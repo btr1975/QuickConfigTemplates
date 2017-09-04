@@ -1,0 +1,2 @@
+# QuickConfigTemplates
+Config templates
