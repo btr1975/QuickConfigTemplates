@@ -16,6 +16,10 @@ This script is for simple config templates, to make lif easier on admins/enginee
 
 * Python: 3.5.2
 
+### Version 1.0.4.prod information
+
+* Added in requirement for persistentdatatools==2.2.7
+
 ### Requirements
 * Jinja2==2.9.6
 * MarkupSafe==1.0
