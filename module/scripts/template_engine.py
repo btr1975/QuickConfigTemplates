@@ -2,7 +2,7 @@ import logging
 from jinja2 import Environment, select_autoescape, FileSystemLoader
 import yaml
 import json
-from module import pdt
+import persistentdatatools as pdt
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'

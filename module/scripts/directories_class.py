@@ -1,7 +1,7 @@
 import logging
 import os
 from yaml import safe_load
-import module as mod
+import persistentdatatools as pdt
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
@@ -22,7 +22,7 @@ class Directories(object):
     def __init__(self, base_dir):
         self.base_dir = base_dir
         self.data_dir = os.path.join(self.base_dir, 'Data')
-        mod.pdt.verify_directory('Data', self.base_dir, directory_create=True)
+        pdt.verify_directory('Data', self.base_dir, directory_create=True)
         self.yml_config_data = open(os.path.join(self.data_dir, 'config.yml'))
         self.dir_config = safe_load(self.yml_config_data).get('config')
         self.templates_dir = list()
@@ -36,7 +36,7 @@ class Directories(object):
 
         else:
             self.yml_dir = os.path.join(self.base_dir, 'yaml')
-            mod.pdt.verify_directory('yaml', self.base_dir, directory_create=True)
+            pdt.verify_directory('yaml', self.base_dir, directory_create=True)
 
         # This sets the default directory for templates, and adds extra directories for templates
         self.templates_dir.append(os.path.join(self.base_dir, 'templates'))
@@ -53,7 +53,7 @@ class Directories(object):
                     exit('Bad templates directory {}'.format(directory))
 
         else:
-            mod.pdt.verify_directory('templates', self.base_dir, directory_create=True)
+            pdt.verify_directory('templates', self.base_dir, directory_create=True)
 
         # This sets the location of the output directory
         if self.dir_config.get('output_directory'):
@@ -64,7 +64,7 @@ class Directories(object):
 
         else:
             self.output_dir = os.path.join(self.base_dir, 'Output')
-            mod.pdt.verify_directory('Output', self.base_dir, directory_create=True)
+            pdt.verify_directory('Output', self.base_dir, directory_create=True)
 
         # This sets the logging directory
         if self.dir_config.get('logging_directory'):
@@ -75,7 +75,7 @@ class Directories(object):
 
         else:
             self.logging_dir = os.path.join(self.base_dir, 'Logs')
-            mod.pdt.verify_directory('Logs', self.base_dir, directory_create=True)
+            pdt.verify_directory('Logs', self.base_dir, directory_create=True)
 
         # This sets the logging level
         if self.dir_config.get('logging_level'):
@@ -100,7 +100,7 @@ class Directories(object):
         return self.logging_level
 
     def set_output_dir_folder(self, output_folder):
-        mod.pdt.verify_directory(output_folder, self.output_dir, directory_create=True)
+        pdt.verify_directory(output_folder, self.output_dir, directory_create=True)
         self.output_dir = os.path.join(self.output_dir, output_folder)
 
     def get_output_dir(self):

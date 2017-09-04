@@ -23,6 +23,7 @@ This script is for simple config templates, to make lif easier on admins/enginee
 * pyaml==16.12.2
 * pytest==3.1.3
 * PyYAML==3.12
+* persistentdatatools==2.2.7
 
 ### Some instructions
 
