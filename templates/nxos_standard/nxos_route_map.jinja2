@@ -1,0 +1,81 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for nxos
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: NXOS-RTR01
+                management_ip: 10.99.222.22
+                route_maps:
+                  - route_map_name: RM-TEST-1
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        description: test description
+                        match:
+                          - match_item: access-list
+                            match_item_name: ACL-A-in
+                          - match_item: access-list
+                            match_item_name: ACL-B-in
+                        set:
+                          - set_item: local preference
+                            set_item_to: 200
+
+                      - sequence: 20
+                        permit_deny: deny
+                        description: test description
+                        match:
+                          - match_item: ip address prefix-list
+                            match_item_name: PL-TEST-1
+                        set:
+                          - set_item: local preference
+                            set_item_to: 500
+
+                      - sequence: 30
+                        permit_deny: permit
+                        match:
+                          - match_item: access-list
+                            match_item_name: ACL-C-in
+                        set:
+                          - set_item: local preference
+                            set_item_to: 200
+
+Notes:
+
+match_item options
+
+ip address prefix-list
+as-path
+ip address
+community
+extcommunity
+ip multicast group
+
+set_item options
+
+local-preference
+weight
+community
+as-path prepend
+as-path prepend last-as
+
+-#}
+{% for route_map in device.route_maps %}
+    {% for sequence in route_map.sequences %}
+route-map {{ route_map.route_map_name }} {{ sequence.permit_deny }} {{ sequence.sequence }}
+{% if sequence.description %}
+  description {{ sequence.description }}
+{% endif %}
+        {% for match in sequence.match %}
+  match {{ match.match_item }} {{ match.match_item_name }}
+        {% endfor %}
+        {% for set in sequence.set %}
+  set {{ set.set_item }} {{ set.set_item_to }}
+        {% endfor %}
+    {% endfor %}
+{% endfor %}

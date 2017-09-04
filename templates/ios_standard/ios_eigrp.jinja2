@@ -1,0 +1,46 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for ios
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR02
+                management_ip: 10.99.222.23
+                eigrp:
+                    eigrp_as: 500
+                    router_id: 172.16.1.1
+                    networks:
+                      - network: 192.168.1.0
+                        inverse_mask: 0.0.0.255
+
+                      - network: 192.168.2.0
+                        inverse_mask: 0.0.0.255
+
+                      - network: 192.168.3.0
+                        inverse_mask: 0.0.0.255
+
+                    passive_interfaces:
+                      - g0/0
+                      - vlan100
+
+-#}
+router eigrp {{ device.eigrp.eigrp_as }}
+{% if device.eigrp.router_id %}
+  eigrp router-id {{ device.eigrp.router_id }}
+  no auto-summary
+{% endif %}
+{% if device.eigrp.passive_interfaces %}
+    {% for interface in device.eigrp.passive_interfaces %}
+  passive-interface {{ interface }}
+    {% endfor %}
+{% endif %}
+{% if device.eigrp.networks %}
+    {% for network in device.eigrp.networks %}
+  network {{ network.network }} {{ network.inverse_mask }}
+    {% endfor %}
+{% endif %}

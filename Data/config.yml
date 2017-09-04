@@ -1,0 +1,9 @@
+--- # Version 1.0.0
+config:
+  yml_directory:
+  templates_directory:
+  output_directory:
+  logging_directory:
+  logging_level:
+
+# Logging level is 3 by default, highest is 1 lowest is 5

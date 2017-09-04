@@ -1,0 +1,52 @@
+{#-
+Version: 1.0.1
+
+Sample data for this template
+
+---
+common:
+    template: iosxr_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+    -   device:
+        -   devicename: NYC-CORE-RTR00
+            management_ip: 10.99.222.21
+            mpls_vrfs:
+            -   export_rts:
+                - '22650:1'
+                import_rts:
+                - '22650:1'
+                - '22650:2'
+                vrf: CDMI_MAIN
+
+    -   device:
+        -   devicename: NYC-CORE-RTR01
+            management_ip: 10.99.222.22
+            mpls_vrfs:
+            -   export_rts:
+                - '22650:1'
+                import_rts:
+                - '22650:1'
+                - '22650:2'
+                vrf: CDMI_MAIN
+
+
+-#}
+{% for vrf in device.mpls_vrfs %}
+vrf {{ vrf.vrf }}
+ address-family ipv4 unicast
+{% if vrf.import_rts %}
+  import route-target
+{% for import_rt in vrf.import_rts %}
+   {{ import_rt }}
+{% endfor %}
+  !
+{% endif %}
+{% if vrf.export_rts %}
+  export route-target
+{% for export_rt in vrf.export_rts %}
+   {{ export_rt }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}

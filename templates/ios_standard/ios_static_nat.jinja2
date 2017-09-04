@@ -1,0 +1,30 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for ios
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR02
+                management_ip: 10.99.222.23
+                static_nats:
+                  - nat_type: inside
+                    real_ip: 172.16.1.1
+                    nat_ip: 5.5.5.5
+
+                  - nat_type: outside
+                    real_ip: 6.6.6.6
+                    nat_ip: 172.16.2.1
+
+-#}
+{% for nat in device.static_nats %}
+    {% if nat.nat_type == 'inside' %}
+ip nat inside source static {{ nat.real_ip }} {{ nat.nat_ip }}
+    {% elif nat.nat_type == 'outside' %}
+ip nat outside source static {{ nat.nat_ip }} {{ nat.real_ip }}
+    {% endif %}
+{% endfor %}

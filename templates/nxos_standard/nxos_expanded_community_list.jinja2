@@ -1,0 +1,30 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for nxos
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: NXOS-RTR02
+                management_ip: 10.99.222.23
+                expanded_community_lists:
+                  - community_list_name: CL-EXP-1
+                    sequences:
+                      - sequence: 1
+                        permit_deny: permit
+                        regex: '^22650:1 22650:1*$'
+
+                      - sequence: 1
+                        permit_deny: permit
+                        regex: '^2_5$'
+
+-#}
+{% for community_list in device.expanded_community_lists %}
+    {% for sequence in community_list.sequences %}
+ip community-list expanded {{ community_list.community_list_name }} {{ sequence.permit_deny }} {{ sequence.regex }}
+    {% endfor %}
+{% endfor %}

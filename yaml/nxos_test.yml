@@ -1,0 +1,158 @@
+--- # Test data to for nxos
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: NXOS-RTR00
+                management_ip: 10.99.222.21
+                routed_interfaces:
+                  - interface: g0/0
+                    description: description a
+                    tag: 701
+                    bfd: true
+                    ip: 10.1.1.1
+                    mask: 255.255.255.252
+                  
+                  - interface: g0/1
+                    description: description b
+                    remove: true
+
+                switched_interfaces:
+                  - interface: e2/1
+                    description: description switched a
+                    port_type: access
+                    vlan: 900
+                  
+                  - interface: e2/2
+                    description: description switched b
+                    port_type: trunk
+                    vlans: 100, 200, 300
+                    
+                bgp:
+                    bgp_as: 22650
+                    router_id: 172.16.1.1
+                    networks:
+                      - 192.168.1.1/24
+                      - 192.168.2.1/24
+                    neighbors:
+                      - neighbor: 192.168.5.1
+                        neighbor_as: 123456
+                        neighbor_password: poop
+                        neighbor_local_as: 22650
+                        neighbor_no_prepend: true
+                        neighbor_description: Test description
+                        neighbor_update_source: Loopback100
+                        neighbor_bfd: true
+                        neighbor_timers:
+                            keep_alive: 7
+                            hold_time: 21
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN
+                            route_map_out: RM-TEST-OUT
+                        neighbor_next_hop_self: true
+                        
+                      - neighbor: 192.168.6.1
+                        neighbor_as: 11111
+                        neighbor_local_as: 5231
+                        neighbor_description: Test description 2
+                        neighbor_update_source: Loopback100
+                        neighbor_timers:
+                            keep_alive: 21
+                            hold_time: 63
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN-2
+                        neighbor_next_hop_self: true
+                        
+                
+                
+        - device:
+              - devicename: NXOS-RTR01
+                management_ip: 10.99.222.22
+                routed_interfaces:
+                  - interface: g0/10
+                    description: description a
+                    ip: 10.1.1.1
+                    mask: 255.255.255.252
+                  
+                  - interface: g0/20
+                    description: description b
+                    ip: 10.2.2.1
+                    mask: 255.255.255.252
+                    
+                switched_interfaces:
+                  - interface: e1/1
+                    description: description switched a
+                    port_type: access
+                    vlan: 900
+                    portfast: true
+                  
+                  - interface: e1/2
+                    description: description switched b
+                    port_type: trunk
+                    vlans: 100, 200, 300
+                    portfast: true
+
+                bgp:
+                    bgp_as: 22650
+                    router_id: 172.16.1.1
+                    networks:
+                      - 192.168.25.1/24
+                      - 192.168.42.1/24
+                    neighbors:
+                      - neighbor: 192.168.25.1
+                        neighbor_as: 123456
+                        neighbor_password: poop
+                        neighbor_local_as: 22650
+                        neighbor_no_prepend: true
+                        neighbor_description: Test description
+                        neighbor_update_source: Loopback100
+                        neighbor_bfd: true
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN
+                            route_map_out: RM-TEST-OUT
+                        neighbor_next_hop_self: true
+
+                      - neighbor: 192.168.10.1
+                        neighbor_as: 11111
+                        neighbor_local_as: 5231
+                        neighbor_description: Test description 2
+                        neighbor_update_source: Loopback100
+                        neighbor_timers:
+                            keep_alive: 15
+                            hold_time: 45
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN-2
+                        neighbor_next_hop_self: true
+
+        - device:
+              - devicename: NXOS-RTR02
+                management_ip: 10.99.222.23
+                eigrp:
+                    eigrp_process_name: MAIN
+                    eigrp_as: 500
+                    bfd: true
+                    router_id: 172.16.1.1
+
+                ospf:
+                    ospf_process: 65000
+                    bfd: true
+                    router_id: 172.16.1.1
+
+                routed_interfaces:
+                  - interface: g0/10
+                    description: description a
+                    ip: 10.1.1.1
+                    mask: 255.255.255.252
+                    acl_in: ACL-IN
+                    acl_out: ACL-OUT
+                    eigrp:
+                      process_name: MAIN
+                      passive: true
+                      summary: 0.0.0.0/0
+                      summary_weight: 254
+                    ospf:
+                      process: 65000
+                      passive: true
+                      area: 0
+

@@ -1,0 +1,68 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for ios
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR00
+                management_ip: 10.99.222.21
+                switched_interfaces:
+                  - interface: g1/1
+                    description: description switched a
+                    port_type: access
+                    vlan: 900
+
+                  - interface: g1/2
+                    description: description switched b
+                    port_type: trunk
+                    vlans: 100, 200, 300
+
+        - device:
+              - devicename: IOS-RTR01
+                management_ip: 10.99.222.22
+                switched_interfaces:
+                  - interface: g1/1
+                    description: description switched a
+                    port_type: access
+                    vlan: 900
+                    portfast: true
+
+                  - interface: g1/2
+                    description: description switched b
+                    port_type: trunk
+                    vlans: 100, 200, 300
+                    portfast: true
+
+-#}
+{% for interface in device.switched_interfaces %}
+interface {{ interface.interface }}
+  description {{ interface.description }}
+  switchport
+  {% if interface.port_type == 'access' %}
+  switchport access vlan {{ interface.vlan }}
+  switchport mode access
+  switchport nonegotiate
+  no ip address
+  {% if interface.portfast %}
+  spanning-tree portfast
+  spanning-tree bpduguard enable
+  {% endif %}
+  {% endif %}
+  {% if interface.port_type == 'trunk' %}
+  switchport trunk encapsulation dot1q
+  switchport trunk allowed vlan {{ interface.vlans }}
+  switchport mode trunk
+  switchport nonegotiate
+  no ip address
+  {% if interface.portfast %}
+  spanning-tree portfast trunk
+  spanning-tree bpduguard enable
+  {% endif %}
+  {% endif %}
+end
+{% endfor %}

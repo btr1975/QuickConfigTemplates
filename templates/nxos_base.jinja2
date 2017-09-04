@@ -1,0 +1,79 @@
+{#-
+Version: 1.0.1
+
+Sample data for this template
+
+---
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+
+-#}
+{% if ticket_number %}
+snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
+{% endif %}
+{% for device_info in devices %}
+    {% for device in device_info.device %}
+<{{ device.devicename }}, {{ device.management_ip }}>
+
+{% if device.routed_interfaces %}
+{% include "nxos_standard/nxos_routed_interface.jinja2" %}
+
+{% endif %}
+{% if device.switched_interfaces %}
+{% include "nxos_standard/nxos_switched_interface.jinja2" %}
+
+{% endif %}
+{% if device.standard_acls %}
+{% include "nxos_standard/nxos_standard_acl.jinja2" %}
+
+{% endif %}
+{% if device.extended_acls %}
+{% include "nxos_standard/nxos_extended_acl.jinja2" %}
+
+{% endif %}
+{% if device.prefix_lists %}
+{% include "nxos_standard/nxos_prefix_list.jinja2" %}
+
+{% endif %}
+{% if device.standard_community_lists %}
+{% include "nxos_standard/nxos_standard_community_list.jinja2" %}
+
+{% endif %}
+{% if device.expanded_community_lists %}
+{% include "nxos_standard/nxos_expanded_community_list.jinja2" %}
+
+{% endif %}
+{% if device.as_path_acls %}
+{% include "nxos_standard/nxos_as_path_acl.jinja2" %}
+
+{% endif %}
+{% if device.route_maps %}
+{% include "nxos_standard/nxos_route_map.jinja2" %}
+
+{% endif %}
+{% if device.static_multicast_rps %}
+{% include "nxos_standard/nxos_static_multicast_rp.jinja2" %}
+
+{% endif %}
+{% if device.static_nats %}
+{% include "nxos_standard/nxos_static_nat.jinja2" %}
+
+{% endif %}
+{% if device.eigrp %}
+{% include "nxos_standard/nxos_eigrp.jinja2" %}
+
+{% endif %}
+{% if device.ospf %}
+{% include "nxos_standard/nxos_ospf.jinja2" %}
+
+{% endif %}
+{% if device.bgp %}
+{% include "nxos_standard/nxos_bgp.jinja2" %}
+
+{% endif %}
+
+</{{ device.devicename }}, {{ device.management_ip }}>
+
+    {% endfor %}
+{% endfor %}

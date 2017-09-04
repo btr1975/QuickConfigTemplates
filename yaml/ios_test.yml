@@ -1,0 +1,350 @@
+--- # Test data to for ios
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR02
+                management_ip: 10.99.222.23
+                prefix_lists:
+                  - prefix_list_name: PL-TEST-1
+                    sequences:
+                      - sequence: 5
+                        permit_deny: permit
+                        network: 192.168.1.0/24
+
+                      - sequence: 10
+                        permit_deny: deny
+                        network: 192.168.2.0/24
+                        le_ge: le
+                        le_ge_value: 32
+
+                      - sequence: 15
+                        permit_deny: permit
+                        network: 192.168.3.0/24
+                        le_ge: ge
+                        le_ge_value: 16
+
+                standard_acls:
+                  - acl_name: ACL-STANDARD-1
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        source_network: 192.168.1.0/24
+
+                      - sequence: 20
+                        permit_deny: deny
+                        source_network: 192.168.2.0/24
+
+                      - sequence: 30
+                        permit_deny: permit
+                        source_network: 192.168.3.0/24
+
+                  - acl_name: ACL-STANDARD-2
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        source_network: 192.168.4.0/24
+
+                      - sequence: 20
+                        permit_deny: deny
+                        source_network: 192.168.5.0/24
+
+                      - sequence: 30
+                        permit_deny: permit
+                        source_network: 192.168.6.0/24
+
+                extended_acls:
+                  - acl_name: ACL-EXT-1
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: ip
+                        source_network: 192.168.1.0/24
+                        source_port: 445
+                        destination_network: 192.168.5.0/24
+
+                      - sequence: 20
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port: 445
+
+                      - sequence: 30
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port_range: 445 600
+
+                      - sequence: 40
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        source_port_range: 445 600
+                        destination_network: 192.168.6.0/24
+
+
+                  - acl_name: ACL-EXT-2
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port: 445
+
+                  - acl_name: ACL-EXT-3
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: ip
+                        source_network: 192.168.1.0/24
+                        source_port: 445
+                        destination_network: 192.168.5.0/24
+                        destination_port: 445
+
+                  - acl_name: ACL-EXT-4
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        source_port_range: 445 600
+                        destination_network: 192.168.6.0/24
+                        destination_port_range: 445 600
+
+                  - acl_name: ACL-EXT-5
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port_range: 445 600
+
+                  - acl_name: ACL-EXT-6
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        source_port_range: 445 600
+                        destination_network: 192.168.6.0/24
+
+                  - acl_name: ACL-EXT-7
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+
+                standard_community_lists:
+                  - community_list_name: CL-STAND-1
+                    sequences:
+                      - sequence: 1
+                        permit_deny: permit
+                        community: '22650:1'
+
+                      - sequence: 1
+                        permit_deny: permit
+                        community: '22650:25'
+
+                      - sequence: 1
+                        permit_deny: permit
+                        community: no-export
+
+                expanded_community_lists:
+                  - community_list_name: CL-EXP-1
+                    sequences:
+                      - sequence: 1
+                        permit_deny: permit
+                        regex: '^22650:1 22650:1*$'
+
+                      - sequence: 1
+                        permit_deny: permit
+                        regex: '^2_5$'
+
+                as_path_acls:
+                  - as_path_acl_name: ASP-TEST-1
+                    sequences:
+                        - sequence: 1
+                          permit_deny: permit
+                          regex: ^22650_26541$
+
+                        - sequence: 2
+                          permit_deny: deny
+                          regex: ^_26541$
+
+                route_maps:
+                  - route_map_name: RM-TEST-1
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        description: test description
+                        match:
+                          - match_item: access-list
+                            match_item_name: ACL-A-in
+                          - match_item: access-list
+                            match_item_name: ACL-B-in
+                        set:
+                          - set_item: local preference
+                            set_item_to: 200
+
+                      - sequence: 20
+                        permit_deny: deny
+                        description: test description
+                        match:
+                          - match_item: ip address prefix-list
+                            match_item_name: PL-TEST-1
+                        set:
+                          - set_item: local preference
+                            set_item_to: 500
+
+                      - sequence: 30
+                        permit_deny: permit
+                        match:
+                          - match_item: access-list
+                            match_item_name: ACL-C-in
+                        set:
+                          - set_item: local preference
+                            set_item_to: 200
+
+                standard_acls:
+                  - acl_name: ACL-TEST-MCAST
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        source_network: 224.1.2.0 0.0.0.255
+
+                      - sequence: 20
+                        permit_deny: deny
+                        source_network: 224.1.3.0 0.0.0.255
+
+                      - sequence: 30
+                        permit_deny: permit
+                        source_network: 224.1.4.0 0.0.0.255
+
+                static_multicast_rps:
+                  - rp_address: 172.16.1.1
+                    standard_acl: ACL-TEST-MCAST
+
+                static_nats:
+                  - nat_type: inside
+                    real_ip: 172.16.1.1
+                    nat_ip: 5.5.5.5
+
+                  - nat_type: outside
+                    real_ip: 6.6.6.6
+                    nat_ip: 172.16.2.1
+
+                routed_interfaces:
+                  - interface: g0/10
+                    description: description a
+                    ip: 10.1.1.1
+                    vrf: CDMI_MAIN
+                    mask: 255.255.255.252
+                    acl_in: ACL-IN
+                    acl_out: ACL-OUT
+
+                  - interface: g0/20
+                    description: description b
+                    ip: 10.2.2.1
+                    mask: 255.255.255.252
+
+                  - interface: g0/0
+                    description: description a
+                    tag: 701
+                    bfd: true
+                    ip: 10.1.1.1
+                    mask: 255.255.255.252
+
+                switched_interfaces:
+                  - interface: g1/1
+                    description: description switched a
+                    port_type: access
+                    vlan: 900
+                    portfast: true
+
+                  - interface: g1/2
+                    description: description switched b
+                    port_type: trunk
+                    vlans: 100, 200, 300
+                    portfast: true
+
+                bgp:
+                    bgp_as: 22650
+                    router_id: 172.16.1.1
+                    networks:
+                      - network: 192.168.1.0
+                        mask: 255.255.255.0
+                      - network: 192.168.2.0
+                        mask: 255.255.255.0
+                    neighbors:
+                      - neighbor: 192.168.5.1
+                        neighbor_as: 123456
+                        neighbor_password: poop
+                        neighbor_local_as: 22650
+                        neighbor_no_prepend: true
+                        neighbor_description: Test description
+                        neighbor_update_source: Loopback100
+                        neighbor_bfd: true
+                        neighbor_timers:
+                            keep_alive: 7
+                            hold_time: 21
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN
+                            route_map_out: RM-TEST-OUT
+                        neighbor_next_hop_self: true
+
+                      - neighbor: 192.168.6.1
+                        neighbor_as: 11111
+                        neighbor_local_as: 5231
+                        neighbor_description: Test description 2
+                        neighbor_update_source: Loopback100
+                        neighbor_timers:
+                            keep_alive: 21
+                            hold_time: 63
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN-2
+                        neighbor_next_hop_self: true
+
+                eigrp:
+                    eigrp_as: 500
+                    bfd: true
+                    router_id: 172.16.1.1
+                    networks:
+                      - network: 192.168.1.0
+                        inverse_mask: 0.0.0.255
+
+                      - network: 192.168.2.0
+                        inverse_mask: 0.0.0.255
+
+                      - network: 192.168.3.0
+                        inverse_mask: 0.0.0.255
+
+                    passive_interfaces:
+                      - g0/0
+                      - vlan100
+
+                ospf:
+                    ospf_process: 500
+                    router_id: 172.16.1.1
+                    networks:
+                      - network: 192.168.1.0
+                        inverse_mask: 0.0.0.255
+                        area: 0
+
+                      - network: 192.168.2.0
+                        inverse_mask: 0.0.0.255
+                        area: 10
+
+                      - network: 192.168.3.0
+                        inverse_mask: 0.0.0.255
+                        area: 20
+
+                    passive_interfaces:
+                      - g0/0
+                      - vlan100

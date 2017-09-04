@@ -1,0 +1,34 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for nxos
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: NXOS-RTR02
+                management_ip: 10.99.222.23
+                standard_community_lists:
+                  - community_list_name: CL-STAND-1
+                    sequences:
+                      - sequence: 1
+                        permit_deny: permit
+                        community: '22650:1'
+
+                      - sequence: 1
+                        permit_deny: permit
+                        community: '22650:25'
+
+                      - sequence: 1
+                        permit_deny: permit
+                        community: no-export
+
+-#}
+{% for community_list in device.standard_community_lists %}
+    {% for sequence in community_list.sequences %}
+ip community-list standard {{ community_list.community_list_name }} {{ sequence.permit_deny }} {{ sequence.community }}
+    {% endfor %}
+{% endfor %}

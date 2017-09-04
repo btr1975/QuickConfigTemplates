@@ -1,0 +1,131 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for ios
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR02
+                management_ip: 10.99.222.23
+                extended_acls:
+                  - acl_name: ACL-EXT-1
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: ip
+                        source_network: 192.168.1.0/24
+                        source_port: 445
+                        destination_network: 192.168.5.0/24
+
+                      - sequence: 20
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port: 445
+
+                      - sequence: 30
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port_range: 445 600
+
+                      - sequence: 40
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        source_port_range: 445 600
+                        destination_network: 192.168.6.0/24
+
+
+                  - acl_name: ACL-EXT-2
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port: 445
+
+                  - acl_name: ACL-EXT-3
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: ip
+                        source_network: 192.168.1.0/24
+                        source_port: 445
+                        destination_network: 192.168.5.0/24
+                        destination_port: 445
+
+                  - acl_name: ACL-EXT-4
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        source_port_range: 445 600
+                        destination_network: 192.168.6.0/24
+                        destination_port_range: 445 600
+
+                  - acl_name: ACL-EXT-5
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+                        destination_port_range: 445 600
+
+                  - acl_name: ACL-EXT-6
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        source_port_range: 445 600
+                        destination_network: 192.168.6.0/24
+
+                  - acl_name: ACL-EXT-7
+                    sequences:
+                      - sequence: 10
+                        permit_deny: permit
+                        protocol: tcp
+                        source_network: 192.168.4.0/24
+                        destination_network: 192.168.6.0/24
+
+-#}
+{% for acl in device.extended_acls %}
+ip access-list extended {{ acl.acl_name }}
+    {% for sequence in acl.sequences %}
+        {% if sequence.source_port %}
+            {% if sequence.destination_port %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} eq {{ sequence.source_port }} {{ sequence.destination_network }} eq {{ sequence.destination_port }}
+            {% elif sequence.destination_port_range %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} eq {{ sequence.source_port }} {{ sequence.destination_network }} range {{ sequence.destination_port_range }}
+            {%  else %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} eq {{ sequence.source_port }} {{ sequence.destination_network }}
+            {% endif %}
+        {% elif sequence.source_port_range %}
+            {% if sequence.destination_port %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} range {{ sequence.source_port_range }} {{ sequence.destination_network }} eq {{ sequence.destination_port }}
+            {% elif sequence.destination_port_range %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} range {{ sequence.source_port_range }} {{ sequence.destination_network }} range {{ sequence.destination_port_range }}
+            {%  else %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} range {{ sequence.source_port_range }} {{ sequence.destination_network }}
+            {% endif %}
+        {% else %}
+            {% if sequence.destination_port %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} {{ sequence.destination_network }} eq {{ sequence.destination_port }}
+            {% elif sequence.destination_port_range %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} {{ sequence.destination_network }} range {{ sequence.destination_port_range }}
+            {%  else %}
+  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} {{ sequence.destination_network }}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}

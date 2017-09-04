@@ -1,0 +1,86 @@
+{#-
+Version: 1.0.1
+
+Sample data for this template
+
+---
+common:
+    template: iosxr_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+    -   device:
+        -   devicename: NYC-CORE-RTR00
+            management_ip: 10.99.222.21
+            mpls_pe_to_ce_interfaces:
+            -   description: description a
+                interface: g0/1
+                ip: 10.1.1.1
+                mask: 255.255.255.252
+                tag: 701
+                vrf: CDMI_MAIN
+
+            -   description: description b
+                interface: g0/2
+                ip: 10.2.2.1
+                mask: 255.255.255.252
+                multicast: true
+                tag: 720
+                vrf: MCAST_A
+    -   device:
+        -   devicename: NYC-CORE-RTR01
+            management_ip: 10.99.222.22
+            mpls_pe_to_ce_interfaces:
+            -   description: description a
+                interface: g0/1
+                ip: 10.1.1.1
+                mask: 255.255.255.252
+                tag: 701
+                vrf: CDMI_MAIN
+
+            -   description: description b
+                interface: g0/2
+                ip: 10.2.2.1
+                mask: 255.255.255.252
+                multicast: true
+                tag: 720
+                vrf: MCAST_A
+
+
+-#}
+{% for interface in device.mpls_pe_to_ce_interfaces %}
+interface {{ interface.interface }}
+ description {{ interface.description }}
+ vrf {{ interface.vrf }}
+ cdp
+ {% if interface.remove %}
+ no ipv4 address
+ {% else %}
+ ipv4 address {{ interface.ip }} {{ interface.mask }}
+ {% endif %}
+ {% if interface.tag %}
+ encapsulation dot1q {{ interface.tag }}
+ {% endif %}
+
+{% if interface.multicast %}
+router pim
+ vrf {{ interface.vrf }}
+  address-family ipv4
+   interface {{ interface.interface }}
+   {% if interface.remove %}
+    disable
+   {% else %}
+    enable
+   {% endif %}
+
+multicast-routing
+ vrf {{ interface.vrf }}
+  address-family ipv4
+   interface {{ interface.interface }}
+   {% if interface.remove %}
+    disable
+   {% else %}
+    enable
+   {% endif %}
+{% endif %}
+
+{% endfor %}

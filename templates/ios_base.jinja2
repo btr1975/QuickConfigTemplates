@@ -1,0 +1,79 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+---
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+
+-#}
+{% if ticket_number %}
+snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
+{% endif %}
+{% for device_info in devices %}
+    {% for device in device_info.device %}
+<{{ device.devicename }}, {{ device.management_ip }}>
+
+{% if device.routed_interfaces %}
+{% include "ios_standard/ios_routed_interface.jinja2" %}
+
+{% endif %}
+{% if device.switched_interfaces %}
+{% include "ios_standard/ios_switched_interface.jinja2" %}
+
+{% endif %}
+{% if device.standard_acls %}
+{% include "ios_standard/ios_standard_acl.jinja2" %}
+
+{% endif %}
+{% if device.extended_acls %}
+{% include "ios_standard/ios_extended_acl.jinja2" %}
+
+{% endif %}
+{% if device.prefix_lists %}
+{% include "ios_standard/ios_prefix_list.jinja2" %}
+
+{% endif %}
+{% if device.standard_community_lists %}
+{% include "ios_standard/ios_standard_community_list.jinja2" %}
+
+{% endif %}
+{% if device.expanded_community_lists %}
+{% include "ios_standard/ios_expanded_community_list.jinja2" %}
+
+{% endif %}
+{% if device.as_path_acls %}
+{% include "ios_standard/ios_as_path_acl.jinja2" %}
+
+{% endif %}
+{% if device.route_maps %}
+{% include "ios_standard/ios_route_map.jinja2" %}
+
+{% endif %}
+{% if device.static_multicast_rps %}
+{% include "ios_standard/ios_static_multicast_rp.jinja2" %}
+
+{% endif %}
+{% if device.static_nats %}
+{% include "ios_standard/ios_static_nat.jinja2" %}
+
+{% endif %}
+{% if device.eigrp %}
+{% include "ios_standard/ios_eigrp.jinja2" %}
+
+{% endif %}
+{% if device.ospf %}
+{% include "ios_standard/ios_ospf.jinja2" %}
+
+{% endif %}
+{% if device.bgp %}
+{% include "ios_standard/ios_bgp.jinja2" %}
+
+{% endif %}
+
+</{{ device.devicename }}, {{ device.management_ip }}>
+
+    {% endfor %}
+{% endfor %}

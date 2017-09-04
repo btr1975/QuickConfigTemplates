@@ -1,0 +1,25 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for nxos
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: NXOS-RTR02
+                management_ip: 10.99.222.23
+                ospf:
+                    ospf_process: 65000
+                    bfd: true
+                    router_id: 172.16.1.1
+
+-#}
+feature ospf
+router ospf {{ device.ospf.ospf_process }}
+  {% if device.ospf.bfd %}
+  bfd
+  {% endif %}
+  router-id {{ device.ospf.router_id }}

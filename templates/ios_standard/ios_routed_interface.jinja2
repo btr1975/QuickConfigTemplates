@@ -1,0 +1,72 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for ios
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR00
+                management_ip: 10.99.222.21
+                routed_interfaces:
+                  - interface: g0/0
+                    description: description a
+                    tag: 701
+                    bfd: true
+                    ip: 10.1.1.1
+                    mask: 255.255.255.252
+
+                  - interface: g0/1
+                    description: description b
+                    remove: true
+
+        - device:
+              - devicename: IOS-RTR01
+                management_ip: 10.99.222.22
+                routed_interfaces:
+                  - interface: g0/10
+                    description: description a
+                    ip: 10.1.1.1
+                    mask: 255.255.255.252
+                    acl_in: ACL-IN
+                    acl_out: ACL-OUT
+
+                  - interface: g0/20
+                    description: description b
+                    vrf: TEST_VRF
+                    ip: 10.2.2.1
+                    mask: 255.255.255.252
+
+-#}
+{% for interface in device.routed_interfaces %}
+interface {{ interface.interface }}
+ description {{ interface.description }}
+ {% if interface.vrf %}
+ ip vrf forwarding {{ interface.vrf }}
+ {% endif %}
+ {% if interface.tag %}
+ encapsulation dot1q {{ interface.tag }}
+ {% endif %}
+ no switchport
+ {% if interface.bfd %}
+ bfd interval 250 min_rx 250 multiplier 3
+ {% endif %}
+ {% if interface.remove %}
+ no ip address
+ {% else %}
+ ip address {{ interface.ip }} {{ interface.mask }}
+ {% endif %}
+ no ip redirects
+ no ip proxy-arp
+ arp timeout 270
+ {% if interface.acl_in %}
+ ip access-group {{ interface.acl_in }} in
+ {% endif %}
+ {% if interface.acl_out %}
+ ip access-group {{ interface.acl_out }} out
+ {% endif %}
+end
+{% endfor %}

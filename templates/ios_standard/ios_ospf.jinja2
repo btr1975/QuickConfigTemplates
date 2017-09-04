@@ -1,0 +1,49 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for ios
+common:
+    template: ios_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR02
+                management_ip: 10.99.222.23
+                ospf:
+                    ospf_process: 500
+                    router_id: 172.16.1.1
+                    networks:
+                      - network: 192.168.1.0
+                        inverse_mask: 0.0.0.255
+                        area: 0
+
+                      - network: 192.168.2.0
+                        inverse_mask: 0.0.0.255
+                        area: 10
+
+                      - network: 192.168.3.0
+                        inverse_mask: 0.0.0.255
+                        area: 20
+
+                    passive_interfaces:
+                      - g0/0
+                      - vlan100
+
+-#}
+router ospf {{ device.ospf.ospf_process }}
+{% if device.ospf.router_id %}
+  router-id {{ device.ospf.router_id }}
+  log-adjacency-changes
+{% endif %}
+{% if device.ospf.passive_interfaces %}
+    {% for interface in device.ospf.passive_interfaces %}
+  passive-interface {{ interface }}
+    {% endfor %}
+{% endif %}
+{% if device.ospf.networks %}
+    {% for network in device.ospf.networks %}
+  network {{ network.network }} {{ network.inverse_mask }} area {{ network.area }}
+    {% endfor %}
+{% endif %}

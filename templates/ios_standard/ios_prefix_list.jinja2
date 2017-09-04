@@ -1,0 +1,42 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for ios
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOS-RTR02
+                management_ip: 10.99.222.23
+                prefix_lists:
+                  - prefix_list_name: PL-TEST-1
+                    sequences:
+                      - sequence: 5
+                        permit_deny: permit
+                        network: 192.168.1.0/24
+
+                      - sequence: 10
+                        permit_deny: deny
+                        network: 192.168.2.0/24
+                        le_ge: le
+                        le_ge_value: 32
+
+                      - sequence: 15
+                        permit_deny: permit
+                        network: 192.168.3.0/24
+                        le_ge: ge
+                        le_ge_value: 16
+
+-#}
+{% for prefix_list in device.prefix_lists %}
+    {% for sequence in prefix_list.sequences %}
+        {% if sequence.le_ge %}
+ip prefix-list {{ prefix_list.prefix_list_name }} seq {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.network }} {{ sequence.le_ge }} {{ sequence.le_ge_value }}
+        {% else %}
+ip prefix-list {{ prefix_list.prefix_list_name }} seq {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.network }}
+        {% endif %}
+    {% endfor %}
+{% endfor %}

@@ -1,0 +1,134 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for nxos
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: NXOS-RTR00
+                management_ip: 10.99.222.21
+                bgp:
+                    bgp_as: 22650
+                    router_id: 172.16.1.1
+                    networks:
+                      - 192.168.1.1/24
+                      - 192.168.2.1/24
+                    neighbors:
+                      - neighbor: 192.168.5.1
+                        neighbor_as: 123456
+                        neighbor_password: poop
+                        neighbor_local_as: 22650
+                        neighbor_no_prepend: true
+                        neighbor_description: Test description
+                        neighbor_update_source: Loopback100
+                        neighbor_bfd: true
+                        neighbor_timers:
+                            keep_alive: 7
+                            hold_time: 21
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN
+                            route_map_out: RM-TEST-OUT
+                        neighbor_next_hop_self: true
+
+                      - neighbor: 192.168.6.1
+                        neighbor_as: 11111
+                        neighbor_local_as: 5231
+                        neighbor_description: Test description 2
+                        neighbor_update_source: Loopback100
+                        neighbor_timers:
+                            keep_alive: 21
+                            hold_time: 63
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN-2
+                        neighbor_next_hop_self: true
+
+
+
+        - device:
+              - devicename: NXOS-RTR01
+                management_ip: 10.99.222.22
+                bgp:
+                    bgp_as: 22650
+                    router_id: 172.16.1.1
+                    networks:
+                      - 192.168.25.1/24
+                      - 192.168.42.1/24
+                    neighbors:
+                      - neighbor: 192.168.25.1
+                        neighbor_as: 123456
+                        neighbor_password: poop
+                        neighbor_local_as: 22650
+                        neighbor_no_prepend: true
+                        neighbor_description: Test description
+                        neighbor_update_source: Loopback100
+                        neighbor_bfd: true
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN
+                            route_map_out: RM-TEST-OUT
+                        neighbor_next_hop_self: true
+
+                      - neighbor: 192.168.10.1
+                        neighbor_as: 11111
+                        neighbor_local_as: 5231
+                        neighbor_description: Test description 2
+                        neighbor_update_source: Loopback100
+                        neighbor_timers:
+                            keep_alive: 15
+                            hold_time: 45
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN-2
+                        neighbor_next_hop_self: true
+
+-#}
+router bgp {{ device.bgp.bgp_as }}
+{% if device.bgp.router_id %}
+  router-id {{ device.bgp.router_id }}
+  log-neighbor-changes
+{% endif %}
+{% if device.bgp.networks %}
+  address-family ipv4 unicast
+   {% for network in device.bgp.networks %}
+   {{ network }}
+   {% endfor %}
+{% endif %}
+{% for neighbor in device.bgp.neighbors %}
+  neighbor {{ neighbor.neighbor }}
+    remote-as {{ neighbor.neighbor_as }}
+{% if neighbor.neighbor_password %}
+    password {{ neighbor.neighbor_password }}
+{% endif %}
+{% if neighbor.neighbor_local_as %}
+    {% if neighbor.neighbor_no_prepend %}
+    local-as {{ neighbor.neighbor_local_as }} no-prepend
+    {% else %}
+    local-as {{ neighbor.neighbor_local_as }}
+    {% endif %}
+{% endif %}
+{% if neighbor.neighbor_description %}
+    description {{ neighbor.neighbor_description }}
+{% endif %}
+{% if neighbor.neighbor_update_source %}
+    update-source {{ neighbor.neighbor_update_source }}
+{% endif %}
+{% if neighbor.neighbor_bfd %}
+    bfd
+{% endif %}
+{% if neighbor.neighbor_timers %}
+    timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
+{% endif %}
+    address-family ipv4 unicast
+      send-community
+{% if neighbor.neighbor_route_maps.route_map_in %}
+      route-map {{ neighbor.neighbor_route_maps.route_map_in }} in
+{% endif %}
+{% if neighbor.neighbor_route_maps.route_map_out %}
+      route-map {{ neighbor.neighbor_route_maps.route_map_out }} out
+{% endif %}
+{% if neighbor.neighbor_next_hop_self %}
+      next_hop_self
+{% endif %}
+{% endfor %}

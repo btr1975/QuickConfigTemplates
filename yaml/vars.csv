@@ -1,0 +1,4 @@
+variable,value
+source,Loopback1000
+ntp_server_1,10.99.222.1
+ntp_server_2,10.99.225.2

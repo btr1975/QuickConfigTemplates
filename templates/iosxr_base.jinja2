@@ -1,0 +1,44 @@
+{#-
+Version: 1.0.2
+
+Sample data for this template
+
+---
+common:
+    template: iosxr_base.jinja2
+    ticket_number: CHG123456789
+
+-#}
+{% if ticket_number %}
+snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
+{% endif %}
+{% for device_info in devices %}
+    {% for device in device_info.device %}
+
+<{{ device.devicename }}, {{ device.management_ip }}>
+
+{% if device.mpls_vrfs %}
+{% include "iosxr_standard/iosxr_mpls_vrfs.jinja2" %}
+{% endif %}
+
+{% if device.mpls_pe_to_pe_interfaces %}
+{% include "iosxr_standard/iosxr_mpls_pe_to_pe__interface.jinja2" %}
+{% endif %}
+
+{% if device.mpls_pe_to_ce_interfaces %}
+{% include "iosxr_standard/iosxr_mpls_pe_to_ce_interface.jinja2" %}
+{% endif %}
+
+{% if device.mpls_te_tunnel_interfaces %}
+{% include "iosxr_standard/iosxr_mpls_te_tunnel_interface.jinja2" %}
+{% endif %}
+
+{% if device.ntp_servers %}
+{% include "iosxr_standard/iosxr_ntp_servers.jinja2" %}
+{% endif %}
+
+</{{ device.devicename }}, {{ device.management_ip }}>
+
+    {% endfor %}
+{% endfor %}
+

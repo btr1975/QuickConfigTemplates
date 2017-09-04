@@ -1,0 +1,55 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+---
+common:
+    template: iosxr_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+    -   device:
+        -   devicename: NYC-CORE-RTR00
+            management_ip: 10.99.222.21
+            mpls_te_tunnel_interfaces:
+            -   description: description a
+                tunnel_number: 5000
+                unnumbered_interface: Loopback1000
+                destination_ip: 172.16.10.50
+
+            -   description: description b
+                tunnel_number: 5001
+                remove: true
+
+    -   device:
+        -   devicename: NYC-CORE-RTR01
+            management_ip: 10.99.222.22
+            mpls_te_tunnel_interfaces:
+            -   description: description a
+                tunnel_number: 6000
+                unnumbered_interface: Loopback1000
+                destination_ip: 172.16.10.51
+
+            -   description: description b
+                tunnel_number: 5060
+                unnumbered_interface: Loopback1000
+                destination_ip: 172.16.10.51
+
+-#}
+{% for interface in device.mpls_te_tunnel_interfaces %}
+interface tunnel-te{{ interface.tunnel_number }}
+ description {{ interface.description }}
+ bandwidth 10000000
+ {% if interface.remove %}
+ no ipv4 unnumbered
+ {% else %}
+ ipv4 unnumbered {{ interface.unnumbered_interface }}
+ {% endif %}
+ autoroute announce
+ !
+ destination {{ interface.destination_ip }}
+ fast-reroute
+ record-route
+ path-option 1000 dynamic
+
+{% endfor %}

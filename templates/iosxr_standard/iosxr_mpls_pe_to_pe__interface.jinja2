@@ -1,0 +1,92 @@
+{#-
+Version: 1.0.1
+
+Sample data for this template
+
+---
+common:
+    template: iosxr_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+    -   device:
+        -   devicename: NYC-CORE-RTR00
+            management_ip: 10.99.222.21
+            mpls_pe_to_pe_interfaces:
+            -   description: description a
+                interface: g0/0
+                ip: 10.1.1.1
+                mask: 255.255.255.252
+
+            -   description: description b
+                interface: g0/1
+                remove: true
+
+    -   device:
+        -   devicename: NYC-CORE-RTR01
+            management_ip: 10.99.222.22
+            mpls_pe_to_pe_interfaces:
+            -   description: description a
+                interface: g0/10
+                ip: 10.1.1.1
+                mask: 255.255.255.252
+
+            -   description: description b
+                interface: g0/20
+                ip: 10.2.2.1
+                mask: 255.255.255.252
+
+
+-#}
+{% for interface in device.mpls_pe_to_pe_interfaces %}
+
+***** BEGIN config for {{ interface.interface }} *****
+
+interface {{ interface.interface }}
+ description {{ interface.description }}
+ bandwidth 10000000
+ cdp
+ mtu 4000
+ {% if interface.remove %}
+ no ipv4 address
+ {% else %}
+ ipv4 address {{ interface.ip }} {{ interface.mask }}
+ {% endif %}
+ mpls
+  mtu 4000
+
+router pim
+ address-family ipv4
+  interface {{ interface.interface }}
+  {% if interface.remove %}
+   disable
+  {% else %}
+   enable
+  {% endif %}
+
+multicast-routing
+ address-family ipv4
+  interface {{ interface.interface }}
+  {% if interface.remove %}
+   disable
+  {% else %}
+   enable
+  {% endif %}
+
+mpls ldp
+ interface {{ interface.interface }}
+
+mpls traffic-eng
+ interface {{ interface.interface }}
+  admin-weight 1
+
+rsvp
+ interface {{ interface.interface }}
+  bandwidth 5000000
+
+router ospf 1
+ area 0
+  interface {{ interface.interface }}
+
+***** END config for {{ interface.interface }} *****
+
+{% endfor %}

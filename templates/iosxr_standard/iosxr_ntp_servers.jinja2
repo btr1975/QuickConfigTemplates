@@ -1,0 +1,36 @@
+{#-
+Version: 1.0.1
+
+Sample data for this template
+
+---
+common:
+    template: iosxr_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+    -   device:
+        -   devicename: NYC-CORE-RTR00
+            management_ip: 10.99.222.21
+            ntp_servers:
+                servers:
+                - 10.99.222.1
+                - 10.99.222.2
+
+    -   device:
+        -   devicename: NYC-CORE-RTR01
+            management_ip: 10.99.222.22
+            ntp_servers:
+                servers:
+                - 10.99.222.1
+                - 10.99.222.2
+                source: Loopback1000
+
+
+-#}
+ntp
+{% for ntp_serv in device.ntp_servers.servers %}
+ server {{ ntp_serv }}
+{% endfor %}
+{% if device.ntp_servers.source %}
+ source {{ device.ntp_servers.source }}
+{% endif %}

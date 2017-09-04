@@ -1,0 +1,27 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for nxos
+common:
+    template: nxos_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: NXOS-RTR02
+                management_ip: 10.99.222.23
+                eigrp:
+                    eigrp_process_name: MAIN
+                    eigrp_as: 500
+                    bfd: true
+                    router_id: 172.16.1.1
+
+-#}
+feature eigrp
+router eigrp {{ device.eigrp.eigrp_process_name }}
+  {% if device.eigrp.bfd %}
+  bfd
+  {% endif %}
+  autonomous-system {{ device.eigrp.eigrp_as }}
+  router-id {{ device.eigrp.router_id }}
