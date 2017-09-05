@@ -1,0 +1,141 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+--- # Test data to for iosxr
+common:
+    template: iosxr_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+        - device:
+              - devicename: IOSXR-RTR00
+                management_ip: 10.99.222.21
+                bgp:
+                    bgp_as: 22650
+                    router_id: 172.16.1.1
+                    networks:
+                      - 192.168.1.1/24
+                      - 192.168.2.1/24
+                    neighbors:
+                      - neighbor: 192.168.5.1
+                        neighbor_as: 123456
+                        neighbor_password: poop
+                        neighbor_local_as: 22650
+                        neighbor_no_prepend: true
+                        neighbor_description: Test description
+                        neighbor_update_source: Loopback100
+                        neighbor_bfd: true
+                        neighbor_timers:
+                            keep_alive: 7
+                            hold_time: 21
+                        neighbor_route_policies:
+                            route_policy_in: RM-TEST-IN
+                            route_policy_out: RM-TEST-OUT
+                        neighbor_next_hop_self: true
+
+                      - neighbor: 192.168.6.1
+                        neighbor_as: 11111
+                        neighbor_local_as: 5231
+                        neighbor_description: Test description 2
+                        neighbor_update_source: Loopback100
+                        neighbor_timers:
+                            keep_alive: 21
+                            hold_time: 63
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN-2
+                        neighbor_next_hop_self: true
+                    vrf_neighbors:
+                      - neighbor: 192.168.5.1
+                        neighbor_vrf: CDMI_MAIN
+                        neighbor_rd: '22650:1'
+                        neighbor_as: 123456
+                        neighbor_password: poop
+                        neighbor_local_as: 22650
+                        neighbor_no_prepend: true
+                        neighbor_description: Test description
+                        neighbor_update_source: Loopback100
+                        neighbor_bfd: true
+                        neighbor_timers:
+                            keep_alive: 7
+                            hold_time: 21
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN
+                            route_map_out: RM-TEST-OUT
+                        neighbor_next_hop_self: true
+
+                      - neighbor: 192.168.6.1
+                        neighbor_as: 11111
+                        neighbor_local_as: 5231
+                        neighbor_description: Test description 2
+                        neighbor_update_source: Loopback100
+                        neighbor_timers:
+                            keep_alive: 21
+                            hold_time: 63
+                        neighbor_route_maps:
+                            route_map_in: RM-TEST-IN-2
+                        neighbor_next_hop_self: true
+
+-#}
+router bgp {{ device.bgp.bgp_as }}
+{% if device.bgp.router_id %}
+ bgp router-id {{ device.bgp.router_id }}
+ address-family ipv4 unicast
+ !
+ address-family vpnv4 unicast
+ !
+ address-family ipv4 mdt
+ !
+{% endif %}
+{% for neighbor in device.bgp.neighbors %}
+ neighbor {{ neighbor.neighbor }}
+  remote-as {{ neighbor.neighbor_as }}
+  timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
+  description {{ neighbor.neighbor_description }}
+  address-family ipv4 unicast
+   {% if neighbor.neighbor_route_policy.route_policy_in %}
+   route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+   {% endif %}
+   {% if neighbor.neighbor_route_policy.route_policy_out %}
+   route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
+   {% elif %}
+   soft-reconfiguration inbound
+  !
+  address-family vpnv4 unicast
+   {% if neighbor.neighbor_route_policy.route_policy_in %}
+   route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+   {% endif %}
+   {% if neighbor.neighbor_route_policy.route_policy_out %}
+   route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
+   {% elif %}
+  !
+  address-family ipv4 mdt
+   {% if neighbor.neighbor_route_policy.route_policy_in %}
+   route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+   {% endif %}
+   {% if neighbor.neighbor_route_policy.route_policy_out %}
+   route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
+   {% elif %}
+{% endfor %}
+{% for neighbor in device.bgp.vrf_neighbors %}
+ vrf {{ neighbor.neighbor_vrf }}
+  {% if neighbor.neighbor_rd %}
+  rd {{ neighbor.neighbor_rd }}
+  address-family ipv4 unicast
+   redistribute connected
+  !
+  {% endif %}
+  neighbor {{ neighbor.neighbor }}
+   remote-as {{ neighbor.neighbor_as }}
+   timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
+   description {{ neighbor.neighbor_description }}
+   address-family ipv4 unicast
+    send-community-ebgp
+    {% if neighbor.neighbor_route_policy.route_policy_in %}
+    route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+    {% endif %}
+    {% if neighbor.neighbor_route_policy.route_policy_out %}
+    route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
+    {% elif %}
+    soft-reconfiguration inbound
+{% endfor %}
