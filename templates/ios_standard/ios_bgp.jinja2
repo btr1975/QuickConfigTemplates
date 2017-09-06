@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -130,10 +130,12 @@ router bgp {{ device.bgp.bgp_as }}
 {% endif %}
   neighbor {{ neighbor.neighbor }} send-community
   neighbor {{ neighbor.neighbor }} soft-reconfiguration inbound
-{% if neighbor.neighbor_route_maps.route_map_in %}
+{% if neighbor.neighbor_route_maps %}
+    {% if neighbor.neighbor_route_maps.route_map_in %}
   neighbor {{ neighbor.neighbor }} route-map {{ neighbor.neighbor_route_maps.route_map_in }} in
-{% endif %}
-{% if neighbor.neighbor_route_maps.route_map_out %}
+    {% endif %}
+    {% if neighbor.neighbor_route_maps.route_map_out %}
   neighbor {{ neighbor.neighbor }} route-map {{ neighbor.neighbor_route_maps.route_map_out }} out
+    {% endif %}
 {% endif %}
 {% endfor %}

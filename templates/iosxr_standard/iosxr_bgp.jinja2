@@ -93,29 +93,35 @@ router bgp {{ device.bgp.bgp_as }}
   timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
   description {{ neighbor.neighbor_description }}
   address-family ipv4 unicast
-   {% if neighbor.neighbor_route_policy.route_policy_in %}
-   route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+   {% if neighbor.neighbor_route_policies %}
+       {% if neighbor.neighbor_route_policies.route_policy_in %}
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+       {% endif %}
+       {% if neighbor.neighbor_route_policies.route_policy_out %}
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+       {% endif %}
    {% endif %}
-   {% if neighbor.neighbor_route_policy.route_policy_out %}
-   route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
-   {% elif %}
    soft-reconfiguration inbound
   !
   address-family vpnv4 unicast
-   {% if neighbor.neighbor_route_policy.route_policy_in %}
-   route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+   {% if neighbor.neighbor_route_policies %}
+       {% if neighbor.neighbor_route_policies.route_policy_in %}
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+       {% endif %}
+       {% if neighbor.neighbor_route_policies.route_policy_out %}
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+       {% endif %}
    {% endif %}
-   {% if neighbor.neighbor_route_policy.route_policy_out %}
-   route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
-   {% elif %}
   !
   address-family ipv4 mdt
-   {% if neighbor.neighbor_route_policy.route_policy_in %}
-   route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+   {% if neighbor.neighbor_route_policies %}
+       {% if neighbor.neighbor_route_policies.route_policy_in %}
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+       {% endif %}
+       {% if neighbor.neighbor_route_policies.route_policy_out %}
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+       {% endif %}
    {% endif %}
-   {% if neighbor.neighbor_route_policy.route_policy_out %}
-   route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
-   {% elif %}
 {% endfor %}
 {% for neighbor in device.bgp.vrf_neighbors %}
  vrf {{ neighbor.neighbor_vrf }}
@@ -131,11 +137,13 @@ router bgp {{ device.bgp.bgp_as }}
    description {{ neighbor.neighbor_description }}
    address-family ipv4 unicast
     send-community-ebgp
-    {% if neighbor.neighbor_route_policy.route_policy_in %}
-    route-policy {{ neighbor.neighbor_route_policy.route_policy_in }} in
+    {% if neighbor.neighbor_route_policies %}
+        {% if neighbor.neighbor_route_policies.route_policy_in %}
+    route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+        {% endif %}
+        {% if neighbor.neighbor_route_policies.route_policy_out %}
+    route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+        {% endif %}
     {% endif %}
-    {% if neighbor.neighbor_route_policy.route_policy_out %}
-    route-policy {{ neighbor.neighbor_route_policy.route_policy_out }} out
-    {% elif %}
     soft-reconfiguration inbound
 {% endfor %}

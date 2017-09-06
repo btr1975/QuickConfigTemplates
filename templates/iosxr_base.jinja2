@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
 
 Sample data for this template
 
@@ -35,6 +35,11 @@ snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
 
 {% if device.ntp_servers %}
 {% include "iosxr_standard/iosxr_ntp_servers.jinja2" %}
+{% endif %}
+
+{% if device.bgp %}
+{% include "iosxr_standard/iosxr_bgp.jinja2" %}
+
 {% endif %}
 
 </{{ device.devicename }}, {{ device.management_ip }}>
