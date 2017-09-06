@@ -37,6 +37,11 @@ snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
 {% include "iosxr_standard/iosxr_ntp_servers.jinja2" %}
 {% endif %}
 
+{% if device.mpls_pe_to_ce_route_policies %}
+{% include "iosxr_standard/iosxr_mpls_pe_to_ce_route_policy.jinja2" %}
+
+{% endif %}
+
 {% if device.bgp %}
 {% include "iosxr_standard/iosxr_bgp.jinja2" %}
 
@@ -46,4 +51,3 @@ snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
 
     {% endfor %}
 {% endfor %}
-
