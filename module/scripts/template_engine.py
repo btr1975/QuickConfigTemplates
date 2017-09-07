@@ -1,4 +1,5 @@
 import logging
+import sys
 from jinja2 import Environment, select_autoescape, FileSystemLoader
 import yaml
 import json
@@ -40,7 +41,7 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
 
     except Exception as e:
         LOGGER.critical('Error could not retrieve common_data {}'.format(e))
-        exit(e)
+        sys.exit(e)
 
     env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
                                                    default_for_string=True),
@@ -55,7 +56,7 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
 
         except FileNotFoundError as e:
             LOGGER.critical('Can not write output {}'.format(directories.get_output_dir()))
-            exit(e)
+            sys.exit(e)
 
     print(template.render(common_data))
 
@@ -94,7 +95,7 @@ def config_as_json(config_yml, display_only, dir_out, output_file_name):
 
         except FileNotFoundError as e:
             LOGGER.critical('Can not write output {}'.format(dir_out))
-            exit(e)
+            sys.exit(e)
 
 
 def config_as_yml(config_yml, display_only, dir_out, output_file_name):
@@ -122,7 +123,7 @@ def config_as_yml(config_yml, display_only, dir_out, output_file_name):
 
         except FileNotFoundError as e:
             LOGGER.critical('Can not write output {}'.format(dir_out))
-            exit(e)
+            sys.exit(e)
 
 
 def variable_dict_builder(input_dir, variables_file_name):
@@ -144,7 +145,7 @@ def variable_dict_builder(input_dir, variables_file_name):
 
     except FileNotFoundError as e:
         LOGGER.critical('Error could not retrieve Variables file {}'.format(e))
-        exit(e)
+        sys.exit(e)
 
 
 def yml_variable_pre_run_environment(input_dir, yml_file_name, variable_data):
@@ -202,4 +203,4 @@ def auto_build_template(directories=None, variables_file_name=None):
 
     except Exception as e:
         LOGGER.critical(e)
-        exit(e)
+        sys.exit(e)
