@@ -6,9 +6,9 @@ import persistentdatatools as pdt
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
-__license__ = ''
+__license__ = 'MIT'
 __status__ = 'prod'
-__version_info__ = (1, 0, 3, __status__)
+__version_info__ = (1, 0, 4, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -125,6 +125,45 @@ def config_as_yml(config_yml, display_only, dir_out, output_file_name):
             exit(e)
 
 
+def variable_dict_builder(input_dir, variables_file_name):
+    """
+
+    :param input_dir: The yaml input directory
+    :param variables_file_name: The name of the variable csv
+    :return:
+        A Dictionary of variables
+
+    """
+    data = dict()
+    try:
+        temp = pdt.csv_to_dict(variables_file_name, input_dir)
+        for key in temp.values():
+            data[key.get('variable')] = key.get('value')
+
+        return data
+
+    except FileNotFoundError as e:
+        LOGGER.critical('Error could not retrieve Variables file {}'.format(e))
+        exit(e)
+
+
+def yml_variable_pre_run_environment(input_dir, yml_file_name, variable_data):
+    """
+
+    :param input_dir: The input directory of the yml file
+    :param yml_file_name: The yml file name
+    :param variable_data: The variables csv file
+    :return:
+        A rendered yml file with variables filled in
+
+    """
+    pre_run_env = Environment(autoescape=select_autoescape(enabled_extensions=('yml', 'yaml'), default_for_string=True),
+                              loader=FileSystemLoader([input_dir]), lstrip_blocks=True, trim_blocks=True)
+
+    yml_file = pre_run_env.get_template(yml_file_name)
+    return yml_file.render(variable_data)
+
+
 def pre_run_yml_input_file(input_dir=None, yml_file_name=None, variables_file_name=None):
     """
     Function to pre run the yaml file to replace variables
@@ -136,19 +175,31 @@ def pre_run_yml_input_file(input_dir=None, yml_file_name=None, variables_file_na
 
     """
     data = dict()
-
-    pre_run_env = Environment(autoescape=select_autoescape(enabled_extensions=('yml', 'yaml'), default_for_string=True),
-                              loader=FileSystemLoader([input_dir]), lstrip_blocks=True, trim_blocks=True)
-
     if variables_file_name:
-        try:
-            temp = pdt.csv_to_dict(variables_file_name, input_dir)
-            for key in temp.values():
-                data[key.get('variable')] = key.get('value')
+        data = variable_dict_builder(input_dir, variables_file_name)
 
-        except FileNotFoundError as e:
-            LOGGER.critical('Error could not retrieve Variables file {}'.format(e))
-            exit(e)
+    return yml_variable_pre_run_environment(input_dir, yml_file_name, data)
 
-    yml_file = pre_run_env.get_template(yml_file_name)
-    return yml_file.render(data)
+
+def auto_build_template(directories=None, variables_file_name=None):
+    """
+
+    :param directories: The Directory object
+    :param variables_file_name: The Variables file name
+    :return:
+        The name of the yml template to use
+
+    """
+
+    try:
+        data = variable_dict_builder(directories.get_yml_dir(), variables_file_name)
+
+        if data.get('yml_template'):
+            return data.get('yml_template')
+
+        else:
+            raise KeyError('KeyError: There is no "yml_template" variable in the csv!')
+
+    except Exception as e:
+        LOGGER.critical(e)
+        exit(e)
