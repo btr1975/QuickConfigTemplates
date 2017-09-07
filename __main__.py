@@ -12,7 +12,7 @@ __version_info__ = (1, 0, 5, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
-COMPILE = False
+COMPILE = True
 
 
 LOGGER = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
             else:
                 arg_parser.print_help()
-                exit('\n!!! You are not using the -a option correctly please see the help. !!!')
+                sys.exit('\n!!! You are not using the -a option correctly please see the help. !!!')
 
         else:
             if len(args.yml_file) == 1:
@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
             else:
                 arg_parser.print_help()
-                exit('\n!!! You are required to have only one yml_file argument. !!!')
+                sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
         mod.scripts.te(directories, mod.scripts.pre_run_yml(directories.get_yml_dir(), yml_file, args.typefile),
                        output_file_name, args.config_only, args.json, args.yml)
