@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -51,7 +51,9 @@ common:
 interface {{ interface.interface }}
  description {{ interface.description }}
  vrf {{ interface.vrf }}
+ {% if not interface.tag %}
  cdp
+ {% endif %}
  {% if interface.remove %}
  no ipv4 address
  {% else %}

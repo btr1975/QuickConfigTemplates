@@ -70,3 +70,11 @@ common:
                         neighbor_route_policies:
                             route_policy_in: RM-TEST-IN-2
                         neighbor_next_hop_self: true
+
+                mpls_pe_to_ce_interfaces:
+                -   description: description a
+                    interface: g0/1
+                    ip: 10.1.1.1
+                    mask: 255.255.255.252
+                    tag: 701
+                    vrf: CDMI_MAIN

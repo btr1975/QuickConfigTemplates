@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -42,7 +42,7 @@ common:
 
 -#}
 {% for acl in device.standard_acls %}
-ip access-list standard {{ acl.acl_name }}
+ip access-list {{ acl.acl_name }}
     {% for sequence in acl.sequences %}
   {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.source_network }}
     {% endfor %}

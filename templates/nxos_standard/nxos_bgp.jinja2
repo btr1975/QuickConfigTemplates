@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -92,7 +92,7 @@ router bgp {{ device.bgp.bgp_as }}
 {% if device.bgp.networks %}
   address-family ipv4 unicast
    {% for network in device.bgp.networks %}
-   {{ network }}
+   network {{ network }}
    {% endfor %}
 {% endif %}
 {% for neighbor in device.bgp.neighbors %}
