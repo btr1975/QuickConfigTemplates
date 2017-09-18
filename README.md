@@ -20,6 +20,10 @@ This script is for simple config templates, to make lif easier on admins/enginee
 
 * Added in requirement for persistentdatatools==2.2.7
 
+### Version 1.0.5.prod information
+
+* Added in requirement for persistentdatatools==2.2.8
+
 ### Requirements
 * Jinja2==2.9.6
 * MarkupSafe==1.0
@@ -27,7 +31,7 @@ This script is for simple config templates, to make lif easier on admins/enginee
 * pyaml==16.12.2
 * pytest==3.1.3
 * PyYAML==3.12
-* persistentdatatools==2.2.7
+* persistentdatatools==2.2.8
 
 ### Some instructions
 
