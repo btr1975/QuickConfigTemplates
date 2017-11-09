@@ -1,3 +1,9 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+---
 common:
     template: iosxr_base.jinja2
     ticket_number: CHG123456789
@@ -34,3 +40,23 @@ common:
             -   server_ip: 192.168.6.1
                 server_key: somekey
                 informs: true
+
+-#}
+{% for snmp_serv in device.snmp_servers %}
+{% if snmp_serv.vrf %}
+snmp-server vrf {{ snmp_serv.vrf }}
+ {% if snmp_serv.traps %}
+ host {{ snmp_serv.server_ip }} traps version 2c {{ snmp_serv.server_key }}
+ {% endif %}
+ {% if snmp_serv.informs %}
+ host {{ snmp_serv.server_ip }} informs version 2c {{ snmp_serv.server_key }}
+ {% endif %}
+{% else %}
+  {% if snmp_serv.traps %}
+snmp-server host {{ snmp_serv.server_ip }} traps version 2c {{ snmp_serv.server_key }}
+  {% endif %}
+  {% if snmp_serv.informs %}
+snmp-server host {{ snmp_serv.server_ip }} informs version 2c {{ snmp_serv.server_key }}
+  {% endif %}
+{% endif %}
+{% endfor %}

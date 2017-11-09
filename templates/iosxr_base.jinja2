@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
 
 Sample data for this template
 
@@ -19,34 +19,36 @@ snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
 
 {% if device.mpls_vrfs %}
 {% include "iosxr_standard/iosxr_mpls_vrfs.jinja2" %}
-{% endif %}
 
+{% endif %}
 {% if device.mpls_pe_to_pe_interfaces %}
 {% include "iosxr_standard/iosxr_mpls_pe_to_pe__interface.jinja2" %}
-{% endif %}
 
+{% endif %}
 {% if device.mpls_pe_to_ce_interfaces %}
 {% include "iosxr_standard/iosxr_mpls_pe_to_ce_interface.jinja2" %}
-{% endif %}
 
+{% endif %}
 {% if device.mpls_te_tunnel_interfaces %}
 {% include "iosxr_standard/iosxr_mpls_te_tunnel_interface.jinja2" %}
-{% endif %}
 
+{% endif %}
 {% if device.ntp_servers %}
 {% include "iosxr_standard/iosxr_ntp_servers.jinja2" %}
-{% endif %}
 
+{% endif %}
+{% if device.snmp_servers %}
+{% include "iosxr_standard/iosxr_snmp_servers.jinja2" %}
+
+{% endif %}
 {% if device.mpls_pe_to_ce_route_policies %}
 {% include "iosxr_standard/iosxr_mpls_pe_to_ce_route_policy.jinja2" %}
 
 {% endif %}
-
 {% if device.bgp %}
 {% include "iosxr_standard/iosxr_bgp.jinja2" %}
 
 {% endif %}
-
 </{{ device.devicename }}, {{ device.management_ip }}>
 
     {% endfor %}
