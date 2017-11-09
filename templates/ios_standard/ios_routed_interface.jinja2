@@ -8,37 +8,36 @@ common:
     template: ios_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: IOS-RTR00
-                management_ip: 10.99.222.21
-                routed_interfaces:
-                  - interface: g0/0
-                    description: description a
-                    tag: 701
-                    bfd: true
-                    ip: 10.1.1.1
-                    mask: 255.255.255.252
+    -   device:
+        -   devicename: IOS-RTR00
+            management_ip: 10.99.222.21
+            routed_interfaces:
+            -   bfd: true
+                description: description a
+                interface: g0/0
+                ip: 10.1.1.1
+                mask: 255.255.255.252
+                tag: 701
 
-                  - interface: g0/1
-                    description: description b
-                    remove: true
+            -   description: description b
+                interface: g0/1
+                remove: true
+    -   device:
+        -   devicename: IOS-RTR01
+            management_ip: 10.99.222.22
+            routed_interfaces:
+            -   acl_in: ACL-IN
+                acl_out: ACL-OUT
+                description: description a
+                interface: g0/10
+                ip: 10.1.1.1
+                mask: 255.255.255.252
 
-        - device:
-              - devicename: IOS-RTR01
-                management_ip: 10.99.222.22
-                routed_interfaces:
-                  - interface: g0/10
-                    description: description a
-                    ip: 10.1.1.1
-                    mask: 255.255.255.252
-                    acl_in: ACL-IN
-                    acl_out: ACL-OUT
-
-                  - interface: g0/20
-                    description: description b
-                    vrf: TEST_VRF
-                    ip: 10.2.2.1
-                    mask: 255.255.255.252
+            -   description: description b
+                interface: g0/20
+                ip: 10.2.2.1
+                mask: 255.255.255.252
+                vrf: TEST_VRF
 
 -#}
 {% for interface in device.routed_interfaces %}

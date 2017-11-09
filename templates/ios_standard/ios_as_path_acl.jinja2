@@ -8,19 +8,19 @@ common:
     template: ios_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-            - devicename: IOS-RTR02
-              management_ip: 10.99.222.23
-              as_path_acls:
-                  - as_path_acl_name: ASP-TEST-1
-                    sequences:
-                        - sequence: 1
-                          permit_deny: permit
-                          regex: ^22650_26541$
+    -   device:
+        -   devicename: IOS-RTR02
+            management_ip: 10.99.222.23
+            as_path_acls:
+            -   as_path_acl_name: ASP-TEST-1
+                sequences:
+                -   permit_deny: permit
+                    regex: ^22650_26541$
+                    sequence: 1
 
-                        - sequence: 2
-                          permit_deny: deny
-                          regex: ^_26541$
+                -   permit_deny: deny
+                    regex: ^_26541$
+                    sequence: 2
 
 -#}
 {% for as_path_acl in device.as_path_acls %}

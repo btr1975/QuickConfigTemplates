@@ -8,37 +8,37 @@ common:
     template: ios_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: IOS-RTR02
-                management_ip: 10.99.222.23
-                standard_acls:
-                  - acl_name: ACL-STANDARD-1
-                    sequences:
-                      - sequence: 10
-                        permit_deny: permit
-                        source_network: 192.168.1.0/24
+    -   device:
+        -   devicename: IOS-RTR02
+            management_ip: 10.99.222.23
+            standard_acls:
+            -   acl_name: ACL-STANDARD-1
+                sequences:
+                -   permit_deny: permit
+                    sequence: 10
+                    source_network: 192.168.1.0/24
 
-                      - sequence: 20
-                        permit_deny: deny
-                        source_network: 192.168.2.0/24
+                -   permit_deny: deny
+                    sequence: 20
+                    source_network: 192.168.2.0/24
 
-                      - sequence: 30
-                        permit_deny: permit
-                        source_network: 192.168.3.0/24
+                -   permit_deny: permit
+                    sequence: 30
+                    source_network: 192.168.3.0/24
 
-                  - acl_name: ACL-STANDARD-2
-                    sequences:
-                      - sequence: 10
-                        permit_deny: permit
-                        source_network: 192.168.4.0/24
+            -   acl_name: ACL-STANDARD-2
+                sequences:
+                -   permit_deny: permit
+                    sequence: 10
+                    source_network: 192.168.4.0/24
 
-                      - sequence: 20
-                        permit_deny: deny
-                        source_network: 192.168.5.0/24
+                -   permit_deny: deny
+                    sequence: 20
+                    source_network: 192.168.5.0/24
 
-                      - sequence: 30
-                        permit_deny: permit
-                        source_network: 192.168.6.0/24
+                -   permit_deny: permit
+                    sequence: 30
+                    source_network: 192.168.6.0/24
 
 -#}
 {% for acl in device.standard_acls %}
