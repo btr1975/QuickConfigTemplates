@@ -8,29 +8,29 @@ common:
     template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: NXOS-RTR02
-                management_ip: 10.99.222.23
-                route_maps:
-                  - route_map_name: RM-TEST-MCAST
-                    sequences:
-                      - sequence: 10
-                        permit_deny: permit
-                        description: Mcast IP 1
-                        match:
-                          - match_item: ip multicast group
-                            match_item_name: 224.0.1.5/32
+    -   device:
+        -   devicename: NXOS-RTR02
+            management_ip: 10.99.222.23
+            route_maps:
+            -   route_map_name: RM-TEST-MCAST
+                sequences:
+                -   description: Mcast IP 1
+                    match:
+                    -   match_item: ip multicast group
+                        match_item_name: 224.0.1.5/32
+                    permit_deny: permit
+                    sequence: 10
 
-                      - sequence: 20
-                        permit_deny: permit
-                        description: Mcast IP 2
-                        match:
-                          - match_item: ip multicast group
-                            match_item_name: 224.0.10.5/32
+                -   description: Mcast IP 2
+                    match:
+                    -   match_item: ip multicast group
+                        match_item_name: 224.0.10.5/32
+                    permit_deny: permit
+                    sequence: 20
 
-                static_multicast_rps:
-                  - rp_address: 172.16.1.1
-                    route_map: RM-TEST-MCAST
+            static_multicast_rps:
+            -   route_map: RM-TEST-MCAST
+                rp_address: 172.16.1.1
 
 -#}
 {% for multicast_rp in device.static_multicast_rps %}

@@ -8,35 +8,35 @@ common:
     template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: NXOS-RTR00
-                management_ip: 10.99.222.21
-                switched_interfaces:
-                  - interface: e2/1
-                    description: description switched a
-                    port_type: access
-                    vlan: 900
+    -   device:
+        -   devicename: NXOS-RTR00
+            management_ip: 10.99.222.21
+            switched_interfaces:
+            -   description: description switched a
+                interface: e2/1
+                port_type: access
+                vlan: 900
 
-                  - interface: e2/2
-                    description: description switched b
-                    port_type: trunk
-                    vlans: 100, 200, 300
+            -   description: description switched b
+                interface: e2/2
+                port_type: trunk
+                vlans: 100, 200, 300
 
-        - device:
-              - devicename: NXOS-RTR01
-                management_ip: 10.99.222.22
-                switched_interfaces:
-                  - interface: e1/1
-                    description: description switched a
-                    port_type: access
-                    vlan: 900
-                    portfast: true
+    -   device:
+        -   devicename: NXOS-RTR01
+            management_ip: 10.99.222.22
+            switched_interfaces:
+            -   description: description switched a
+                interface: e1/1
+                port_type: access
+                portfast: true
+                vlan: 900
 
-                  - interface: e1/2
-                    description: description switched b
-                    port_type: trunk
-                    vlans: 100, 200, 300
-                    portfast: true
+            -   description: description switched b
+                interface: e1/2
+                port_type: trunk
+                portfast: true
+                vlans: 100, 200, 300
 
 -#}
 {% for interface in device.switched_interfaces %}

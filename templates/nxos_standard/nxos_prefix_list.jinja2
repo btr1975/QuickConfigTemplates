@@ -8,27 +8,27 @@ common:
     template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: NXOS-RTR02
-                management_ip: 10.99.222.23
-                prefix_lists:
-                  - prefix_list_name: PL-TEST-1
-                    sequences:
-                      - sequence: 5
-                        permit_deny: permit
-                        network: 192.168.1.0/24
+    -   device:
+        -   devicename: NXOS-RTR02
+            management_ip: 10.99.222.23
+            prefix_lists:
+            -   prefix_list_name: PL-TEST-1
+                sequences:
+                -   network: 192.168.1.0/24
+                    permit_deny: permit
+                    sequence: 5
 
-                      - sequence: 10
-                        permit_deny: deny
-                        network: 192.168.2.0/24
-                        le_ge: le
-                        le_ge_value: 32
+                -   le_ge: le
+                    le_ge_value: 32
+                    network: 192.168.2.0/24
+                    permit_deny: deny
+                    sequence: 10
 
-                      - sequence: 15
-                        permit_deny: permit
-                        network: 192.168.3.0/24
-                        le_ge: ge
-                        le_ge_value: 16
+                -   le_ge: ge
+                    le_ge_value: 16
+                    network: 192.168.3.0/24
+                    permit_deny: permit
+                    sequence: 15
 
 -#}
 {% for prefix_list in device.prefix_lists %}

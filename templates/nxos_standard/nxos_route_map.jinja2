@@ -8,42 +8,42 @@ common:
     template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: NXOS-RTR01
-                management_ip: 10.99.222.22
-                route_maps:
-                  - route_map_name: RM-TEST-1
-                    sequences:
-                      - sequence: 10
-                        permit_deny: permit
-                        description: test description
-                        match:
-                          - match_item: access-list
-                            match_item_name: ACL-A-in
-                          - match_item: access-list
-                            match_item_name: ACL-B-in
-                        set:
-                          - set_item: local preference
-                            set_item_to: 200
+    -   device:
+        -   devicename: NXOS-RTR01
+            management_ip: 10.99.222.22
+            route_maps:
+            -   route_map_name: RM-TEST-1
+                sequences:
+                -   description: test description
+                    match:
+                    -   match_item: access-list
+                        match_item_name: ACL-A-in
+                    -   match_item: access-list
+                        match_item_name: ACL-B-in
+                    permit_deny: permit
+                    sequence: 10
+                    set:
+                    -   set_item: local preference
+                        set_item_to: 200
 
-                      - sequence: 20
-                        permit_deny: deny
-                        description: test description
-                        match:
-                          - match_item: ip address prefix-list
-                            match_item_name: PL-TEST-1
-                        set:
-                          - set_item: local preference
-                            set_item_to: 500
+                -   description: test description
+                    match:
+                    -   match_item: ip address prefix-list
+                        match_item_name: PL-TEST-1
+                    permit_deny: deny
+                    sequence: 20
+                    set:
+                    -   set_item: local preference
+                        set_item_to: 500
 
-                      - sequence: 30
-                        permit_deny: permit
-                        match:
-                          - match_item: access-list
-                            match_item_name: ACL-C-in
-                        set:
-                          - set_item: local preference
-                            set_item_to: 200
+                -   match:
+                    -   match_item: access-list
+                        match_item_name: ACL-C-in
+                    permit_deny: permit
+                    sequence: 30
+                    set:
+                    -   set_item: local preference
+                        set_item_to: 200
 
 Notes:
 

@@ -8,14 +8,14 @@ common:
     template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: NXOS-RTR02
-                management_ip: 10.99.222.23
-                eigrp:
-                    eigrp_process_name: MAIN
-                    eigrp_as: 500
-                    bfd: true
-                    router_id: 172.16.1.1
+    -   device:
+        -   devicename: NXOS-RTR02
+            management_ip: 10.99.222.23
+            eigrp:
+                bfd: true
+                eigrp_as: 500
+                eigrp_process_name: MAIN
+                router_id: 172.16.1.1
 
 -#}
 feature eigrp

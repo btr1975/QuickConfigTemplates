@@ -1,20 +1,33 @@
 common:
-    template: iosxr_base.jinja2
+    template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
     -   device:
-        -   devicename: NYC-CORE-RTR00
+        -   devicename: NXOS-RTR00
             management_ip: 10.99.222.21
-            ntp_servers:
-                servers:
-                -   10.99.222.1
-                -   10.99.222.2
+            switched_interfaces:
+            -   description: description switched a
+                interface: e2/1
+                port_type: access
+                vlan: 900
+
+            -   description: description switched b
+                interface: e2/2
+                port_type: trunk
+                vlans: 100, 200, 300
 
     -   device:
-        -   devicename: NYC-CORE-RTR01
+        -   devicename: NXOS-RTR01
             management_ip: 10.99.222.22
-            ntp_servers:
-                servers:
-                -   10.99.222.1
-                -   10.99.222.2
-                source: Loopback1000
+            switched_interfaces:
+            -   description: description switched a
+                interface: e1/1
+                port_type: access
+                portfast: true
+                vlan: 900
+
+            -   description: description switched b
+                interface: e1/2
+                port_type: trunk
+                portfast: true
+                vlans: 100, 200, 300

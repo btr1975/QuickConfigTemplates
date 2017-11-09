@@ -8,13 +8,13 @@ common:
     template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: NXOS-RTR02
-                management_ip: 10.99.222.23
-                ospf:
-                    ospf_process: 65000
-                    bfd: true
-                    router_id: 172.16.1.1
+    -   device:
+        -   devicename: NXOS-RTR02
+            management_ip: 10.99.222.23
+            ospf:
+                bfd: true
+                ospf_process: 65000
+                router_id: 172.16.1.1
 
 -#}
 feature ospf
