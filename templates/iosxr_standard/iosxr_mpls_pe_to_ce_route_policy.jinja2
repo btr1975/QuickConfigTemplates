@@ -8,13 +8,14 @@ common:
     template: iosxr_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: IOSXR-RTR00
-                management_ip: 10.99.222.21
-                mpls_pe_to_ce_route_policies:
-                -   ce_name: CE_A
-                    vrf: VRF_A
-                    primary: true
+    -   device:
+        -   devicename: IOSXR-RTR00
+            management_ip: 10.99.222.21
+            mpls_pe_to_ce_route_policies:
+            -   ce_name: CE_A
+                primary: true
+                vrf: VRF_A
+
 -#}
 {% for  mpls_pe_to_ce_route_policy in device.mpls_pe_to_ce_route_policies %}
 route-policy RP-{{ mpls_pe_to_ce_route_policy.ce_name }}_{{ mpls_pe_to_ce_route_policy.vrf }}_IN

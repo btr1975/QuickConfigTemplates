@@ -1,34 +1,20 @@
 common:
-    template: ios_base.jinja2
+    template: iosxr_base.jinja2
     ticket_number: CHG123456789
     devices:
-        - device:
-              - devicename: IOS-RTR00
-                management_ip: 10.99.222.21
-                switched_interfaces:
-                  - interface: g1/1
-                    description: description switched a
-                    port_type: access
-                    vlan: 900
+    -   device:
+        -   devicename: NYC-CORE-RTR00
+            management_ip: 10.99.222.21
+            ntp_servers:
+                servers:
+                -   10.99.222.1
+                -   10.99.222.2
 
-                  - interface: g1/2
-                    description: description switched b
-                    port_type: trunk
-                    vlans: 100, 200, 300
-
-        - device:
-              - devicename: IOS-RTR01
-                management_ip: 10.99.222.22
-                switched_interfaces:
-                  - interface: g1/1
-                    description: description switched a
-                    port_type: access
-                    vlan: 900
-                    portfast: true
-
-                  - interface: g1/2
-                    description: description switched b
-                    port_type: trunk
-                    vlans: 100, 200, 300
-                    portfast: true
-
+    -   device:
+        -   devicename: NYC-CORE-RTR01
+            management_ip: 10.99.222.22
+            ntp_servers:
+                servers:
+                -   10.99.222.1
+                -   10.99.222.2
+                source: Loopback1000
