@@ -1,0 +1,75 @@
+--- # This is a yml template for a IOS-XR MPLS PE to CE configs
+common:
+    template: iosxr_base.jinja2
+    ticket_number: TKTNUMBER01
+    devices:
+    -   device:
+        -   devicename: {{ pe_name_a }}
+            management_ip: {{ pe_mgmt_ip_a }}
+            mpls_pe_to_ce_interfaces:
+            -   interface: {{ pe_interface_a }}.{{ vlan_tag }}
+                vrf: {{ service_vrf_name }}
+                tag: {{ vlan_tag }}
+                description: {{ ce_name_a }} vrf {{ service_vrf_name }}
+                ip: {{ pe_ip_a }}
+                mask: {{ pe_mask_a }}
+                
+            bgp:
+                bgp_as: 22650
+                vrf_neighbors:
+                -   neighbor: {{ ce_ip_a }}
+                    neighbor_rd: "{{ service_export_rt }}"
+                    neighbor_vrf: {{ service_vrf_name }}
+                    neighbor_as: {{ ce_bgp_as }}
+                    neighbor_description: {{ ce_name_a }} vrf {{ service_vrf_name }}
+                    neighbor_timers:
+                        keep_alive: 7
+                        hold_time: 21
+                    neighbor_route_policies:
+                        route_policy_in: RP-{{ ce_name_a }}_{{ service_vrf_name }}_IN
+                        route_policy_out: RP-{{ ce_name_a }}_{{ service_vrf_name }}_OUT
+                        
+            mpls_vrfs:
+            -   vrf: {{ service_vrf_name }}
+                export_rts:
+                -   "{{ service_export_rt }}"
+                
+            mpls_pe_to_ce_route_policies:
+            -   ce_name: {{ ce_name_a }}
+                vrf: {{ service_vrf_name }}
+                primary: true
+                
+        -   devicename: {{ pe_name_b }}
+            management_ip: {{ pe_mgmt_ip_b }}
+            mpls_pe_to_ce_interfaces:
+            -   interface: {{ pe_interface_b }}.{{ vlan_tag }}
+                vrf: {{ service_vrf_name }}
+                tag: {{ vlan_tag }}
+                description: {{ ce_name_b }} vrf {{ service_vrf_name }}
+                ip: {{ pe_ip_b }}
+                mask: {{ pe_mask_b }}
+                
+            bgp:
+                bgp_as: 22650
+                vrf_neighbors:
+                -   neighbor: {{ ce_ip_b }}
+                    neighbor_rd: "{{ service_export_rt }}"
+                    neighbor_vrf: {{ service_vrf_name }}
+                    neighbor_as: {{ ce_bgp_as }}
+                    neighbor_description: {{ ce_name_b }} vrf {{ service_vrf_name }}
+                    neighbor_timers:
+                        keep_alive: 7
+                        hold_time: 21
+                    neighbor_route_policies:
+                        route_policy_in: RP-{{ ce_name_b }}_{{ service_vrf_name }}_IN
+                        route_policy_out: RP-{{ ce_name_b }}_{{ service_vrf_name }}_OUT
+                        
+            mpls_vrfs:
+            -   vrf: {{ service_vrf_name }}
+                export_rts:
+                -   "{{ service_export_rt }}"
+                
+            mpls_pe_to_ce_route_policies:
+            -   ce_name: {{ ce_name_b }}
+                vrf: {{ service_vrf_name }}
+                primary: false
