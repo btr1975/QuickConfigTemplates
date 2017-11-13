@@ -1,0 +1,21 @@
+There are 3 ways to use this config builder.
+
+1) Regular Build, for this way you create a yml file for your configuration following the examples im the templates directory.  In the CLI 
+   you only have to supply the yml file name.
+
+2) Variable Build / Type File Build, for this way you create your yml file, but you also create a CSV with variables to fill out your variable 
+   in your yml file.  This uses the standard Jinja2 variable format, see bellow. In the CLI you supply the name of the yml file, and the -t option
+   and supply the variable CSV file name.
+   
+3) Auto Build, for this way you create a CSV that points to a "variableized" yml file.  This allows you to create one yml file that you can use
+   over and over for a standard config.  This uses the standard Jinja2 variable format, see bellow.  In the CLI you use the -a and -t option and 
+   supply the variable CSV file name.
+   
+The main differences between option 2, and 3 is that with option 3 the CSV file supplies the template file name.  Please reference the examples.
+   
+   
+   
+Reference Documents:
+
+Variable format. http://jinja.pocoo.org
+Example Files: ./Examples
