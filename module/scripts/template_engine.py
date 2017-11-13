@@ -4,11 +4,13 @@ from jinja2 import Environment, select_autoescape, FileSystemLoader
 import yaml
 import json
 import persistentdatatools as pdt
+import os
+import zipfile
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'prod'
+__status__ = 'dev'
 __version_info__ = (1, 0, 5, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
@@ -31,7 +33,6 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
         None
 
     """
-    common_data = None
     file_name = None
     try:
         config = yaml.safe_load(yml_data)
@@ -72,6 +73,7 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
         config_as_yml(config, display_only, directories.get_output_dir(), file_name)
 
     if LOGGER.getEffectiveLevel() == logging.DEBUG:
+        collect_and_zip_templates(env, directories)
         LOGGER.debug('config data: {}'.format(config))
 
 
@@ -195,14 +197,13 @@ def pre_run_yml_input_file(input_dir=None, yml_file_name=None, variables_file_na
 
 def auto_build_template(directories=None, variables_file_name=None):
     """
-
+    Function to build a config using auto build
     :param directories: The Directory object
     :param variables_file_name: The Variables file name
     :return:
         The name of the yml template to use
 
     """
-
     try:
         data = variable_dict_builder(directories.get_yml_dir(), variables_file_name)
 
@@ -215,3 +216,25 @@ def auto_build_template(directories=None, variables_file_name=None):
     except Exception as e:
         LOGGER.critical(e)
         sys.exit(e)
+
+
+def collect_and_zip_templates(env, directories):
+    """
+    Function to collect and zip all current templates in a a build run
+    :param env: A Jinja2 Environment object
+    :param directories: Directories object
+    :return:
+        None
+
+    """
+    temp_list = list()
+    for template_dir_name in directories.get_templates_dir():
+        for a in env.list_templates():
+            if os.path.isfile(os.path.join(template_dir_name, os.path.dirname(a), os.path.basename(a))):
+                temp_list.append(os.path.join(template_dir_name, os.path.dirname(a), os.path.basename(a)))
+
+    with zipfile.ZipFile(os.path.join(directories.get_output_dir(), 'test.zip'), 'w') as myzipfile:
+        for file in temp_list:
+            myzipfile.write(file)
+
+    myzipfile.close()
