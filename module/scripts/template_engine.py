@@ -9,7 +9,7 @@ __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
 __status__ = 'prod'
-__version_info__ = (1, 0, 4, __status__)
+__version_info__ = (1, 0, 5, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -33,8 +33,13 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
     """
     common_data = None
     file_name = None
+    try:
+        config = yaml.safe_load(yml_data)
 
-    config = yaml.safe_load(yml_data)
+    except Exception as e:
+        error = 'Error retrieving yml yaml.safe_load(yml_data) {}'.format(e)
+        LOGGER.critical(error)
+        sys.exit(error)
 
     try:
         common_data = config.get('common')
@@ -161,8 +166,14 @@ def yml_variable_pre_run_environment(input_dir, yml_file_name, variable_data):
     pre_run_env = Environment(autoescape=select_autoescape(enabled_extensions=('yml', 'yaml'), default_for_string=True),
                               loader=FileSystemLoader([input_dir]), lstrip_blocks=True, trim_blocks=True)
 
-    yml_file = pre_run_env.get_template(yml_file_name)
-    return yml_file.render(variable_data)
+    try:
+        yml_file = pre_run_env.get_template(yml_file_name)
+        return yml_file.render(variable_data)
+
+    except Exception as e:
+        error = 'Error when running yml_variable_pre_run_environment file name {}'.format(e)
+        LOGGER.critical(error)
+        sys.exit(error)
 
 
 def pre_run_yml_input_file(input_dir=None, yml_file_name=None, variables_file_name=None):
