@@ -1,6 +1,7 @@
 import logging
 import os
 from yaml import safe_load
+import zipfile
 import persistentdatatools as pdt
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
@@ -111,3 +112,33 @@ class Directories(object):
 
     def get_templates_dir(self):
         return self.templates_dir
+
+    def collect_and_zip_files(self, dir_list, zip_file_name, file_extension_list=None, file_name_list=None):
+        temp_list = list()
+        temp_files_list = list()
+
+        if isinstance(dir_list, list):
+            for dir_name in dir_list:
+                if not os.path.isdir(dir_name):
+                    raise Exception('NOT DIR')
+
+        else:
+            raise Exception('NOT LIST')
+
+        if not file_extension_list or not file_name_list:
+            for dir_name in dir_list:
+                temp_files_list = pdt.list_files_in_directory(dir_name)
+                for file_name in temp_files_list:
+                    temp_list.append(os.path.join(dir_name, file_name))
+
+        if file_extension_list:
+            for dir_name in dir_list:
+                temp_files_list = pdt.list_files_in_directory(dir_name)
+                for file_name in temp_files_list:
+                    temp_list.append(os.path.join(dir_name, file_name))
+
+        with zipfile.ZipFile(os.path.join(self.get_output_dir(), zip_file_name), 'w') as the_zip_file:
+            for file in temp_list:
+                the_zip_file.write(file)
+
+        the_zip_file.close()
