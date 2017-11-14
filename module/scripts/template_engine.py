@@ -87,9 +87,9 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
                                               file_name_list=[file_name])
 
         except Exception as e:
+            LOGGER.critical(e)
             directories.collect_and_zip_files([directories.get_logging_dir()], zip_file_name, file_extension_list=None,
                                               file_name_list=['logs.txt'])
-            LOGGER.critical(e)
 
         LOGGER.debug('config data: {}'.format(config))
 
@@ -239,6 +239,28 @@ def auto_build_template(directories=None, variables_file_name=None):
 
 
 def create_zip_package(env, directories, zip_file_name, output_file_name):
+    """
+    Function to create a zip package for reference
+    :param env: A Jinja2 Environment object
+    :param directories: Directories object
+    :param zip_file_name: The name of the zip file
+    :param output_file_name: The name of the output config file
+    :return:
+        None
+
+    """
+    if len(zip_file_name.split('.')) == 2:
+        name, ext = zip_file_name.split('.')
+        if ext != 'zip':
+            LOGGER.warning('Changed the extension of zip_file_name={} to be zip'.format(zip_file_name))
+            zip_file_name = '{}.{}'.format(name, 'zip')
+
+    else:
+        error = 'Function create_zip_package expected zip_file_name to only contain one . ' \
+                'but received {}'.format(zip_file_name)
+        LOGGER.critical(error)
+        raise NameError(error)
+
     zip_file_name = pdt.file_name_increase(zip_file_name, directories.get_output_dir())
 
     directories.collect_and_zip_files(collect_templates(env, directories), zip_file_name,
@@ -254,7 +276,7 @@ def collect_templates(env, directories):
     :param env: A Jinja2 Environment object
     :param directories: Directories object
     :return:
-        None
+        A list of directories
 
     """
     temp_set = set()
