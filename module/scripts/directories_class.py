@@ -113,9 +113,14 @@ class Directories(object):
     def get_templates_dir(self):
         return self.templates_dir
 
+    def get_data_dir(self):
+        return self.data_dir
+
+    def get_logging_dir(self):
+        return self.logging_dir
+
     def collect_and_zip_files(self, dir_list, zip_file_name, file_extension_list=None, file_name_list=None):
         temp_list = list()
-        temp_files_list = list()
 
         if isinstance(dir_list, list):
             for dir_name in dir_list:
@@ -123,21 +128,47 @@ class Directories(object):
                     raise Exception('NOT DIR')
 
         else:
-            raise Exception('NOT LIST')
+            error = 'Method collect_and_zip_files from class {} expected dir_list to be a ' \
+                    'list but received a {}'.format(type(self), type(dir_list))
+            LOGGER.critical(error)
+            raise TypeError(error)
 
-        if not file_extension_list or not file_name_list:
+        if not file_extension_list and not file_name_list:
             for dir_name in dir_list:
                 temp_files_list = pdt.list_files_in_directory(dir_name)
                 for file_name in temp_files_list:
                     temp_list.append(os.path.join(dir_name, file_name))
 
         if file_extension_list:
-            for dir_name in dir_list:
-                temp_files_list = pdt.list_files_in_directory(dir_name)
-                for file_name in temp_files_list:
-                    temp_list.append(os.path.join(dir_name, file_name))
+            if isinstance(file_extension_list, list):
+                for dir_name in dir_list:
+                    temp_files_list = pdt.list_files_in_directory(dir_name)
+                    for file_name in temp_files_list:
+                        garbage, extension = file_name.split('.')
+                        if extension in file_extension_list:
+                            temp_list.append(os.path.join(dir_name, file_name))
 
-        with zipfile.ZipFile(os.path.join(self.get_output_dir(), zip_file_name), 'w') as the_zip_file:
+            else:
+                error = 'Method collect_and_zip_files from class {} expected file_extension_list to be a ' \
+                        'list but received a {}'.format(type(self), type(file_extension_list))
+                LOGGER.critical(error)
+                raise TypeError(error)
+
+        if file_name_list:
+            if isinstance(file_name_list, list):
+                for dir_name in dir_list:
+                    temp_files_list = pdt.list_files_in_directory(dir_name)
+                    for file_name in temp_files_list:
+                        if file_name in file_name_list:
+                            temp_list.append(os.path.join(dir_name, file_name))
+
+            else:
+                error = 'Method collect_and_zip_files from class {} expected file_name_list to be a ' \
+                        'list but received a {}'.format(type(self), type(file_name_list))
+                LOGGER.critical(error)
+                raise TypeError(error)
+
+        with zipfile.ZipFile(os.path.join(self.get_output_dir(), zip_file_name), 'a') as the_zip_file:
             for file in temp_list:
                 the_zip_file.write(file)
 
