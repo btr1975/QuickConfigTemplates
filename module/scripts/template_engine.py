@@ -5,7 +5,6 @@ import yaml
 import json
 import persistentdatatools as pdt
 import os
-import zipfile
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
@@ -20,7 +19,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def run_template(directories=None, yml_data=None, output_file_name=None, display_only=False,
-                 display_json=False, display_yml=False):
+                 display_json=False, display_yml=False, package_name=None):
     """
     Function to build, and output the template
     :param directories: The directory the templates are in
@@ -29,6 +28,7 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
     :param display_only: Do not output data
     :param display_json: Display data in JSON format
     :param display_yml: Display data in YML format
+    :param package_name: The name of the zip file package
     :return:
         None
 
@@ -73,8 +73,28 @@ def run_template(directories=None, yml_data=None, output_file_name=None, display
         config_as_yml(config, display_only, directories.get_output_dir(), file_name)
 
     if LOGGER.getEffectiveLevel() == logging.DEBUG:
-        collect_and_zip_templates(env, directories)
+        zip_file_name = pdt.file_name_increase('debug.zip', directories.get_output_dir())
+        try:
+            directories.collect_and_zip_files(collect_templates(env, directories), zip_file_name,
+                                              file_extension_list=['jinja2'], file_name_list=None)
+            directories.collect_and_zip_files([directories.get_yml_dir()], zip_file_name,
+                                              file_extension_list=['yml', 'yaml'], file_name_list=None)
+            directories.collect_and_zip_files([directories.get_data_dir()], zip_file_name, file_extension_list=None,
+                                              file_name_list=['config.yml'])
+            directories.collect_and_zip_files([directories.get_logging_dir()], zip_file_name, file_extension_list=None,
+                                              file_name_list=['logs.txt'])
+            directories.collect_and_zip_files([directories.get_output_dir()], zip_file_name, file_extension_list=None,
+                                              file_name_list=[file_name])
+
+        except Exception as e:
+            directories.collect_and_zip_files([directories.get_logging_dir()], zip_file_name, file_extension_list=None,
+                                              file_name_list=['logs.txt'])
+            LOGGER.critical(e)
+
         LOGGER.debug('config data: {}'.format(config))
+
+    if package_name:
+        create_zip_package(env, directories, package_name, file_name)
 
 
 def config_as_json(config_yml, display_only, dir_out, output_file_name):
@@ -218,7 +238,17 @@ def auto_build_template(directories=None, variables_file_name=None):
         sys.exit(e)
 
 
-def collect_and_zip_templates(env, directories):
+def create_zip_package(env, directories, zip_file_name, output_file_name):
+    zip_file_name = pdt.file_name_increase(zip_file_name, directories.get_output_dir())
+
+    directories.collect_and_zip_files(collect_templates(env, directories), zip_file_name,
+                                      file_extension_list=['jinja2'], file_name_list=None)
+
+    directories.collect_and_zip_files([directories.get_output_dir()], zip_file_name, file_extension_list=None,
+                                      file_name_list=[output_file_name])
+
+
+def collect_templates(env, directories):
     """
     Function to collect and zip all current templates in a a build run
     :param env: A Jinja2 Environment object
@@ -227,14 +257,10 @@ def collect_and_zip_templates(env, directories):
         None
 
     """
-    temp_list = list()
+    temp_set = set()
     for template_dir_name in directories.get_templates_dir():
         for a in env.list_templates():
             if os.path.isfile(os.path.join(template_dir_name, os.path.dirname(a), os.path.basename(a))):
-                temp_list.append(os.path.join(template_dir_name, os.path.dirname(a), os.path.basename(a)))
+                temp_set.add(os.path.join(template_dir_name, os.path.dirname(a)))
 
-    with zipfile.ZipFile(os.path.join(directories.get_output_dir(), 'test.zip'), 'w') as myzipfile:
-        for file in temp_list:
-            myzipfile.write(file)
-
-    myzipfile.close()
+    return list(temp_set)
