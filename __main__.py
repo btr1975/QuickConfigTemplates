@@ -48,6 +48,7 @@ if __name__ == '__main__':
     arg_parser.add_argument('-f', '--folder', help='Put output file in a folder, name of the folder')
     arg_parser.add_argument('-j', '--json', action='store_true', help='Display the config, in JSON format')
     arg_parser.add_argument('-o', '--outputfile', help='The filename to output config to')
+    arg_parser.add_argument('-p', '--package', help='The zip filename to output the package to')
     arg_parser.add_argument('-t', '--typefile', help='The filename of the csv for variable replacement')
     arg_parser.add_argument('-v', '--version', action='version', version=__version__)
     arg_parser.add_argument('-y', '--yml', action='store_true', help='Display the config, in YML format')
@@ -85,7 +86,7 @@ if __name__ == '__main__':
                 sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
         mod.scripts.te(directories, mod.scripts.pre_run_yml(directories.get_yml_dir(), yml_file, args.typefile),
-                       output_file_name, args.config_only, args.json, args.yml)
+                       output_file_name, args.config_only, args.json, args.yml, args.package)
 
     except AttributeError as e:
         LOGGER.critical(e)
