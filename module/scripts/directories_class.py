@@ -120,6 +120,16 @@ class Directories(object):
         return self.logging_dir
 
     def collect_and_zip_files(self, dir_list, zip_file_name, file_extension_list=None, file_name_list=None):
+        """
+        Method to collect files and make a zip file
+        :param dir_list: A list of directories
+        :param zip_file_name: Zip file name
+        :param file_extension_list: A list of extensions of files to find
+        :param file_name_list: A list of file names to find
+        :return:
+            Outputs a zip file
+
+        """
         temp_list = list()
 
         if isinstance(dir_list, list):
@@ -167,6 +177,18 @@ class Directories(object):
                         'list but received a {}'.format(type(self), type(file_name_list))
                 LOGGER.critical(error)
                 raise TypeError(error)
+
+        if len(zip_file_name.split('.')) == 2:
+            name, ext = zip_file_name.split('.')
+            if ext != 'zip':
+                LOGGER.warning('Changed the extension of zip_file_name={} to be zip'.format(zip_file_name))
+                zip_file_name = '{}.{}'.format(name, 'zip')
+
+        else:
+            error = 'Method collect_and_zip_files from class {} expected zip_file_name to only contain one . ' \
+                    'but received {}'.format(type(self), zip_file_name)
+            LOGGER.critical(error)
+            raise NameError(error)
 
         with zipfile.ZipFile(os.path.join(self.get_output_dir(), zip_file_name), 'a') as the_zip_file:
             for file in temp_list:
