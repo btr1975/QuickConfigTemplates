@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -23,8 +23,16 @@ common:
 -#}
 {% for nat in device.static_nats %}
     {% if nat.nat_type == 'inside' %}
+        {% if nat.remove %}
+no ip nat inside source static {{ nat.real_ip }} {{ nat.nat_ip }}
+        {% else %}
 ip nat inside source static {{ nat.real_ip }} {{ nat.nat_ip }}
+        {% endif %}
     {% elif nat.nat_type == 'outside' %}
+        {% if nat.remove %}
+no ip nat outside source static {{ nat.nat_ip }} {{ nat.real_ip }}
+        {% else %}
 ip nat outside source static {{ nat.nat_ip }} {{ nat.real_ip }}
+        {% endif %}
     {% endif %}
 {% endfor %}
