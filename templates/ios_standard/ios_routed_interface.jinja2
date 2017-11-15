@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -42,12 +42,24 @@ common:
 -#}
 {% for interface in device.routed_interfaces %}
 interface {{ interface.interface }}
+ {% if interface.remove %}
+ no description
+ {% else %}
  description {{ interface.description }}
+ {% endif %}
  {% if interface.vrf %}
+     {% if interface.remove %}
+ no ip vrf forwarding {{ interface.vrf }}
+     {% else %}
  ip vrf forwarding {{ interface.vrf }}
+     {% endif %}
  {% endif %}
  {% if interface.tag %}
+     {% if interface.remove %}
+ no ncapsulation dot1q {{ interface.tag }}
+     {% else %}
  encapsulation dot1q {{ interface.tag }}
+     {% endif %}
  {% endif %}
  no switchport
  {% if interface.bfd %}
@@ -62,10 +74,18 @@ interface {{ interface.interface }}
  no ip proxy-arp
  arp timeout 270
  {% if interface.acl_in %}
+     {% if interface.remove %}
+ no ip access-group {{ interface.acl_in }} in
+     {% else %}
  ip access-group {{ interface.acl_in }} in
+     {% endif %}
  {% endif %}
  {% if interface.acl_out %}
+     {% if interface.remove %}
+ no ip access-group {{ interface.acl_out }} out
+     {% else %}
  ip access-group {{ interface.acl_out }} out
+     {% endif %}
  {% endif %}
 end
 {% endfor %}
