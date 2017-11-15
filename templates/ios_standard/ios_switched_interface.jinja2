@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -41,17 +41,22 @@ common:
 -#}
 {% for interface in device.switched_interfaces %}
 interface {{ interface.interface }}
+  {% if interface.remove %}
+  no description
+  no switchport
+  {% else %}
   description {{ interface.description }}
   switchport
+  {% endif %}
   {% if interface.port_type == 'access' %}
   switchport access vlan {{ interface.vlan }}
   switchport mode access
   switchport nonegotiate
   no ip address
-  {% if interface.portfast %}
+      {% if interface.portfast %}
   spanning-tree portfast
   spanning-tree bpduguard enable
-  {% endif %}
+      {% endif %}
   {% endif %}
   {% if interface.port_type == 'trunk' %}
   switchport trunk encapsulation dot1q
@@ -59,10 +64,10 @@ interface {{ interface.interface }}
   switchport mode trunk
   switchport nonegotiate
   no ip address
-  {% if interface.portfast %}
+      {% if interface.portfast %}
   spanning-tree portfast trunk
   spanning-tree bpduguard enable
-  {% endif %}
+      {% endif %}
   {% endif %}
 end
 {% endfor %}
