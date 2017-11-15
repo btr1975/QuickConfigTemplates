@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -42,17 +42,29 @@ common:
 ***** BEGIN config for {{ interface.interface }} *****
 
 interface {{ interface.interface }}
+ {% if interface.remove %}
+ no description
+ {% else %}
  description {{ interface.description }}
+ {% endif %}
  bandwidth 10000000
  cdp
+ {% if interface.remove %}
+ no mtu 4000
+ {% else %}
  mtu 4000
+ {% endif %}
  {% if interface.remove %}
  no ipv4 address
  {% else %}
  ipv4 address {{ interface.ip }} {{ interface.mask }}
  {% endif %}
+ {% if interface.remove %}
+ no mpls
+ {% else %}
  mpls
   mtu 4000
+ {% endif %}
 
 router pim
  address-family ipv4
@@ -73,19 +85,35 @@ multicast-routing
   {% endif %}
 
 mpls ldp
+ {% if interface.remove %}
+ no interface {{ interface.interface }}
+ {% else %}
  interface {{ interface.interface }}
+ {% endif %}
 
 mpls traffic-eng
+ {% if interface.remove %}
+ no interface {{ interface.interface }}
+ {% else %}
  interface {{ interface.interface }}
   admin-weight 1
+ {% endif %}
 
 rsvp
+ {% if interface.remove %}
+ no interface {{ interface.interface }}
+ {% else %}
  interface {{ interface.interface }}
   bandwidth 5000000
+ {% endif %}
 
 router ospf 1
  area 0
+  {% if interface.remove %}
+  no interface {{ interface.interface }}
+  {% else %}
   interface {{ interface.interface }}
+  {% endif %}
 
 ***** END config for {{ interface.interface }} *****
 
