@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -32,5 +32,9 @@ common:
 
 -#}
 {% for multicast_rp in device.static_multicast_rps %}
+    {% if multicast_rp.remove %}
+no ip pim rp-address {{ multicast_rp.rp_address }} {{ multicast_rp.standard_acl }} override
+    {% else %}
 ip pim rp-address {{ multicast_rp.rp_address }} {{ multicast_rp.standard_acl }} override
+    {% endif %}
 {% endfor %}
