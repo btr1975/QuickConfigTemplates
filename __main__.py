@@ -36,41 +36,47 @@ if __name__ == '__main__':
     LOGGER.warning('Logging started!!')
 
     arg_parser = ArgumentParser(description='Quick Config Templates')
-    arg_parser.add_argument('yml_file', help='The name of the yml file of your config, '
-                                                        'not required if you are using the -a option')
-    arg_parser.add_argument('-a', '--auto_build', action='store_true',
-                            help='This option uses a csv only to build a config.  If you use this option you '
-                                 'are also required to use the -t option.')
-    arg_parser.add_argument('-c', '--config_only', action='store_true', help='Display the config, do not output '
-                                                                             'to file')
-    arg_parser.add_argument('-d', '--debug', help='The debug level default is level 3, highest is 1 and lowest is 5, '
-                                                  'it will also show you your yml data in a JSON format')
     arg_parser.add_argument('-f', '--folder', help='Put output file in a folder, name of the folder')
-    arg_parser.add_argument('-j', '--json', action='store_true', help='Display the config, in JSON format')
     arg_parser.add_argument('-o', '--outputfile', help='The filename to output config to')
-    arg_parser.add_argument('-p', '--package', help='The zip filename to output the package to')
-    arg_parser.add_argument('-t', '--typefile', help='The filename of the csv for variable replacement')
     arg_parser.add_argument('-v', '--version', action='version', version=__version__)
-    arg_parser.add_argument('-y', '--yml', action='store_true', help='Display the config, in YML format')
 
-    subparsers = arg_parser.add_subparsers(title='subcommands', description='Valid subcommands', help='CLI Help')
+    subparsers = arg_parser.add_subparsers(title='commands', description='Valid commands: a single command is required',
+                                           help='CLI Help', dest='a sinlge command please see the -h option')
+    subparsers.required = True
 
-    arg_parser_create_yml_from_prefix_list = subparsers.add_parser('plcreate', help='Create Prefix-List YML from a '
-                                                                                    'Prefix-List')
-    arg_parser_create_yml_from_prefix_list.set_defaults(which_sub='plcreate')
-    arg_parser_create_yml_from_prefix_list.add_argument('-f', '--file_name', help='The name of the text file the Prefix-List is in.')
+    # This is the sub parser to run a configuration build
+    arg_parser_run_build = subparsers.add_parser('run_build', help='Run a config build.')
+    arg_parser_run_build.set_defaults(which_sub='run_build')
+    arg_parser_run_build.add_argument('yml_file', nargs='*', help='The name of the yml file of your config, not '
+                                                                  'required if you are using the -a option')
+    arg_parser_run_build.add_argument('-a', '--auto_build', action='store_true',
+                                      help='This option uses a csv only to build a config.  If you use this option '
+                                           'you are also required to use the -t option.')
+    arg_parser_run_build.add_argument('-c', '--config_only', action='store_true', help='Display the config, do not '
+                                                                                       'output to file')
+    arg_parser_run_build.add_argument('-d', '--debug', help='The debug level default is level 3, highest is 1 and l'
+                                                            'owest is 5, it will also show you your yml data in a '
+                                                            'JSON format')
+    arg_parser_run_build.add_argument('-j', '--json', action='store_true', help='Display the config, in JSON format')
+    arg_parser_run_build.add_argument('-p', '--package', help='The zip filename to output the package to')
+    arg_parser_run_build.add_argument('-t', '--typefile', help='The filename of the csv for variable replacement')
+    arg_parser_run_build.add_argument('-y', '--yml', action='store_true', help='Display the config, in YML format')
+
+    # This is the sub parser to run a conversion to Prefix-List to YML
+    arg_parser_create_yml_from_prefix_list = subparsers.add_parser('pl_create', help='Create Prefix-List YML '
+                                                                                     'from a Prefix-List')
+    arg_parser_create_yml_from_prefix_list.set_defaults(which_sub='pl_create')
+    arg_parser_create_yml_from_prefix_list.add_argument('file_name', help='The name of the text file the '
+                                                                          'Prefix-List is in.')
 
     args = arg_parser.parse_args()
 
-    print(args)
-
     try:
 
-        if args.which_sub == 'plcreate':
-            print('poop')
-            sys.exit('\n!!! You are not using the -a option correctly please see the help. !!!')
+        if args.which_sub == 'pl_create':
+            print(args.file_name)
 
-        else:
+        elif args.which_sub == 'run_build':
             if args.debug:
                 directories.set_logging_level(args.debug)
                 logging.getLogger().setLevel(directories.get_logging_level())
