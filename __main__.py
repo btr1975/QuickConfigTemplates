@@ -70,6 +70,15 @@ if __name__ == '__main__':
     arg_parser_create_yml_from_prefix_list.add_argument('-c', '--config_only', action='store_true',
                                                         help='Display the output, do not output to file')
 
+    # This is the sub parser to run a conversion to Route-Map to YML
+    arg_parser_create_yml_from_route_map = subparsers.add_parser('rm_create', help='Create Route-Map YML '
+                                                                                   'from a Route-Map ')
+    arg_parser_create_yml_from_route_map.set_defaults(which_sub='rm_create')
+    arg_parser_create_yml_from_route_map.add_argument('file_name', help='The name of the text file the '
+                                                                        'Route-Map is in.')
+    arg_parser_create_yml_from_route_map.add_argument('-c', '--config_only', action='store_true',
+                                                      help='Display the output, do not output to file')
+
     args = arg_parser.parse_args()
 
     try:
@@ -88,6 +97,15 @@ if __name__ == '__main__':
                 output_file_name = 'pl_convert.yml'
 
             mod.convert_pl(directories, args.file_name, output_file_name, args.config_only)
+
+        elif args.which_sub == 'rm_create':
+            if args.outputfile:
+                output_file_name = args.outputfile
+
+            else:
+                output_file_name = 'rm_convert.yml'
+
+            mod.convert_rm(directories, args.file_name, output_file_name, args.config_only)
 
         elif args.which_sub == 'run_build':
             if args.outputfile:
