@@ -111,3 +111,6 @@ Output/
 
 # Ignore Logs
 Logs/
+
+# Ignore yaml directory
+yaml/
