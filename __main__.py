@@ -36,6 +36,8 @@ if __name__ == '__main__':
     LOGGER.warning('Logging started!!')
 
     arg_parser = ArgumentParser(description='Quick Config Templates')
+    arg_parser.add_argument('-d', '--debug', help='The debug level default is level 3, highest is 1 and lowest is 5, '
+                                                  'it will also show you your yml data in a JSON format')
     arg_parser.add_argument('-f', '--folder', help='Put output file in a folder, name of the folder')
     arg_parser.add_argument('-o', '--outputfile', help='The filename to output config to')
     arg_parser.add_argument('-v', '--version', action='version', version=__version__)
@@ -54,9 +56,6 @@ if __name__ == '__main__':
                                            'you are also required to use the -t option.')
     arg_parser_run_build.add_argument('-c', '--config_only', action='store_true', help='Display the config, do not '
                                                                                        'output to file')
-    arg_parser_run_build.add_argument('-d', '--debug', help='The debug level default is level 3, highest is 1 and l'
-                                                            'owest is 5, it will also show you your yml data in a '
-                                                            'JSON format')
     arg_parser_run_build.add_argument('-j', '--json', action='store_true', help='Display the config, in JSON format')
     arg_parser_run_build.add_argument('-p', '--package', help='The zip filename to output the package to')
     arg_parser_run_build.add_argument('-t', '--typefile', help='The filename of the csv for variable replacement')
@@ -68,22 +67,29 @@ if __name__ == '__main__':
     arg_parser_create_yml_from_prefix_list.set_defaults(which_sub='pl_create')
     arg_parser_create_yml_from_prefix_list.add_argument('file_name', help='The name of the text file the '
                                                                           'Prefix-List is in.')
+    arg_parser_create_yml_from_prefix_list.add_argument('-c', '--config_only', action='store_true',
+                                                        help='Display the output, do not output to file')
 
     args = arg_parser.parse_args()
 
     try:
+        if args.debug:
+            directories.set_logging_level(args.debug)
+            logging.getLogger().setLevel(directories.get_logging_level())
+
+        if args.folder:
+            directories.set_output_dir_folder(args.folder)
 
         if args.which_sub == 'pl_create':
-            print(args.file_name)
+            if args.outputfile:
+                output_file_name = args.outputfile
+
+            else:
+                output_file_name = 'pl_convert.yml'
+
+            mod.convert_pl(directories, args.file_name, output_file_name, args.config_only)
 
         elif args.which_sub == 'run_build':
-            if args.debug:
-                directories.set_logging_level(args.debug)
-                logging.getLogger().setLevel(directories.get_logging_level())
-
-            if args.folder:
-                directories.set_output_dir_folder(args.folder)
-
             if args.outputfile:
                 output_file_name = args.outputfile
 
