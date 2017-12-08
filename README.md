@@ -25,13 +25,13 @@ This script is for simple config templates, to make lif easier on admins/enginee
 * Added in requirement for persistentdatatools==2.2.8
 
 ### Requirements
-* Jinja2==2.9.6
+* Jinja2==2.10
 * MarkupSafe==1.0
-* py==1.4.34
-* pyaml==16.12.2
-* pytest==3.1.3
+* py==1.5.2
+* pyaml==17.10.0
+* pytest==3.3.1
 * PyYAML==3.12
-* persistentdatatools==2.2.8
+* persistentdatatools==2.2.9
 
 ### Some instructions
 
