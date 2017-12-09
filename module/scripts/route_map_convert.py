@@ -16,14 +16,77 @@ __email__ = 'e_ben_75-python@yahoo.com'
 LOGGER = logging.getLogger(__name__)
 
 
+class RouteMapData(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.lines = list()
+        self.temp_dict = dict()
+
+    def __str__(self):
+        return 'RouteMapData: Route-Map {}'.format(self.name)
+
+    def __repr__(self):
+        return 'RouteMapData: Route-Map {}'.format(self.name)
+
+    def set_sequence_info(self, sequence, permit_deny):
+        self.temp_dict.update({'sequence': sequence})
+        self.temp_dict.update({'permit_deny': permit_deny})
+        self.temp_dict.update({'description': None})
+        self.temp_dict.update({'match': list()})
+        self.temp_dict.update({'set': list()})
+
+    def set_description(self, line_data):
+        line_data_split = line_data.split()
+        self.temp_dict['description'] = ' '.join(line_data_split[1:])
+
+    def set_matches(self, line_data):
+        line_data_split = line_data.split()
+        if 'prefix-list' in line_data_split:
+            self.temp_dict['match'].append({'match_item': ' '.join(line_data_split[1:4]),
+                                            'match_item_name': line_data_split[4]})
+
+        elif 'address' in line_data_split:
+            self.temp_dict['match'].append({'match_item': ' '.join(line_data_split[1:3]),
+                                            'match_item_name': line_data_split[3]})
+
+        else:
+            self.temp_dict['match'].append({'match_item': line_data_split[1], 'match_item_name': line_data_split[2]})
+
+    def set_sets(self, line_data):
+        line_data_split = line_data.split()
+        if 'as-path' in line_data_split:
+            if 'last-as' in line_data_split:
+                self.temp_dict['set'].append({'set_item': ' '.join(line_data_split[1:4]),
+                                              'set_item_name': line_data_split[4]})
+
+            else:
+                self.temp_dict['set'].append({'set_item': ' '.join(line_data_split[1:3]),
+                                              'set_item_name': line_data_split[3]})
+
+        else:
+            self.temp_dict['set'].append({'set_item': line_data_split[1], 'set_item_name': line_data_split[2]})
+
+    def get_name(self):
+        return self.name
+
+    def get_current_sequence(self):
+        return self.temp_dict.get('sequence')
+
+    def get_temp_dict(self):
+        return self.temp_dict
+
+    def set_new_sequence(self):
+        self.lines.append(self.temp_dict.copy())
+        self.temp_dict.clear()
+
+    def get_sequences(self):
+        return self.lines
+
+
 def convert_route_map_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False):
     temp_list = list()
-    dict_of_route_maps = dict()
-
-    print(directories)
-    print(input_file_name)
-    print(output_file_name)
-    print(display_only)
+    rmap_obj = None
 
     try:
         route_maps = pdt.file_to_list(input_file_name, directories.get_yml_dir())
@@ -41,22 +104,16 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
 
     for rm_line in route_maps:
         rm_line_split =  pdt.remove_extra_spaces(rm_line).split()
-        print(rm_line_split)
 
         if rm_line_split[0] == 'route-map':
             try:
-                if not dict_of_route_maps.get(rm_line_split[1]):
-                    dict_of_route_maps[rm_line_split[1]] = list()
-                    current_rmap_name = rm_line_split[1]
-                    current_rmap_seq = rm_line_split[3]
-                    dict_current_seq = {current_rmap_seq: dict()}
-                    dict_current_seq.get(current_rmap_seq).update({'permit_deny': rm_line_split[2]})
+                if not rmap_obj:
+                    rmap_obj = RouteMapData(rm_line_split[1])
+                    rmap_obj.set_sequence_info(rm_line_split[3], rm_line_split[2])
 
-                else:
-                    current_rmap_name = rm_line_split[1]
-                    current_rmap_seq = rm_line_split[3]
-                    dict_current_seq = {current_rmap_seq: dict()}
-                    dict_current_seq.get(current_rmap_seq).update({'permit_deny': rm_line_split[2]})
+                elif rmap_obj:
+                    rmap_obj.set_new_sequence()
+                    rmap_obj.set_sequence_info(rm_line_split[3], rm_line_split[2])
 
             except IndexError:
                 error = 'Cannot find Route-Map name in this statement "{}"'.format(rm_line)
@@ -65,15 +122,15 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
                 critical_issue = True
 
         elif rm_line_split[0] == 'description':
-            dict_current_seq.get(current_rmap_seq).update({'description': ' '.join(rm_line_split[1:])})
+            rmap_obj.set_description(rm_line)
 
         elif rm_line_split[0] == 'match':
-            dict_current_seq.get(current_rmap_seq).update({'match': list()})
+            rmap_obj.set_matches(rm_line)
 
         elif rm_line_split[0] == 'set':
-            dict_current_seq.get(current_rmap_seq).update({'set': list()})
+            rmap_obj.set_sets(rm_line)
 
-            dict_of_route_maps.get(current_rmap_name).append(dict_current_seq)
+    rmap_obj.set_new_sequence()
 
     temp_list.append('--- # Created from file: {} with rm_create'.format(input_file_name))
     temp_list.append('common:')
@@ -83,73 +140,33 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
     temp_list.append('        -   devicename: <replace>')
     temp_list.append('            management_ip: <replace>')
     temp_list.append('            route_maps:')
+    temp_list.append('            -   route_map_name: {}'.format(rmap_obj.get_name()))
+    temp_list.append('                sequences:')
+    for line in rmap_obj.get_sequences():
+        temp_list.append('                -   sequence: {}'.format(line.get('sequence')))
+        if line.get('description'):
+            temp_list.append('                    description: {}'.format(line.get('description')))
+        temp_list.append('                    permit_deny: {}'.format(line.get('permit_deny')))
+        if line.get('match'):
+            temp_list.append('                    match:')
+            for enum, match_line in enumerate(line.get('match')):
+                if enum == 0:
+                    temp_list.append('                    -   match_item: {}'.format(match_line.get('match_item')))
 
+                else:
+                    temp_list.append('                        match_item: {}'.format(match_line.get('match_item')))
+                temp_list.append('                        match_item_name: {}'.format(match_line.get('match_item_name')))
 
+        if line.get('set'):
+            temp_list.append('                    set:')
+            for enum, set_line in enumerate(line.get('set')):
+                if enum == 0:
+                    temp_list.append('                    -   set_item: {}'.format(set_line.get('set_item')))
 
-    """
---- # Test data to for ios
-common:
-    template: ios_base.jinja2
-    ticket_number: CHG123456789
-    devices:
-    -   device:
-        -   devicename: IOS-RTR01
-            management_ip: 10.99.222.22
-            route_maps:
-            -   route_map_name: RM-TEST-1
-                sequences:
-                -   description: test description
-                    match:
-                    -   match_item: access-list
-                        match_item_name: ACL-A-in
-                    -   match_item: access-list
-                        match_item_name: ACL-B-in
-                    permit_deny: permit
-                    sequence: 10
-                    set:
-                    -   set_item: local preference
-                        set_item_to: 200
+                else:
+                    temp_list.append('                        set_item: {}'.format(set_line.get('set_item')))
 
-                -   description: test description
-                    match:
-                    -   match_item: ip address prefix-list
-                        match_item_name: PL-TEST-1
-                    permit_deny: deny
-                    sequence: 20
-                    set:
-                    -   set_item: local preference
-                        set_item_to: 500
-
-                -   match:
-                    -   match_item: access-list
-                        match_item_name: ACL-C-in
-                    permit_deny: permit
-                    sequence: 30
-                    set:
-                    -   set_item: local preference
-                        set_item_to: 200
-
-Notes:
-
-match_item options
-
-ip address prefix-list
-as-path
-ip address
-community
-extcommunity
-
-set_item options
-
-local-preference
-weight
-community
-as-path prepend
-as-path prepend last-as
-    
-    """
+                temp_list.append('                        set_item_name: {}'.format(set_line.get('set_item_name')))
 
     for thing in temp_list:
         print(thing)
-
-    print(dict_of_route_maps)

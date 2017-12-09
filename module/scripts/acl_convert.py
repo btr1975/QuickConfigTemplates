@@ -16,6 +16,61 @@ __email__ = 'e_ben_75-python@yahoo.com'
 LOGGER = logging.getLogger(__name__)
 
 
+class StandardAclData(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.lines = list()
+        self.acl_type = 'standard'
+
+    def __str__(self):
+        return '<StandardAclData: ACL Name {}>'.format(self.name)
+
+    def __repr__(self):
+        return '<StandardAclData: ACL Name {}>'.format(self.name)
+
+    def set_lines(self, line_data):
+        line_data_split = line_data.split()
+        self.lines.append({'sequence': line_data_split[0],
+                           'permit_deny': line_data_split[1],
+                           'source_network': ' '.join(line_data_split[2:])})
+
+    def get_name(self):
+        return self.name
+
+    def get_acl_type(self):
+        return self.acl_type
+
+    def get_lines(self):
+        return self.lines
+
+
+class ExtendedAclData(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.lines = list()
+        self.acl_type = 'standard'
+
+    def __str__(self):
+        return '<ExtendedAclData: ACL Name {}>'.format(self.name)
+
+    def __repr__(self):
+        return '<ExtendedAclData: ACL Name {}>'.format(self.name)
+
+    def set_lines(self, line_data):
+        pass
+
+    def get_name(self):
+        return self.name
+
+    def get_acl_type(self):
+        return self.acl_type
+
+    def get_lines(self):
+        return self.lines
+
+
 def convert_acl_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False):
     """
     Function to convert a ACL to a YML format for QuickConfigTemplates
@@ -28,12 +83,11 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
 
     """
     temp_list = list()
-    dict_of_acls = dict()
+    acl_obj = None
     print(directories)
     print(input_file_name)
     print(output_file_name)
     print(display_only)
-
 
     try:
         acls = pdt.file_to_list(input_file_name, directories.get_yml_dir())
@@ -52,21 +106,16 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
     for line in acls:
         critical_issue = False
         line_split = line.split()
-        # print(line_split)
+        print(line_split)
 
         if line_split[0] == 'ip':
 
             try:
-                if not dict_of_acls.get(line_split[3]):
-                    if line_split[2] == 'standard':
-                        acl_type = 'standard'
-                        current_acl_name = line_split[3]
-                        dict_of_acls[current_acl_name] = {acl_type: list()}
-
-                    elif line_split[2] == 'extended':
-                        acl_type = 'extended'
-                        current_acl_name = line_split[3]
-                        dict_of_acls[current_acl_name] = {acl_type: list()}
+                if line_split[2] == 'standard':
+                    print(line_split)
+                    acl_obj = StandardAclData(line_split[3])
+                elif line_split[2] == 'extended':
+                    acl_obj = ExtendedAclData(line_split[3])
 
             except IndexError:
                 error = 'Cannot find ACL name in this statement "{}"'.format(line)
@@ -74,10 +123,12 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
                 print(error)
                 critical_issue = True
 
-        elif int(line_split[0]) and acl_type == 'standard':
-            dict_of_acls.get(current_acl_name).get(acl_type).append({'sequence': line_split[0],
-                                                                     'permit_deny': line_split[1],
-                                                                     'source_network': ' '.join(line_split[2:])})
+        elif int(line_split[0]):
+            if acl_obj:
+                acl_obj.set_lines(line)
+
+            else:
+                print('shit')
 
     temp_list.append('--- # Created from file: {} with acl_create'.format(input_file_name))
     temp_list.append('common:')
@@ -86,21 +137,14 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
     temp_list.append('    -   device:')
     temp_list.append('        -   devicename: <replace>')
     temp_list.append('            management_ip: <replace>')
-
-    for acl_name in dict_of_acls:
-        acl = dict_of_acls.get(acl_name)
-        for acl_type in acl:
-            acl_list = acl.get(acl_type)
-            if acl_type == 'standard':
-                temp_list.append('            standard_acls:')
-            temp_list.append('            -   acl_name: {}'.format(acl_name))
-            temp_list.append('                sequences:')
-            for dict_acl in acl_list:
-                temp_list.append('                -   sequence: {}'.format(dict_acl.get('sequence')))
-                temp_list.append('                    permit_deny: {}'.format(dict_acl.get('permit_deny')))
-                temp_list.append('                    source_network: {}'.format(dict_acl.get('source_network')))
-
-
+    if acl_obj.get_acl_type() == 'standard':
+        temp_list.append('            standard_acls:')
+        temp_list.append('            -   acl_name: {}'.format(acl_obj.get_name()))
+        temp_list.append('                sequences:')
+        for line_data in acl_obj.get_lines():
+            temp_list.append('                -   sequence: {}'.format(line_data.get('sequence')))
+            temp_list.append('                    permit_deny: {}'.format(line_data.get('permit_deny')))
+            temp_list.append('                    source_network: {}'.format(line_data.get('source_network')))
     """
 --- # Test data to for ios
 common:
@@ -128,5 +172,3 @@ common:
 
     for acl_yml_line in temp_list:
         print(acl_yml_line)
-
-    print(dict_of_acls)
