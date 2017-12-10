@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -16,29 +16,29 @@ common:
                 sequences:
                 -   permit_deny: permit
                     sequence: 10
-                    source_network: 192.168.1.0/24
+                    source_network: 192.168.1.0 0.0.0.255
 
                 -   permit_deny: deny
                     sequence: 20
-                    source_network: 192.168.2.0/24
+                    source_network: 192.168.2.0 0.0.0.255
 
                 -   permit_deny: permit
                     sequence: 30
-                    source_network: 192.168.3.0/24
+                    source_network: 192.168.3.0 0.0.0.255
 
             -   acl_name: ACL-STANDARD-2
                 sequences:
                 -   permit_deny: permit
                     sequence: 10
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
 
                 -   permit_deny: deny
                     sequence: 20
-                    source_network: 192.168.5.0/24
+                    source_network: 192.168.5.0 0.0.0.255
 
                 -   permit_deny: permit
                     sequence: 30
-                    source_network: 192.168.6.0/24
+                    source_network: 192.168.6.0 0.0.0.255
 
 -#}
 {% for acl in device.standard_acls %}

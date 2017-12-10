@@ -188,7 +188,14 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
         elif rm_line_split[0] == 'set':
             rmap_obj.set_sets(rm_line)
 
-    rmap_obj.set_new_sequence()
+    if not rmap_obj:
+        error = 'Your data in file {} does not all seem to be a ' \
+                'Route-Map'.format(os.path.join(directories.get_yml_dir(), input_file_name))
+        LOGGER.critical(error)
+        sys.exit(error)
+
+    else:
+        rmap_obj.set_new_sequence()
 
     temp_list.append('--- # Created from file: {} with rm_create'.format(input_file_name))
     temp_list.append('common:')

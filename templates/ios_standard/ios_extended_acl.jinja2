@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -14,88 +14,86 @@ common:
             extended_acls:
             -   acl_name: ACL-EXT-1
                 sequences:
-                -   destination_network: 192.168.5.0/24
+                -   destination_network: 192.168.5.0 0.0.0.255
                     permit_deny: permit
                     protocol: ip
                     sequence: 10
-                    source_network: 192.168.1.0/24
-                    source_port: 445
+                    source_network: 192.168.1.0 0.0.0.255
 
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     destination_port: 445
                     permit_deny: permit
                     protocol: tcp
                     sequence: 20
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
 
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     destination_port_range: 445 600
                     permit_deny: permit
                     protocol: tcp
                     sequence: 30
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
 
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     permit_deny: permit
                     protocol: tcp
                     sequence: 40
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
                     source_port_range: 445 600
 
             -   acl_name: ACL-EXT-2
                 sequences:
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     destination_port: 445
                     permit_deny: permit
                     protocol: tcp
                     sequence: 10
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
 
             -   acl_name: ACL-EXT-3
                 sequences:
-                -   destination_network: 192.168.5.0/24
+                -   destination_network: 192.168.5.0 0.0.0.255
                     destination_port: 445
                     permit_deny: permit
                     protocol: ip
                     sequence: 10
-                    source_network: 192.168.1.0/24
-                    source_port: 445
+                    source_network: 192.168.1.0 0.0.0.255
 
             -   acl_name: ACL-EXT-4
                 sequences:
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     destination_port_range: 445 600
                     permit_deny: permit
                     protocol: tcp
                     sequence: 10
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
                     source_port_range: 445 600
 
             -   acl_name: ACL-EXT-5
                 sequences:
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     destination_port_range: 445 600
                     permit_deny: permit
                     protocol: tcp
                     sequence: 10
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
 
             -   acl_name: ACL-EXT-6
                 sequences:
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     permit_deny: permit
                     protocol: tcp
                     sequence: 10
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
                     source_port_range: 445 600
 
             -   acl_name: ACL-EXT-7
                 sequences:
-                -   destination_network: 192.168.6.0/24
+                -   destination_network: 192.168.6.0 0.0.0.255
                     permit_deny: permit
                     protocol: tcp
                     sequence: 10
-                    source_network: 192.168.4.0/24
+                    source_network: 192.168.4.0 0.0.0.255
 
 -#}
 {% for acl in device.extended_acls %}

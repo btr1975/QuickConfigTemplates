@@ -50,7 +50,7 @@ class ExtendedAclData(object):
     def __init__(self, name):
         self.name = name
         self.lines = list()
-        self.acl_type = 'standard'
+        self.acl_type = 'extended'
 
     def __str__(self):
         return '<ExtendedAclData: ACL Name {}>'.format(self.name)
@@ -59,7 +59,36 @@ class ExtendedAclData(object):
         return '<ExtendedAclData: ACL Name {}>'.format(self.name)
 
     def set_lines(self, line_data):
-        pass
+        line_data_split = line_data.split()
+        if line_data_split[2] == 'ip':
+            self.lines.append({'sequence': line_data_split[0],
+                               'permit_deny': line_data_split[1],
+                               'protocol': line_data_split[2],
+                               'source_network': ' '.join(line_data_split[3:5]),
+                               'destination_network': ' '.join(line_data_split[5:7])})
+
+        elif line_data_split[2] == 'tcp':
+            if 'eq' or 'range' in line_data:
+                if line_data.count('eq') == 2:
+                    pass
+                elif line_data.count('eq') == 1:
+                    pass
+                elif line_data.count('range') == 2:
+                    pass
+                elif line_data.count('range') == 1:
+                    pass
+
+            else:
+                self.lines.append({'sequence': line_data_split[0],
+                                   'permit_deny': line_data_split[1],
+                                   'protocol': line_data_split[2],
+                                   'source_network': ' '.join(line_data_split[3:5]),
+                                   'destination_network': ' '.join(line_data_split[5:7])})
+
+        else:
+            self.lines.append({'sequence': line_data_split[0],
+                               'permit_deny': line_data_split[1],
+                               'protocol': line_data_split[2]})
 
     def get_name(self):
         return self.name
@@ -145,6 +174,17 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
             temp_list.append('                -   sequence: {}'.format(line_data.get('sequence')))
             temp_list.append('                    permit_deny: {}'.format(line_data.get('permit_deny')))
             temp_list.append('                    source_network: {}'.format(line_data.get('source_network')))
+
+    elif acl_obj.get_acl_type() == 'extended':
+        temp_list.append('            extended_acls:')
+        temp_list.append('            -   acl_name: {}'.format(acl_obj.get_name()))
+        temp_list.append('                sequences:')
+        for line_data in acl_obj.get_lines():
+            temp_list.append('                -   sequence: {}'.format(line_data.get('sequence')))
+            temp_list.append('                    permit_deny: {}'.format(line_data.get('permit_deny')))
+            temp_list.append('                    protocol: {}'.format(line_data.get('protocol')))
+            temp_list.append('                    source_network: {}'.format(line_data.get('source_network')))
+            temp_list.append('                    destination_network: {}'.format(line_data.get('destination_network')))
     """
 --- # Test data to for ios
 common:
@@ -154,21 +194,40 @@ common:
     -   device:
         -   devicename: IOS-RTR02
             management_ip: 10.99.222.23
-            standard_acls:
-            -   acl_name: ACL-STANDARD-1
+            extended_acls:
+            -   acl_name: ACL-EXT-1
                 sequences:
-                -   permit_deny: permit
+                -   destination_network: 192.168.5.0 0.0.0.255
+                    permit_deny: permit
+                    protocol: ip
                     sequence: 10
                     source_network: 192.168.1.0 0.0.0.255
 
-                -   permit_deny: deny
+                -   destination_network: 192.168.6.0 0.0.0.255
+                    destination_port: 445
+                    permit_deny: permit
+                    protocol: tcp
                     sequence: 20
-                    source_network: 192.168.2.0 0.0.0.255
+                    source_network: 192.168.4.0 0.0.0.255
 
-                -   permit_deny: permit
+                -   destination_network: 192.168.6.0 0.0.0.255
+                    destination_port_range: 445 600
+                    permit_deny: permit
+                    protocol: tcp
                     sequence: 30
-                    source_network: 192.168.3.0 0.0.0.255
+                    source_network: 192.168.4.0 0.0.0.255
+
+                -   destination_network: 192.168.6.0 0.0.0.255
+                    permit_deny: permit
+                    protocol: tcp
+                    sequence: 40
+                    source_network: 192.168.4.0 0.0.0.255
+                    source_port_range: 445 600
     """
 
     for acl_yml_line in temp_list:
         print(acl_yml_line)
+
+    print(acl_obj)
+    for line in acl_obj.get_lines():
+        print(line)

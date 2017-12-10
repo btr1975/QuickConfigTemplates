@@ -10,7 +10,7 @@
 
 ### About
 
-This script is for simple config templates, to make lif easier on admins/engineers
+This script is for simple config templates, to make life easier on admins/engineers
 
 ### Version 1.0.3.prod information
 
@@ -24,6 +24,20 @@ This script is for simple config templates, to make lif easier on admins/enginee
 
 * Added in requirement for persistentdatatools==2.2.8
 
+### Version 1.0.7.dev information
+
+* Added in requirement for Jinja2==2.10
+* Added in requirement for py==1.5.2
+* Added in requirement for pyaml==17.10.0
+* Added in requirement for PyYAML==3.12
+* Added in requirement for persistentdatatools==2.2.9
+* Added in requirement for ipaddresstools==1.2.8
+* Added run_build which now is the command to create a config from YML
+* Added pl_create which takes a Prefix-List and converts it to YML, in our format
+* Added rm_create which takes a Route-Map and converts it to YML, in our format
+* Added acl_create which takes a Route-Map and converts it to YML, in our format, still under development, standard
+  seems to work fine, extended has some issue
+
 ### Requirements
 * Jinja2==2.10
 * MarkupSafe==1.0
@@ -32,6 +46,7 @@ This script is for simple config templates, to make lif easier on admins/enginee
 * pytest==3.3.1
 * PyYAML==3.12
 * persistentdatatools==2.2.9
+* ipaddresstools==1.2.8
 
 ### Some instructions
 
