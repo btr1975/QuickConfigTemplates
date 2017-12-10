@@ -86,14 +86,14 @@ class RouteMapData(object):
         if 'as-path' in line_data_split:
             if 'last-as' in line_data_split:
                 self.temp_dict['set'].append({'set_item': ' '.join(line_data_split[1:4]),
-                                              'set_item_name': line_data_split[4]})
+                                              'set_item_to': line_data_split[4]})
 
             else:
                 self.temp_dict['set'].append({'set_item': ' '.join(line_data_split[1:3]),
-                                              'set_item_name': line_data_split[3]})
+                                              'set_item_to': line_data_split[3]})
 
         else:
-            self.temp_dict['set'].append({'set_item': line_data_split[1], 'set_item_name': line_data_split[2]})
+            self.temp_dict['set'].append({'set_item': line_data_split[1], 'set_item_to': line_data_split[2]})
 
     def get_name(self):
         """
@@ -208,24 +208,15 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
         if line.get('match'):
             temp_list.append('                    match:')
             for enum, match_line in enumerate(line.get('match')):
-                if enum == 0:
-                    temp_list.append('                    -   match_item: {}'.format(match_line.get('match_item')))
-
-                else:
-                    temp_list.append('                        match_item: {}'.format(match_line.get('match_item')))
+                temp_list.append('                    -   match_item: {}'.format(match_line.get('match_item')))
                 temp_list.append('                        match_item_name: '
                                  '{}'.format(match_line.get('match_item_name')))
 
         if line.get('set'):
             temp_list.append('                    set:')
             for enum, set_line in enumerate(line.get('set')):
-                if enum == 0:
-                    temp_list.append('                    -   set_item: {}'.format(set_line.get('set_item')))
-
-                else:
-                    temp_list.append('                        set_item: {}'.format(set_line.get('set_item')))
-
-                temp_list.append('                        set_item_name: {}'.format(set_line.get('set_item_name')))
+                temp_list.append('                    -   set_item: {}'.format(set_line.get('set_item')))
+                temp_list.append('                        set_item_to: {}'.format(set_line.get('set_item_to')))
 
     if not display_only:
         file_name = pdt.file_name_increase(output_file_name, directories.get_output_dir())
