@@ -152,3 +152,7 @@ if __name__ == '__main__':
     except AttributeError as e:
         LOGGER.critical(e)
         arg_parser.print_help()
+
+    except Exception as e:
+        LOGGER.critical(e)
+        arg_parser.print_help()
