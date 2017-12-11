@@ -2,6 +2,7 @@ import logging
 import sys
 import os
 import persistentdatatools as pdt
+import ipaddresstools as ipv4
 from ..utils import clean_list
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
@@ -31,9 +32,25 @@ class StandardAclData(object):
 
     def set_lines(self, line_data):
         line_data_split = line_data.split()
-        self.lines.append({'sequence': line_data_split[0],
-                           'permit_deny': line_data_split[1],
-                           'source_network': ' '.join(line_data_split[2:])})
+        if line_data_split[0] == 'permit' or line_data_split[0] == 'deny':
+            self.lines.append({'permit_deny': line_data_split[0],
+                               'source_network': ' '.join(line_data_split[1:])})
+
+        elif type(line_data_split[0]) == int:
+            self.lines.append({'sequence': line_data_split[0],
+                               'permit_deny': line_data_split[1],
+                               'source_network': ' '.join(line_data_split[2:])})
+
+        else:
+            try:
+                int(line_data_split[0])
+                self.lines.append({'sequence': line_data_split[0],
+                                   'permit_deny': line_data_split[1],
+                                   'source_network': ' '.join(line_data_split[2:])})
+
+            except Exception as e:
+                LOGGER.critical(e)
+                sys.exit(e)
 
     def get_name(self):
         return self.name
@@ -59,15 +76,42 @@ class ExtendedAclData(object):
         return '<ExtendedAclData: ACL Name {}>'.format(self.name)
 
     def set_lines(self, line_data):
+        temp_dict = dict()
+        prev_enum = 0
+        hit_once = False
         line_data_split = line_data.split()
-        if line_data_split[2] == 'ip':
-            self.lines.append({'sequence': line_data_split[0],
-                               'permit_deny': line_data_split[1],
-                               'protocol': line_data_split[2],
-                               'source_network': ' '.join(line_data_split[3:5]),
-                               'destination_network': ' '.join(line_data_split[5:7])})
+        for enum, entry in enumerate(line_data_split):
+            if ipv4.ip(entry, return_tuple=False):
+                if not hit_once:
+                    temp_network = None
 
-        elif line_data_split[2] == 'tcp':
+                else:
+                    temp_network = None
+
+            elif ipv4.ip_mask(entry, return_tuple=False):
+                if not hit_once:
+                    temp_dict.update({'source_network': entry})
+                    hit_once = True
+                else:
+                    temp_dict.update({'destination_network': entry})
+                    print(temp_dict)
+
+        if line_data_split[2] == 'ip':
+            if ipv4.ip_mask(line_data_split[3], return_tuple=False):
+                temp_dict.update({'sequence': line_data_split[0],
+                                  'permit_deny': line_data_split[1],
+                                  'protocol': line_data_split[2]})
+
+            else:
+                temp_dict.update({'sequence': line_data_split[0],
+                                  'permit_deny': line_data_split[1],
+                                  'protocol': line_data_split[2],
+                                  'source_network': ' '.join(line_data_split[3:5]),
+                                  'destination_network': ' '.join(line_data_split[5:7])})
+
+            self.lines.append(temp_dict)
+
+        elif line_data_split[2] != 'ip':
             if 'eq' or 'range' in line_data:
                 if line_data.count('eq') == 2:
                     pass
@@ -133,31 +177,40 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
         sys.exit(error)
 
     for line in acls:
-        critical_issue = False
         line_split = line.split()
         print(line_split)
 
         if line_split[0] == 'ip':
-
             try:
                 if line_split[2] == 'standard':
                     print(line_split)
                     acl_obj = StandardAclData(line_split[3])
+
                 elif line_split[2] == 'extended':
                     acl_obj = ExtendedAclData(line_split[3])
 
             except IndexError:
                 error = 'Cannot find ACL name in this statement "{}"'.format(line)
                 LOGGER.error(error)
-                print(error)
-                critical_issue = True
+                sys.exit(error)
 
-        elif int(line_split[0]):
+        elif line_split[0] == 'permit' or line_split[0] == 'deny':
             if acl_obj:
                 acl_obj.set_lines(line)
 
             else:
-                print('shit')
+                error = 'Cannot find ACL Object'
+                LOGGER.error(error)
+                sys.exit(error)
+
+        else:
+            if acl_obj:
+                acl_obj.set_lines(line)
+
+            else:
+                error = 'Cannot find ACL Object'
+                LOGGER.error(error)
+                sys.exit(error)
 
     temp_list.append('--- # Created from file: {} with acl_create'.format(input_file_name))
     temp_list.append('common:')
