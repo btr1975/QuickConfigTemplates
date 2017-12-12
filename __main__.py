@@ -7,7 +7,7 @@ __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = ''
-__status__ = 'dev'
+__status__ = 'prod'
 __version_info__ = (1, 0, 7, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
@@ -69,6 +69,8 @@ if __name__ == '__main__':
                                                                           'Prefix-List is in.')
     arg_parser_create_yml_from_prefix_list.add_argument('-c', '--config_only', action='store_true',
                                                         help='Display the output, do not output to file')
+    arg_parser_create_yml_from_prefix_list.add_argument('-r', '--reset_sequences', action='store_true',
+                                                        help='Reset sequence numbers')
 
     # This is the sub parser to run a conversion to Route-Map to YML
     arg_parser_create_yml_from_route_map = subparsers.add_parser('rm_create', help='Create Route-Map YML '
@@ -78,6 +80,8 @@ if __name__ == '__main__':
                                                                         'Route-Map is in.')
     arg_parser_create_yml_from_route_map.add_argument('-c', '--config_only', action='store_true',
                                                       help='Display the output, do not output to file')
+    arg_parser_create_yml_from_route_map.add_argument('-r', '--reset_sequences', action='store_true',
+                                                      help='Reset sequence numbers')
 
     # This is the sub parser to run a conversion to ACL to YML
     arg_parser_create_yml_from_acl = subparsers.add_parser('acl_create', help='Create ACL YML from a ACL ')
@@ -85,6 +89,8 @@ if __name__ == '__main__':
     arg_parser_create_yml_from_acl.add_argument('file_name', help='The name of the text file the ACL is in.')
     arg_parser_create_yml_from_acl.add_argument('-c', '--config_only', action='store_true',
                                                 help='Display the output, do not output to file')
+    arg_parser_create_yml_from_acl.add_argument('-r', '--reset_sequences', action='store_true',
+                                                help='Reset sequence numbers')
 
     args = arg_parser.parse_args()
 
@@ -103,7 +109,7 @@ if __name__ == '__main__':
             else:
                 output_file_name = 'pl_convert.yml'
 
-            mod.convert_pl(directories, args.file_name, output_file_name, args.config_only)
+            mod.convert_pl(directories, args.file_name, output_file_name, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'rm_create':
             if args.outputfile:
@@ -112,7 +118,7 @@ if __name__ == '__main__':
             else:
                 output_file_name = 'rm_convert.yml'
 
-            mod.convert_rm(directories, args.file_name, output_file_name, args.config_only)
+            mod.convert_rm(directories, args.file_name, output_file_name, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'acl_create':
             if args.outputfile:
@@ -121,7 +127,7 @@ if __name__ == '__main__':
             else:
                 output_file_name = 'acl_convert.yml'
 
-            mod.convert_acl(directories, args.file_name, output_file_name, args.config_only)
+            mod.convert_acl(directories, args.file_name, output_file_name, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'run_build':
             if args.outputfile:

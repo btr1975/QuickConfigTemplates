@@ -19,8 +19,10 @@ LOGGER = logging.getLogger(__name__)
 
 class StandardAclData(object):
 
-    def __init__(self, name):
+    def __init__(self, name, reset_sequences=False):
         self.name = name
+        self.reset_sequences = reset_sequences
+        self.current_seq = 10
         self.lines = list()
         self.acl_type = 'standard'
 
@@ -32,25 +34,34 @@ class StandardAclData(object):
 
     def set_lines(self, line_data):
         line_data_split = line_data.split()
+        temp_dict = dict()
         if line_data_split[0] == 'permit' or line_data_split[0] == 'deny':
-            self.lines.append({'permit_deny': line_data_split[0],
-                               'source_network': ' '.join(line_data_split[1:])})
+            temp_dict.update({'sequence': self.current_seq,
+                              'permit_deny': line_data_split[0],
+                              'source_network': ' '.join(line_data_split[1:])})
+            self.current_seq += 10
 
-        elif type(line_data_split[0]) == int:
-            self.lines.append({'sequence': line_data_split[0],
-                               'permit_deny': line_data_split[1],
-                               'source_network': ' '.join(line_data_split[2:])})
+        elif line_data_split[0] == 'remark':
+            pass
 
         else:
             try:
                 int(line_data_split[0])
-                self.lines.append({'sequence': line_data_split[0],
-                                   'permit_deny': line_data_split[1],
-                                   'source_network': ' '.join(line_data_split[2:])})
+                if self.reset_sequences:
+                    temp_dict.update({'sequence': self.current_seq})
+                    self.current_seq += 10
+
+                else:
+                    temp_dict.update({'sequence': line_data_split[0]})
+
+                temp_dict.update({'permit_deny': line_data_split[1],
+                                  'source_network': ' '.join(line_data_split[2:])})
 
             except Exception as e:
                 LOGGER.critical(e)
                 sys.exit(e)
+
+        self.lines.append(temp_dict)
 
     def get_name(self):
         return self.name
@@ -64,8 +75,10 @@ class StandardAclData(object):
 
 class ExtendedAclData(object):
 
-    def __init__(self, name):
+    def __init__(self, name, reset_sequences=False):
         self.name = name
+        self.reset_sequences = reset_sequences
+        self.current_seq = 10
         self.lines = list()
         self.acl_type = 'extended'
 
@@ -144,23 +157,21 @@ class ExtendedAclData(object):
         return self.lines
 
 
-def convert_acl_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False):
+def convert_acl_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False,
+                              reset_sequences=False):
     """
     Function to convert a ACL to a YML format for QuickConfigTemplates
     :param directories:
     :param input_file_name: The input file name
     :param output_file_name: The output file name
     :param display_only: Boolean true = don't output to file
+    :param reset_sequences: Set True to recount sequences
     :return:
         None
 
     """
     temp_list = list()
     acl_obj = None
-    print(directories)
-    print(input_file_name)
-    print(output_file_name)
-    print(display_only)
 
     try:
         acls = pdt.file_to_list(input_file_name, directories.get_yml_dir())
@@ -178,16 +189,16 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
 
     for line in acls:
         line_split = line.split()
-        print(line_split)
+        if directories.get_logging_level() == logging.DEBUG:
+            print(line_split)
 
         if line_split[0] == 'ip':
             try:
                 if line_split[2] == 'standard':
-                    print(line_split)
-                    acl_obj = StandardAclData(line_split[3])
+                    acl_obj = StandardAclData(line_split[3], reset_sequences)
 
                 elif line_split[2] == 'extended':
-                    acl_obj = ExtendedAclData(line_split[3])
+                    acl_obj = ExtendedAclData(line_split[3], reset_sequences)
 
             except IndexError:
                 error = 'Cannot find ACL name in this statement "{}"'.format(line)
@@ -278,9 +289,17 @@ common:
                     source_port_range: 445 600
     """
 
-    for acl_yml_line in temp_list:
-        print(acl_yml_line)
+    if not display_only:
+        file_name = pdt.file_name_increase(output_file_name, directories.get_output_dir())
+        pdt.list_to_file(temp_list, file_name, directories.get_output_dir())
+        output_notify = 'Filename: {} output to directory {}'.format(file_name, directories.get_output_dir())
+        print(output_notify)
+        LOGGER.debug(output_notify)
 
-    print(acl_obj)
-    for line in acl_obj.get_lines():
-        print(line)
+    for final_yml in temp_list:
+        print(final_yml)
+
+    if directories.get_logging_level() == logging.DEBUG:
+        print(acl_obj)
+        for line in acl_obj.get_lines():
+            print(line)

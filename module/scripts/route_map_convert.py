@@ -20,8 +20,10 @@ class RouteMapData(object):
     """
     Class to hold 1 Route-Map's Data
     """
-    def __init__(self, name):
+    def __init__(self, name, reset_sequences=False):
         self.name = name
+        self.reset_sequences = reset_sequences
+        self.current_seq = 10
         self.lines = list()
         self.temp_dict = dict()
 
@@ -39,7 +41,11 @@ class RouteMapData(object):
         :return:
             None
         """
-        self.temp_dict.update({'sequence': sequence})
+        if self.reset_sequences:
+            self.temp_dict.update({'sequence': self.current_seq})
+            self.current_seq += 10
+        else:
+            self.temp_dict.update({'sequence': sequence})
         self.temp_dict.update({'permit_deny': permit_deny})
         self.temp_dict.update({'description': None})
         self.temp_dict.update({'match': list()})
@@ -129,13 +135,15 @@ class RouteMapData(object):
         return self.lines
 
 
-def convert_route_map_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False):
+def convert_route_map_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False,
+                                    reset_sequences=False):
     """
     Function to convert a Route-Map to a YML format for QuickConfigTemplates
     :param directories:
     :param input_file_name: The input file name
     :param output_file_name: The output file name
     :param display_only: Boolean true = don't output to file
+    :param reset_sequences: Set True to recount sequences
     :return:
         None
 
@@ -163,7 +171,7 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
         if rm_line_split[0] == 'route-map':
             try:
                 if not rmap_obj:
-                    rmap_obj = RouteMapData(rm_line_split[1])
+                    rmap_obj = RouteMapData(rm_line_split[1], reset_sequences)
                     rmap_obj.set_sequence_info(rm_line_split[3], rm_line_split[2])
 
                 elif rmap_obj:
@@ -228,6 +236,9 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
     if not display_only:
         file_name = pdt.file_name_increase(output_file_name, directories.get_output_dir())
         pdt.list_to_file(temp_list, file_name, directories.get_output_dir())
+        output_notify = 'Filename: {} output to directory {}'.format(file_name, directories.get_output_dir())
+        print(output_notify)
+        LOGGER.debug(output_notify)
 
     for final_yml in temp_list:
         print(final_yml)

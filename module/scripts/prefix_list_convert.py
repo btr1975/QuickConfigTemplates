@@ -16,20 +16,83 @@ __email__ = 'e_ben_75-python@yahoo.com'
 LOGGER = logging.getLogger(__name__)
 
 
+class PrefixListData(object):
+    """
+    Class to hold 1 Prefix-Lists's Data
+    """
+    def __init__(self, name, reset_sequences=False):
+        self.name = name
+        self.reset_sequences = reset_sequences
+        self.current_seq = 5
+        self.lines = list()
+
+    def __str__(self):
+        return '<PrefixListData: Prefix-List Name {}>'.format(self.name)
+
+    def __repr__(self):
+        return '<PrefixListData: Prefix-List Name {}>'.format(self.name)
+
+    def set_lines(self, line_data):
+        """
+        Method to set the sequences description
+        :param line_data: String data
+        :return:
+            None
+        """
+        line_data_split = line_data.split()
+        temp_dict = dict()
+        if self.reset_sequences:
+            temp_dict.update({'sequence': self.current_seq, 'network': line_data_split[6]})
+            self.current_seq += 5
+        else:
+            temp_dict.update({'sequence': line_data_split[4], 'network': line_data_split[6]})
+
+        if 'permit' in line_data:
+            temp_dict.update({'permit_deny': 'permit'})
+
+        else:
+            temp_dict.update({'permit_deny': 'deny'})
+
+        if 'le' in line_data:
+            temp_dict.update({'le_ge': 'le', 'le_ge_value': line_data_split[8]})
+
+        elif 'ge' in line_data:
+            temp_dict.update({'le_ge': 'ge', 'le_ge_value': line_data_split[8]})
+
+        self.lines.append(temp_dict)
+
+    def get_name(self):
+        """
+        Method to get the Prefix-List name
+        :return:
+            String Prefix-List name
+        """
+        return self.name
+
+    def get_lines(self):
+        """
+        Method to get a Prefix-List's sequences
+        :return:
+            List of dictionaries
+        """
+        return self.lines
+
+
 def convert_prefix_list_to_our_format(directories=None, input_file_name=None, output_file_name=None,
-                                      display_only=False):
+                                      display_only=False, reset_sequences=False):
     """
     Function to convert a Prefix-List to a YML format for QuickConfigTemplates
     :param directories:
     :param input_file_name: The input file name
     :param output_file_name: The output file name
     :param display_only: Boolean true = don't output to file
+    :param reset_sequences: Set True to recount sequences
     :return:
         None
 
     """
     temp_list = list()
-    dict_of_prefix_lists = dict()
+    pl_obj = None
 
     try:
         prefix_lists = pdt.file_to_list(input_file_name, directories.get_yml_dir())
@@ -46,56 +109,13 @@ def convert_prefix_list_to_our_format(directories=None, input_file_name=None, ou
         sys.exit(error)
 
     for line in prefix_lists:
-        critical_issue = False
         line_split = line.split()
-        try:
-            if not dict_of_prefix_lists.get(line_split[2]):
-                dict_of_prefix_lists[line_split[2]] = list()
-
-        except IndexError:
-            error = 'Cannot find Prefix-List name in this statement "{}"'.format(line)
-            LOGGER.error(error)
-            print(error)
-            critical_issue = True
-
-        temp_dict = dict()
-        try:
-            temp_dict.update({'sequence': line_split[4]})
-
-        except IndexError:
-            error = 'Cannot find sequence in this statement "{}"'.format(line)
-            LOGGER.error(error)
-            print(error)
-            critical_issue = True
-
-        try:
-            temp_dict.update({'network': line_split[6]})
-
-        except IndexError:
-            error = 'Cannot find network in this statement "{}"'.format(line)
-            LOGGER.error(error)
-            print(error)
-            critical_issue = True
-
-        if critical_issue:
-            error = 'Your data in file {} does not all seem to be a Prefix-List, or ' \
-                    'Prefix-Lists'.format(os.path.join(directories.get_yml_dir(), input_file_name))
-            LOGGER.critical(error)
-            sys.exit(error)
-
-        if 'permit' in line_split:
-            temp_dict.update({'permit_deny': 'permit'})
+        if not pl_obj:
+            pl_obj = PrefixListData(line_split[2], reset_sequences=reset_sequences)
+            pl_obj.set_lines(line)
 
         else:
-            temp_dict.update({'permit_deny': 'deny'})
-
-        if 'le' in line_split:
-            temp_dict.update({'le_ge': 'le', 'le_ge_value': line_split[8]})
-
-        elif 'ge' in line_split:
-            temp_dict.update({'le_ge': 'ge', 'le_ge_value': line_split[8]})
-
-        dict_of_prefix_lists[line_split[2]].append(temp_dict)
+            pl_obj.set_lines(line)
 
     temp_list.append('--- # Created from file: {} with pl_create'.format(input_file_name))
     temp_list.append('common:')
@@ -105,21 +125,22 @@ def convert_prefix_list_to_our_format(directories=None, input_file_name=None, ou
     temp_list.append('        -   devicename: <replace>')
     temp_list.append('            management_ip: <replace>')
     temp_list.append('            prefix_lists:')
-    for prefix_list_name in dict_of_prefix_lists:
-        temp_list.append('            -   prefix_list_name: {}'.format(prefix_list_name))
-        temp_list.append('                sequences:')
-        seq_list = dict_of_prefix_lists.get(prefix_list_name)
-        for seq_dict in seq_list:
-            temp_list.append('                -   sequence: {}'.format(seq_dict.get('sequence')))
-            temp_list.append('                    permit_deny: {}'.format(seq_dict.get('permit_deny')))
-            temp_list.append('                    network: {}'.format(seq_dict.get('network')))
-            if seq_dict.get('le_ge'):
-                temp_list.append('                    le_ge: {}'.format(seq_dict.get('le_ge')))
-                temp_list.append('                    le_ge_value: {}'.format(seq_dict.get('le_ge_value')))
+    temp_list.append('            -   prefix_list_name: {}'.format(pl_obj.get_name()))
+    temp_list.append('                sequences:')
+    for seq_dict in pl_obj.get_lines():
+        temp_list.append('                -   sequence: {}'.format(seq_dict.get('sequence')))
+        temp_list.append('                    permit_deny: {}'.format(seq_dict.get('permit_deny')))
+        temp_list.append('                    network: {}'.format(seq_dict.get('network')))
+        if seq_dict.get('le_ge'):
+            temp_list.append('                    le_ge: {}'.format(seq_dict.get('le_ge')))
+            temp_list.append('                    le_ge_value: {}'.format(seq_dict.get('le_ge_value')))
 
     if not display_only:
         file_name = pdt.file_name_increase(output_file_name, directories.get_output_dir())
         pdt.list_to_file(temp_list, file_name, directories.get_output_dir())
+        output_notify = 'Filename: {} output to directory {}'.format(file_name, directories.get_output_dir())
+        print(output_notify)
+        LOGGER.debug(output_notify)
 
     for final_yml in temp_list:
         print(final_yml)

@@ -24,7 +24,7 @@ This script is for simple config templates, to make life easier on admins/engine
 
 * Added in requirement for persistentdatatools==2.2.8
 
-### Version 1.0.7.dev information
+### Version 1.0.7.prod information
 
 * Added in requirement for Jinja2==2.10
 * Added in requirement for py==1.5.2
