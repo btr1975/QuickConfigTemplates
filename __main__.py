@@ -1,14 +1,15 @@
 import logging
 import os
 import sys
+import platform
 from argparse import ArgumentParser
 import module as mod
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = ''
-__status__ = 'prod'
-__version_info__ = (1, 0, 7, __status__)
+__status__ = 'dev'
+__version_info__ = (1, 0, 8, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -20,7 +21,10 @@ LOGGER = logging.getLogger(__name__)
 
 def set_directory_structure():
     if COMPILE:
-        return mod.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
+        if platform.system().lower() == 'linux':
+            return mod.Directories(base_dir=os.path.dirname(os.path.abspath(sys.argv[0])))
+        else:
+            return mod.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
 
     else:
         return mod.Directories(base_dir=os.path.dirname(os.path.realpath(__file__)))
