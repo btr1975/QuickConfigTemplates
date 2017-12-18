@@ -22,7 +22,10 @@ LOGGER = logging.getLogger(__name__)
 def set_directory_structure():
     if COMPILE:
         if platform.system().lower() == 'linux':
-            return mod.Directories(base_dir=os.path.dirname(os.path.abspath(sys.argv[0])))
+            if os.path.islink('/bin/quick'):
+                return mod.Directories(base_dir=os.path.dirname(os.readlink('/bin/quick')))
+            else:
+                return mod.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
         else:
             return mod.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
 
