@@ -23,7 +23,7 @@ class TemplateEngine(object):
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
                  display_json=False, display_yml=False, package_name=None, variables_file_name=None):
         self.directories = directories
-        self.yml_data = self.pre_run_yml_input_file(yml_file_name, variables_file_name)
+        self.yml_data = self.__pre_run_yml_input_file(yml_file_name, variables_file_name)
         self.output_file_name = output_file_name
         self.display_only = display_only
         self.display_json = display_json
@@ -92,10 +92,10 @@ class TemplateEngine(object):
         print(template.render(common_data))
 
         if self.display_json:
-            self.config_as_json(config)
+            self.__config_as_json(config)
 
         if self.display_yml:
-            self.config_as_yml(config)
+            self.__config_as_yml(config)
 
         if LOGGER.getEffectiveLevel() == logging.DEBUG:
             zip_file_name = pdt.file_name_increase('debug.zip', self.directories.get_output_dir())
@@ -119,9 +119,9 @@ class TemplateEngine(object):
             LOGGER.debug('config data: {}'.format(config))
 
         if self.package_name:
-            create_zip_package(env, self.directories, self.package_name, file_name)
+            self.__create_zip_package(env, file_name)
 
-    def config_as_json(self, config_yml):
+    def __config_as_json(self, config_yml):
         """
         Method to see or output config as JSON data
 
@@ -142,7 +142,7 @@ class TemplateEngine(object):
                 LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
                 sys.exit(e)
 
-    def config_as_yml(self, config_yml):
+    def __config_as_yml(self, config_yml):
         """
         Method to see or output config as YML data
 
@@ -206,7 +206,7 @@ class TemplateEngine(object):
             LOGGER.critical(error)
             sys.exit(error)
 
-    def pre_run_yml_input_file(self, yml_file_name=None, variables_file_name=None):
+    def __pre_run_yml_input_file(self, yml_file_name=None, variables_file_name=None):
         """
         Method to pre run the yaml file to replace variables
 
@@ -216,6 +216,47 @@ class TemplateEngine(object):
             data = self.__variable_dict_builder(variables_file_name)
 
         return self.__yml_variable_pre_run_environment(yml_file_name, data)
+
+    def __collect_templates(self, env):
+        """
+        Method to collect and zip all current templates in a a build run
+        :param env: A Jinja2 Environment object
+        :return:
+            A list of directories
+
+        """
+        temp_set = set()
+        for template_dir_name in self.directories.get_templates_dir():
+            for a in env.list_templates():
+                if os.path.isfile(os.path.join(template_dir_name, os.path.dirname(a), os.path.basename(a))):
+                    temp_set.add(os.path.join(template_dir_name, os.path.dirname(a)))
+
+        return list(temp_set)
+
+    def __create_zip_package(self, env, output_file_name):
+        """
+        Method to create a zip package for reference
+
+        """
+        if len(self.package_name.split('.')) == 2:
+            name, ext = self.package_name.split('.')
+            if ext != 'zip':
+                LOGGER.warning('Changed the extension of zip_file_name={} to be zip'.format(self.package_name))
+                self.package_name = '{}.{}'.format(name, 'zip')
+
+        else:
+            error = 'Function create_zip_package expected zip_file_name to only contain one . ' \
+                    'but received {}'.format(self.package_name)
+            LOGGER.critical(error)
+            raise NameError(error)
+
+        self.package_name = pdt.file_name_increase(self.package_name, self.directories.get_output_dir())
+
+        self.directories.collect_and_zip_files(self.__collect_templates(env), self.package_name,
+                                               file_extension_list=['jinja2'], file_name_list=None)
+
+        self.directories.collect_and_zip_files([self.directories.get_output_dir()], self.package_name,
+                                               file_extension_list=None, file_name_list=[output_file_name])
 
 
 def run_template(directories=None, yml_data=None, output_file_name=None, display_only=False,
