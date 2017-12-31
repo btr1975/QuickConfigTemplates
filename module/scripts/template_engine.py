@@ -18,6 +18,206 @@ __email__ = 'e_ben_75-python@yahoo.com'
 LOGGER = logging.getLogger(__name__)
 
 
+class TemplateEngine(object):
+
+    def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
+                 display_json=False, display_yml=False, package_name=None, variables_file_name=None):
+        self.directories = directories
+        self.yml_data = self.pre_run_yml_input_file(yml_file_name, variables_file_name)
+        self.output_file_name = output_file_name
+        self.display_only = display_only
+        self.display_json = display_json
+        self.display_yml = display_yml
+        self.package_name = package_name
+        self.version_runner()
+
+    def version_runner(self):
+        try:
+            config = yaml.safe_load(self.yml_data)
+
+        except Exception as e:
+            error = 'Error retrieving yml yaml.safe_load(yml_data) {}'.format(e)
+            LOGGER.critical(error)
+            sys.exit(error)
+
+        if config.get('common'):
+            self.run_template_v1()
+
+        elif config.get('version'):
+            pass
+
+        else:
+            error = 'Error method version_runner could not retrieve common, or version.'
+            LOGGER.critical(error)
+            Exception(error)
+
+    def run_template_v1(self):
+        """
+        Method to build, and output the template
+
+        """
+        file_name = None
+        try:
+            config = yaml.safe_load(self.yml_data)
+
+        except Exception as e:
+            error = 'Error retrieving yml yaml.safe_load(yml_data) {}'.format(e)
+            LOGGER.critical(error)
+            sys.exit(error)
+
+        try:
+            common_data = config.get('common')
+
+        except Exception as e:
+            LOGGER.critical('Error could not retrieve common_data {}'.format(e))
+            sys.exit(e)
+
+        env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
+                                                       default_for_string=True),
+                          loader=FileSystemLoader(self.directories.get_templates_dir()), lstrip_blocks=True,
+                          trim_blocks=True)
+
+        template = env.get_template(common_data.get('template'))
+
+        if not self.display_only:
+            try:
+                file_name = pdt.file_name_increase(self.output_file_name, self.directories.get_output_dir())
+                pdt.list_to_file(template.render(common_data).splitlines(), file_name,
+                                 self.directories.get_output_dir())
+
+            except FileNotFoundError as e:
+                LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+                sys.exit(e)
+
+        print(template.render(common_data))
+
+        if self.display_json:
+            self.config_as_json(config)
+
+        if self.display_yml:
+            self.config_as_yml(config)
+
+        if LOGGER.getEffectiveLevel() == logging.DEBUG:
+            zip_file_name = pdt.file_name_increase('debug.zip', self.directories.get_output_dir())
+            try:
+                self.directories.collect_and_zip_files(collect_templates(env, self.directories), zip_file_name,
+                                                       file_extension_list=['jinja2'], file_name_list=None)
+                self.directories.collect_and_zip_files([self.directories.get_yml_dir()], zip_file_name,
+                                                       file_extension_list=['yml', 'yaml'], file_name_list=None)
+                self.directories.collect_and_zip_files([self.directories.get_data_dir()], zip_file_name,
+                                                       file_extension_list=None, file_name_list=['config.yml'])
+                self.directories.collect_and_zip_files([self.directories.get_logging_dir()], zip_file_name,
+                                                       file_extension_list=None, file_name_list=['logs.txt'])
+                self.directories.collect_and_zip_files([self.directories.get_output_dir()], zip_file_name,
+                                                       file_extension_list=None, file_name_list=[file_name])
+
+            except Exception as e:
+                LOGGER.critical(e)
+                self.directories.collect_and_zip_files([self.directories.get_logging_dir()], zip_file_name,
+                                                       file_extension_list=None, file_name_list=['logs.txt'])
+
+            LOGGER.debug('config data: {}'.format(config))
+
+        if self.package_name:
+            create_zip_package(env, self.directories, self.package_name, file_name)
+
+    def config_as_json(self, config_yml):
+        """
+        Method to see or output config as JSON data
+
+        """
+        json_data = json.dumps(config_yml, sort_keys=True, indent=4)
+        print(json_data)
+        if not self.display_only:
+            try:
+                if not self.output_file_name:
+                    file_name = pdt.file_name_increase('config.json', self.directories.get_output_dir())
+
+                else:
+                    file_name = self.output_file_name
+
+                pdt.list_to_file(json_data.splitlines(), file_name, self.directories.get_output_dir())
+
+            except FileNotFoundError as e:
+                LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+                sys.exit(e)
+
+    def config_as_yml(self, config_yml):
+        """
+        Method to see or output config as YML data
+
+        """
+        yml_data = yaml.dump(config_yml, default_flow_style=False, indent=4)
+        print(yml_data)
+        if not self.display_only:
+            try:
+                if not self.output_file_name:
+                    file_name = pdt.file_name_increase('config.json', self.directories.get_output_dir())
+
+                else:
+                    file_name = self.output_file_name
+
+                pdt.list_to_file(yml_data.splitlines(), file_name, self.directories.get_output_dir())
+
+            except FileNotFoundError as e:
+                LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+                sys.exit(e)
+
+    def __variable_dict_builder(self, variables_file_name):
+        """
+
+
+        :param variables_file_name: The name of the variable csv
+        :return:
+            A Dictionary of variables
+
+        """
+        data = dict()
+        try:
+            temp = pdt.csv_to_dict(variables_file_name, self.directories.get_yml_dir())
+            for key in temp.values():
+                data[key.get('variable')] = key.get('value')
+
+            return data
+
+        except FileNotFoundError as e:
+            LOGGER.critical('Error could not retrieve Variables file {}'.format(e))
+            sys.exit(e)
+
+    def __yml_variable_pre_run_environment(self, yml_file_name, variable_data):
+        """
+
+        :param yml_file_name: The yml file name
+        :param variable_data: The variables csv file
+        :return:
+            A rendered yml file with variables filled in
+
+        """
+        pre_run_env = Environment(
+            autoescape=select_autoescape(enabled_extensions=('yml', 'yaml'), default_for_string=True),
+            loader=FileSystemLoader([self.directories.get_yml_dir()]), lstrip_blocks=True, trim_blocks=True)
+
+        try:
+            yml_file = pre_run_env.get_template(yml_file_name)
+            return yml_file.render(variable_data)
+
+        except Exception as e:
+            error = 'Error when running yml_variable_pre_run_environment file name {}'.format(e)
+            LOGGER.critical(error)
+            sys.exit(error)
+
+    def pre_run_yml_input_file(self, yml_file_name=None, variables_file_name=None):
+        """
+        Method to pre run the yaml file to replace variables
+
+        """
+        data = dict()
+        if variables_file_name:
+            data = self.__variable_dict_builder(variables_file_name)
+
+        return self.__yml_variable_pre_run_environment(yml_file_name, data)
+
+
 def run_template(directories=None, yml_data=None, output_file_name=None, display_only=False,
                  display_json=False, display_yml=False, package_name=None):
     """

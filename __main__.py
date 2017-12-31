@@ -162,6 +162,9 @@ if __name__ == '__main__':
             mod.scripts.te(directories, mod.scripts.pre_run_yml(directories.get_yml_dir(), yml_file, args.typefile),
                            output_file_name, args.config_only, args.json, args.yml, args.package)
 
+            mod.scripts.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
+                                       args.package, args.typefile)
+
     except AttributeError as e:
         LOGGER.critical(e)
         arg_parser.print_help()
