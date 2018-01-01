@@ -1,4 +1,3 @@
-from .template_engine import auto_build_template as auto_build_check
 from .template_engine import TemplateEngine
 from .directories_class import Directories
 from .prefix_list_convert import convert_prefix_list_to_our_format as convert_pl

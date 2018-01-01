@@ -145,7 +145,7 @@ if __name__ == '__main__':
 
             if args.auto_build:
                 if args.typefile:
-                    yml_file = mod.auto_build_check(directories, args.typefile)
+                    pass
 
                 else:
                     arg_parser.print_help()
@@ -160,7 +160,7 @@ if __name__ == '__main__':
                     sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
             mod.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
-                               args.package, args.typefile)
+                               args.package, args.typefile, args.auto_build)
 
     except AttributeError as e:
         LOGGER.critical(e)

@@ -21,8 +21,10 @@ LOGGER = logging.getLogger(__name__)
 class TemplateEngine(object):
 
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
-                 display_json=False, display_yml=False, package_name=None, variables_file_name=None):
+                 display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None):
         self.directories = directories
+        if auto_build:
+            yml_file_name = self.__auto_build_template(variables_file_name)
         self.yml_data = self.__pre_run_yml_input_file(yml_file_name, variables_file_name)
         self.output_file_name = output_file_name
         self.display_only = display_only
@@ -332,46 +334,23 @@ class TemplateEngine(object):
         self.directories.collect_and_zip_files([self.directories.get_output_dir()], self.package_name,
                                                file_extension_list=None, file_name_list=[output_file_name])
 
-
-def auto_build_template(directories=None, variables_file_name=None):
-    """
-    Function to build a config using auto build
-    :param directories: The Directory object
-    :param variables_file_name: The Variables file name
-    :return:
-        The name of the yml template to use
-
-    """
-    def variable_dict_builder(input_dir, var_file_name):
+    def __auto_build_template(self, variables_file_name):
         """
-
-        :param input_dir: The yaml input directory
-        :param var_file_name: The name of the variable csv
+        Method to build a config using auto build
+        :param variables_file_name: The Variables file name
         :return:
-            A Dictionary of variables
+            The name of the yml template to use
 
         """
-        var_data = dict()
         try:
-            temp = pdt.csv_to_dict(var_file_name, input_dir)
-            for key in temp.values():
-                var_data[key.get('variable')] = key.get('value')
+            data = self.__variable_dict_builder(variables_file_name)
 
-            return var_data
+            if data.get('yml_template'):
+                return data.get('yml_template')
 
-        except FileNotFoundError as err:
-            LOGGER.critical('Error could not retrieve Variables file {}'.format(err))
-            sys.exit(err)
+            else:
+                raise KeyError('KeyError: There is no "yml_template" variable in the csv!')
 
-    try:
-        data = variable_dict_builder(directories.get_yml_dir(), variables_file_name)
-
-        if data.get('yml_template'):
-            return data.get('yml_template')
-
-        else:
-            raise KeyError('KeyError: There is no "yml_template" variable in the csv!')
-
-    except Exception as e:
-        LOGGER.critical(e)
-        sys.exit(e)
+        except Exception as e:
+            LOGGER.critical(e)
+            sys.exit(e)
