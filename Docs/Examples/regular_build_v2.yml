@@ -1,0 +1,73 @@
+version: 2
+data:
+-   template: iosxr_base.jinja2
+    ticket_number: TKTNUMBER01
+    devices:
+    -   device:
+        -   devicename: SOME-ROUTER01
+            management_ip: 1.1.1.1
+            snmp_servers:
+            -   server_ip: 192.168.1.1
+                server_key: somekey
+                vrf: VRF_NAME
+                traps: true
+                informs: true
+
+            -   server_ip: 192.168.2.1
+                server_key: somekey
+                vrf: VRF_NAME
+                traps: true
+
+            -   server_ip: 192.168.3.1
+                server_key: somekey
+                vrf: VRF_NAME
+                informs: true
+
+            -   server_ip: 192.168.4.1
+                server_key: somekey
+                traps: true
+                informs: true
+
+            -   server_ip: 192.168.5.1
+                server_key: somekey
+                traps: true
+
+            -   server_ip: 192.168.6.1
+                server_key: somekey
+                informs: true
+
+-   template: iosxr_base.jinja2
+    ticket_number: TKTNUMBER02
+    devices:
+    -   device:
+        -   devicename: SOME-ROUTER02
+            management_ip: 1.1.1.1
+            snmp_servers:
+            -   server_ip: 192.168.1.1
+                server_key: somekey
+                vrf: VRF_NAME
+                traps: true
+                informs: true
+
+            -   server_ip: 192.168.2.1
+                server_key: somekey
+                vrf: VRF_NAME
+                traps: true
+
+            -   server_ip: 192.168.3.1
+                server_key: somekey
+                vrf: VRF_NAME
+                informs: true
+
+            -   server_ip: 192.168.4.1
+                server_key: somekey
+                traps: true
+                informs: true
+
+            -   server_ip: 192.168.5.1
+                server_key: somekey
+                traps: true
+
+            -   server_ip: 192.168.6.1
+                server_key: somekey
+                informs: true

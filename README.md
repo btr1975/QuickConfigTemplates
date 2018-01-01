@@ -7,6 +7,7 @@
 
 ### LinkedIn: [Ben Trachtenberg](https://www.linkedin.com/in/ben-trachtenberg-3a78496)
 ### Docker Hub: [Docker Hub](https://hub.docker.com/r/btr1975)
+### Ansible Galaxy: [Ansible Galaxy](https://galaxy.ansible.com/btr1975/)
 
 ### About
 
@@ -37,6 +38,11 @@ This script is for simple config templates, to make life easier on admins/engine
 * Added rm_create which takes a Route-Map and converts it to YML, in our format
 * Added acl_create which takes a Route-Map and converts it to YML, in our format, still under development, standard
   seems to work fine, extended has some issue
+
+### Version 1.0.8.prod information
+
+* Now supports a version 2 of the yml file.  This allows you to use multiple groups of devices using different templates.
+  Please see the examples in the Docs folder.
 
 ### Requirements
 * Jinja2==2.10

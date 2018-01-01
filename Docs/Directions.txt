@@ -12,7 +12,8 @@ There are 3 ways to use this config builder.
    supply the variable CSV file name.
    
 The main differences between option 2, and 3 is that with option 3 the CSV file supplies the template file name.  Please reference the examples.
-   
+
+There are 2 Versions of yml file, Version 2 should be they way to use it from now on, but your Version 1 files will still work.  Please reference the examples.
    
    
 Reference Documents:

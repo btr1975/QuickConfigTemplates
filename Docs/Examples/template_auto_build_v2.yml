@@ -1,0 +1,30 @@
+--- # This is a yml template
+version: 2
+data:
+-   template: iosxr_base.jinja2
+    ticket_number: {{ change_number }}
+    devices:
+    -   device:
+        -   devicename: {{ pe_name_a }}
+            management_ip: {{ pe_mgmt_ip_a }}
+            mpls_pe_to_ce_interfaces:
+            -   interface: {{ pe_interface_a }}.{{ vlan_tag }}
+                vrf: {{ service_vrf_name }}
+                tag: {{ vlan_tag }}
+                description: {{ ce_name_a }} vrf {{ service_vrf_name }}
+                ip: {{ pe_ip_a }}
+                mask: {{ pe_mask_a }}
+
+-   template: ios_base.jinja2
+    ticket_number: {{ change_number }}
+    devices:
+    -   device:
+        -   devicename: {{ pe_name_b }}
+            management_ip: {{ pe_mgmt_ip_b }}
+            routed_interfaces:
+            -   bfd: true
+                description: description a
+                interface: g0/0
+                ip: 10.1.1.1
+                mask: 255.255.255.252
+                tag: 701
