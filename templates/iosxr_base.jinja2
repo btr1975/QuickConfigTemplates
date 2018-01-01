@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.4
+Version: 1.0.5
 
 Sample data for this template
 
@@ -7,10 +7,14 @@ Sample data for this template
 common:
     template: iosxr_base.jinja2
     ticket_number: CHG123456789
+    custom_ticket_header: Something CHG123456789
 
 -#}
 {% if ticket_number %}
-snmp-server contact GNCC +1 877 462 2284 ->{{ ticket_number }}<-
+Ticket Number: {{ ticket_number }}
+{% endif %}
+{% if custom_ticket_header %}
+{{ custom_ticket_header }}
 {% endif %}
 {% for device_info in devices %}
     {% for device in device_info.device %}

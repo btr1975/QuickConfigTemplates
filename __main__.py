@@ -159,8 +159,8 @@ if __name__ == '__main__':
                     arg_parser.print_help()
                     sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
-            mod.scripts.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
-                                       args.package, args.typefile)
+            mod.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
+                               args.package, args.typefile)
 
     except AttributeError as e:
         LOGGER.critical(e)
