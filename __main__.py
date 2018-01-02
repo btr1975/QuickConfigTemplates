@@ -166,6 +166,11 @@ if __name__ == '__main__':
         LOGGER.critical(e)
         arg_parser.print_help()
 
+    except FileNotFoundError as e:
+        LOGGER.critical(e)
+        print('\n !!! {} !!! \n'.format(e))
+        arg_parser.print_help()
+
     except Exception as e:
         LOGGER.critical(e)
         arg_parser.print_help()

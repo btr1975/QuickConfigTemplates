@@ -8,7 +8,7 @@ __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = ''
 __status__ = 'prod'
-__version_info__ = (1, 0, 1, __status__)
+__version_info__ = (1, 0, 2, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -27,16 +27,23 @@ class Directories(object):
         self.yml_config_data = open(os.path.join(self.data_dir, 'config.yml'))
         self.dir_config = safe_load(self.yml_config_data).get('config')
         self.templates_dir = list()
+        self.yml_dir = list()
 
         # This sets the location of the yml input directory
+        self.yml_dir.append(os.path.join(self.base_dir, 'yaml'))
         if self.dir_config.get('yml_directory'):
-            self.yml_dir = self.dir_config.get('yml_directory')
-            if not os.path.isdir(self.yml_dir):
-                LOGGER.critical('Could not find yml directory stated in config file {}'.format(self.yml_dir))
-                exit('Bad yml directory {}'.format(self.yml_dir))
+            if isinstance(self.dir_config.get('yml_directory'), list):
+                self.yml_dir += self.dir_config.get('yml_directory')
+
+            else:
+                self.yml_dir.append(self.dir_config.get('yml_directory'))
+
+            for directory in self.yml_dir:
+                if not os.path.isdir(directory):
+                    LOGGER.critical('Could not find yml directory stated in config file {}'.format(directory))
+                    exit('Bad yml directory {}'.format(directory))
 
         else:
-            self.yml_dir = os.path.join(self.base_dir, 'yaml')
             pdt.verify_directory('yaml', self.base_dir, directory_create=True)
 
         # This sets the default directory for templates, and adds extra directories for templates
@@ -107,8 +114,13 @@ class Directories(object):
     def get_output_dir(self):
         return self.output_dir
 
-    def get_yml_dir(self):
-        return self.yml_dir
+    def get_yml_dir(self, file_name):
+        for yml_dir in self.yml_dir:
+            if os.path.isfile(os.path.join(yml_dir, file_name)):
+                return yml_dir
+
+        error = 'File name {} not found in any directory in {}'.format(file_name, self.yml_dir)
+        raise FileNotFoundError(error)
 
     def get_templates_dir(self):
         return self.templates_dir

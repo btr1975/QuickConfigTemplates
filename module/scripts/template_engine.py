@@ -9,7 +9,7 @@ __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'dev'
+__status__ = 'prod'
 __version_info__ = (2, 0, 0, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
@@ -19,6 +19,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 class TemplateEngine(object):
+    """
+    Class to render, and clean Jinja2 templates
+    """
 
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
                  display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None):
@@ -26,6 +29,7 @@ class TemplateEngine(object):
         if auto_build:
             yml_file_name = self.__auto_build_template(variables_file_name)
         self.yml_data = self.__pre_run_yml_input_file(yml_file_name, variables_file_name)
+        self.yml_file_name = yml_file_name
         self.output_file_name = output_file_name
         self.display_only = display_only
         self.display_json = display_json
@@ -107,8 +111,9 @@ class TemplateEngine(object):
             try:
                 self.directories.collect_and_zip_files(self.__collect_templates(env), zip_file_name,
                                                        file_extension_list=['jinja2'], file_name_list=None)
-                self.directories.collect_and_zip_files([self.directories.get_yml_dir()], zip_file_name,
-                                                       file_extension_list=['yml', 'yaml'], file_name_list=None)
+                self.directories.collect_and_zip_files([self.directories.get_yml_dir(self.yml_file_name)],
+                                                       zip_file_name, file_extension_list=['yml', 'yaml'],
+                                                       file_name_list=None)
                 self.directories.collect_and_zip_files([self.directories.get_data_dir()], zip_file_name,
                                                        file_extension_list=None, file_name_list=['config.yml'])
                 self.directories.collect_and_zip_files([self.directories.get_logging_dir()], zip_file_name,
@@ -178,8 +183,9 @@ class TemplateEngine(object):
             try:
                 self.directories.collect_and_zip_files(self.__collect_templates(env), zip_file_name,
                                                        file_extension_list=['jinja2'], file_name_list=None)
-                self.directories.collect_and_zip_files([self.directories.get_yml_dir()], zip_file_name,
-                                                       file_extension_list=['yml', 'yaml'], file_name_list=None)
+                self.directories.collect_and_zip_files([self.directories.get_yml_dir(self.yml_file_name)],
+                                                       zip_file_name, file_extension_list=['yml', 'yaml'],
+                                                       file_name_list=None)
                 self.directories.collect_and_zip_files([self.directories.get_data_dir()], zip_file_name,
                                                        file_extension_list=None, file_name_list=['config.yml'])
                 self.directories.collect_and_zip_files([self.directories.get_logging_dir()], zip_file_name,
@@ -200,6 +206,9 @@ class TemplateEngine(object):
     def __config_as_json(self, config_yml):
         """
         Method to see or output config as JSON data
+        :param config_yml: A yml file
+        :return
+            None
 
         """
         json_data = json.dumps(config_yml, sort_keys=True, indent=4)
@@ -221,6 +230,9 @@ class TemplateEngine(object):
     def __config_as_yml(self, config_yml):
         """
         Method to see or output config as YML data
+        :param config_yml: A yml file
+        :return
+            None
 
         """
         yml_data = yaml.dump(config_yml, default_flow_style=False, indent=4)
@@ -241,8 +253,7 @@ class TemplateEngine(object):
 
     def __variable_dict_builder(self, variables_file_name):
         """
-
-
+        Method to create the variables dictionary
         :param variables_file_name: The name of the variable csv
         :return:
             A Dictionary of variables
@@ -250,7 +261,7 @@ class TemplateEngine(object):
         """
         data = dict()
         try:
-            temp = pdt.csv_to_dict(variables_file_name, self.directories.get_yml_dir())
+            temp = pdt.csv_to_dict(variables_file_name, self.directories.get_yml_dir(variables_file_name))
             for key in temp.values():
                 data[key.get('variable')] = key.get('value')
 
@@ -262,7 +273,7 @@ class TemplateEngine(object):
 
     def __yml_variable_pre_run_environment(self, yml_file_name, variable_data):
         """
-
+        Method to run the pre run Jinja2 environment
         :param yml_file_name: The yml file name
         :param variable_data: The variables csv file
         :return:
@@ -271,7 +282,8 @@ class TemplateEngine(object):
         """
         pre_run_env = Environment(
             autoescape=select_autoescape(enabled_extensions=('yml', 'yaml'), default_for_string=True),
-            loader=FileSystemLoader([self.directories.get_yml_dir()]), lstrip_blocks=True, trim_blocks=True)
+            loader=FileSystemLoader([self.directories.get_yml_dir(yml_file_name)]), lstrip_blocks=True,
+            trim_blocks=True)
 
         try:
             yml_file = pre_run_env.get_template(yml_file_name)
@@ -285,6 +297,10 @@ class TemplateEngine(object):
     def __pre_run_yml_input_file(self, yml_file_name=None, variables_file_name=None):
         """
         Method to pre run the yaml file to replace variables
+        :param yml_file_name: The name of the input yml file
+        :param variables_file_name: The name of the csv with variables
+        :return
+            A yml file with variables filled
 
         """
         data = dict()
@@ -312,6 +328,10 @@ class TemplateEngine(object):
     def __create_zip_package(self, env, output_file_name):
         """
         Method to create a zip package for reference
+        :param env: A Jinja2 Environment object
+        :param output_file_name: The out file name
+        :return
+            None
 
         """
         if len(self.package_name.split('.')) == 2:
