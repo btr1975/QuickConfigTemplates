@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -34,5 +34,11 @@ common:
 
 -#}
 {% for multicast_rp in device.static_multicast_rps %}
+{% if multicast_rp.note %}
+{% set note = multicast_rp.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 ip pim rp-address {{ multicast_rp.rp_address }} route-map {{ multicast_rp.route_map }}
 {% endfor %}

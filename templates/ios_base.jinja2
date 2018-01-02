@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
 
 Sample data for this template
 
@@ -20,6 +20,12 @@ Ticket Number: {{ ticket_number }}
     {% for device in device_info.device %}
 <{{ device.devicename }}, {{ device.management_ip }}>
 
+{% if device.note %}
+{% set note = device.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 {% if device.routed_interfaces %}
 {% include "ios_standard/ios_routed_interface.jinja2" %}
 

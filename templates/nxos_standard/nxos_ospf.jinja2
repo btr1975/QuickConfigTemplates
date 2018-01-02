@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -17,6 +17,12 @@ common:
                 router_id: 172.16.1.1
 
 -#}
+{% if device.ospf.note %}
+{% set note = device.ospf.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 feature ospf
 router ospf {{ device.ospf.ospf_process }}
   {% if device.ospf.bfd %}

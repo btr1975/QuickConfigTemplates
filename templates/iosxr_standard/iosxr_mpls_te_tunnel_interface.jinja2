@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -9,7 +9,7 @@ common:
     ticket_number: CHG123456789
     devices:
     -   device:
-        -   devicename: NYC-CORE-RTR00
+        -   devicename: DEVICE00
             management_ip: 10.99.222.21
             mpls_te_tunnel_interfaces:
             -   description: description a
@@ -22,7 +22,7 @@ common:
                 remove: true
 
     -   device:
-        -   devicename: NYC-CORE-RTR01
+        -   devicename: DEVICE01
             management_ip: 10.99.222.22
             mpls_te_tunnel_interfaces:
             -   description: description a
@@ -37,6 +37,12 @@ common:
 
 -#}
 {% for interface in device.mpls_te_tunnel_interfaces %}
+{% if interface.note %}
+{% set note = interface.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 interface tunnel-te{{ interface.tunnel_number }}
  description {{ interface.description }}
  bandwidth 10000000

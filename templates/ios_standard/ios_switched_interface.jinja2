@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -40,6 +40,12 @@ common:
 
 -#}
 {% for interface in device.switched_interfaces %}
+{% if interface.note %}
+{% set note = interface.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 interface {{ interface.interface }}
   {% if interface.remove %}
   no description

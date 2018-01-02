@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -22,6 +22,12 @@ common:
 
 -#}
 {% for nat in device.static_nats %}
+{% if nat.note %}
+{% set note = nat.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
     {% if nat.nat_type == 'inside' %}
         {% if nat.remove %}
 no ip nat inside source static {{ nat.real_ip }} {{ nat.nat_ip }}

@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -28,6 +28,12 @@ common:
 
 -#}
 {% for community_list in device.standard_community_lists %}
+{% if community_list.note %}
+{% set note = community_list.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
     {% for sequence in community_list.sequences %}
 ip community-list standard {{ community_list.community_list_name }} {{ sequence.permit_deny }} {{ sequence.community }}
     {% endfor %}

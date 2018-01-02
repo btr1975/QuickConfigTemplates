@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -66,6 +66,12 @@ as-path prepend last-as
 
 -#}
 {% for route_map in device.route_maps %}
+{% if route_map.note %}
+{% set note = route_map.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
     {% for sequence in route_map.sequences %}
 route-map {{ route_map.route_map_name }} {{ sequence.permit_deny }} {{ sequence.sequence }}
 {% if sequence.description %}

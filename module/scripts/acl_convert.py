@@ -9,7 +9,7 @@ __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
 __status__ = 'dev'
-__version_info__ = (1, 0, 0, __status__)
+__version_info__ = (1, 0, 1, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -174,11 +174,12 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
     acl_obj = None
 
     try:
-        acls = pdt.file_to_list(input_file_name, directories.get_yml_dir())
+        acls = pdt.file_to_list(input_file_name, directories.get_yml_dir(input_file_name))
         acls = clean_list(acls)
 
         if len(acls) == 0:
-            error = 'No data found in file {}'.format(os.path.join(directories.get_yml_dir(), input_file_name))
+            error = 'No data found in file {}'.format(os.path.join(directories.get_yml_dir(input_file_name),
+                                                                   input_file_name))
             LOGGER.critical(error)
             sys.exit(error)
 

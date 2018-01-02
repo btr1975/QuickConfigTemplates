@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -9,7 +9,7 @@ common:
     ticket_number: CHG123456789
     devices:
     -   device:
-        -   devicename: NYC-CORE-RTR00
+        -   devicename: DEVICE00
             management_ip: 10.99.222.21
             mpls_vrfs:
             -   export_rts:
@@ -20,7 +20,7 @@ common:
                 vrf: CDMI_MAIN
 
     -   device:
-        -   devicename: NYC-CORE-RTR01
+        -   devicename: DEVICE01
             management_ip: 10.99.222.22
             mpls_vrfs:
             -   export_rts:
@@ -32,6 +32,12 @@ common:
 
 -#}
 {% for vrf in device.mpls_vrfs %}
+{% if vrf.note %}
+{% set note = vrf.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 vrf {{ vrf.vrf }}
  address-family ipv4 unicast
 {% if vrf.import_rts %}

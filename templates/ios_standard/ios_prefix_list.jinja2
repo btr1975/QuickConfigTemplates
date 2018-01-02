@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -32,6 +32,12 @@ common:
 
 -#}
 {% for prefix_list in device.prefix_lists %}
+{% if prefix_list.note %}
+{% set note = prefix_list.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
     {% for sequence in prefix_list.sequences %}
         {% if sequence.le_ge %}
 ip prefix-list {{ prefix_list.prefix_list_name }} seq {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.network }} {{ sequence.le_ge }} {{ sequence.le_ge_value }}

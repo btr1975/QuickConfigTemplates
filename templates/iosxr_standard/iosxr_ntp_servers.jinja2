@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -9,7 +9,7 @@ common:
     ticket_number: CHG123456789
     devices:
     -   device:
-        -   devicename: NYC-CORE-RTR00
+        -   devicename: DEVICE00
             management_ip: 10.99.222.21
             ntp_servers:
                 servers:
@@ -17,7 +17,7 @@ common:
                 -   10.99.222.2
 
     -   device:
-        -   devicename: NYC-CORE-RTR01
+        -   devicename: DEVICE01
             management_ip: 10.99.222.22
             ntp_servers:
                 servers:
@@ -28,6 +28,12 @@ common:
 -#}
 ntp
 {% for ntp_serv in device.ntp_servers.servers %}
+{% if ntp_serv.note %}
+{% set note = ntp_serv.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
  server {{ ntp_serv }}
 {% endfor %}
 {% if device.ntp_servers.source %}

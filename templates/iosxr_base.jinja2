@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.5
+Version: 1.0.6
 
 Sample data for this template
 
@@ -21,6 +21,12 @@ Ticket Number: {{ ticket_number }}
 
 <{{ device.devicename }}, {{ device.management_ip }}>
 
+{% if device.note %}
+{% set note = device.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 {% if device.mpls_vrfs %}
 {% include "iosxr_standard/iosxr_mpls_vrfs.jinja2" %}
 

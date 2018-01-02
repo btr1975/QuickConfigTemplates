@@ -43,6 +43,8 @@ This script is for simple config templates, to make life easier on admins/engine
 
 * Now supports a version 2 of the yml file.  This allows you to use multiple groups of devices using different templates.
   Please see the examples in the Docs folder.
+* In this version you can have multiple input directories, the "yml_directory" group.
+* Added a note key for the yml file, so you can add notes to config sections
 
 ### Requirements
 * Jinja2==2.10
@@ -59,11 +61,13 @@ This script is for simple config templates, to make life easier on admins/engine
 In the Data directory there is a **config.yml** file, this file is used to change directories for the data. It looks
 like this.
 
+
 	
 ```yaml
+--- # Version 1.0.1
 config:
-  yml_directory:
-  templates_directory: <-- This can be a list if you want multiple directories.  They will be searched in order.
+  yml_directory: <-- This can be a list if you want multiple directories.  They will be searched in order. First file found wins.
+  templates_directory: <-- This can be a list if you want multiple directories.  They will be searched in order. First file found wins.
   output_directory:
   logging_directory:
   logging_level:

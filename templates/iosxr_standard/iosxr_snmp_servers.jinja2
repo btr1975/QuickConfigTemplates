@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -9,7 +9,7 @@ common:
     ticket_number: CHG123456789
     devices:
     -   device:
-        -   devicename: NYC-CORE-RTR00
+        -   devicename: DEVICE00
             management_ip: 10.99.222.21
             snmp_servers:
             -   server_ip: 192.168.1.1
@@ -43,6 +43,12 @@ common:
 
 -#}
 {% for snmp_serv in device.snmp_servers %}
+{% if snmp_serv.note %}
+{% set note = snmp_serv.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 {% if snmp_serv.vrf %}
 snmp-server vrf {{ snmp_serv.vrf }}
  {% if snmp_serv.traps %}

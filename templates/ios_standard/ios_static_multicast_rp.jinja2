@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -32,6 +32,12 @@ common:
 
 -#}
 {% for multicast_rp in device.static_multicast_rps %}
+{% if multicast_rp.note %}
+{% set note = multicast_rp.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
     {% if multicast_rp.remove %}
 no ip pim rp-address {{ multicast_rp.rp_address }} {{ multicast_rp.standard_acl }} override
     {% else %}

@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
@@ -42,6 +42,12 @@ common:
 
 -#}
 {% for acl in device.standard_acls %}
+{% if acl.note %}
+{% set note = acl.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 ip access-list standard {{ acl.acl_name }}
     {% for sequence in acl.sequences %}
   {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.source_network }}

@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -90,6 +90,12 @@ router bgp {{ device.bgp.bgp_as }}
  !
 {% endif %}
 {% for neighbor in device.bgp.neighbors %}
+{% if neighbor.note %}
+{% set note = neighbor.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
  neighbor {{ neighbor.neighbor }}
   remote-as {{ neighbor.neighbor_as }}
   timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}

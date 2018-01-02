@@ -8,7 +8,7 @@ __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
 __status__ = 'prod'
-__version_info__ = (1, 0, 0, __status__)
+__version_info__ = (1, 0, 1, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -95,11 +95,12 @@ def convert_prefix_list_to_our_format(directories=None, input_file_name=None, ou
     pl_obj = None
 
     try:
-        prefix_lists = pdt.file_to_list(input_file_name, directories.get_yml_dir())
+        prefix_lists = pdt.file_to_list(input_file_name, directories.get_yml_dir(input_file_name))
         prefix_lists = clean_list(prefix_lists)
 
         if len(prefix_lists) == 0:
-            error = 'No data found in file {}'.format(os.path.join(directories.get_yml_dir(), input_file_name))
+            error = 'No data found in file {}'.format(os.path.join(directories.get_yml_dir(input_file_name),
+                                                                   input_file_name))
             LOGGER.critical(error)
             sys.exit(error)
 

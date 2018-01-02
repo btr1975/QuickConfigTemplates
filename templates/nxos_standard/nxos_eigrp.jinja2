@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -18,6 +18,12 @@ common:
                 router_id: 172.16.1.1
 
 -#}
+{% if device.eigrp.note %}
+{% set note = device.eigrp.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 feature eigrp
 router eigrp {{ device.eigrp.eigrp_process_name }}
   {% if device.eigrp.bfd %}

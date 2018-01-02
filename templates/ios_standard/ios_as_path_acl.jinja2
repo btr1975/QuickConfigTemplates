@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -24,6 +24,12 @@ common:
 
 -#}
 {% for as_path_acl in device.as_path_acls %}
+{% if as_path_acl.note %}
+{% set note = as_path_acl.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
     {% for sequence in as_path_acl.sequences %}
 ip as-path access-list {{ as_path_acl.as_path_acl_name }} {{ sequence.permit_deny }} {{ sequence.regex }}
     {% endfor %}

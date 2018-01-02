@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
 
 Sample data for this template
 
@@ -29,6 +29,12 @@ common:
                 -   vlan100
 
 -#}
+{% if device.eigrp.note %}
+{% set note = device.eigrp.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 router eigrp {{ device.eigrp.eigrp_as }}
 {% if device.eigrp.router_id %}
   eigrp router-id {{ device.eigrp.router_id }}

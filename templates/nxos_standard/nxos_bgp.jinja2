@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
 
 Sample data for this template
 
@@ -84,6 +84,12 @@ common:
                 - 192.168.42.1/24
 
 -#}
+{% if device.bgp.note %}
+{% set note = device.bgp.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 router bgp {{ device.bgp.bgp_as }}
 {% if device.bgp.router_id %}
   router-id {{ device.bgp.router_id }}
@@ -96,6 +102,12 @@ router bgp {{ device.bgp.bgp_as }}
    {% endfor %}
 {% endif %}
 {% for neighbor in device.bgp.neighbors %}
+{% if neighbor.note %}
+{% set note = neighbor.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
   neighbor {{ neighbor.neighbor }}
     remote-as {{ neighbor.neighbor_as }}
 {% if neighbor.neighbor_password %}
