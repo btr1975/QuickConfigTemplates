@@ -20,3 +20,11 @@ Reference Documents:
 
 Variable format. http://jinja.pocoo.org
 Example Files: ./Examples
+
+In Version 1.0.9 using version 2 yaml you can add vars in the yaml like so
+
+version: 2
+vars:
+    test1: something
+
+Any variables listed overrides any variable if you use a "Variable Build, or Auto Build"

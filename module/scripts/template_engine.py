@@ -10,7 +10,7 @@ __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
 __status__ = 'prod'
-__version_info__ = (2, 0, 0, __status__)
+__version_info__ = (2, 0, 1, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -286,6 +286,17 @@ class TemplateEngine(object):
             trim_blocks=True)
 
         try:
+            temp_file = pre_run_env.get_template(yml_file_name)
+            vars_yml_dict = self.__check_for_vars_section_in_yml(temp_file.render())
+            if vars_yml_dict:
+                variable_data.update(vars_yml_dict)
+
+        except Exception as e:
+            error = 'Error when running __yml_variable_pre_run_environment file name {} looking for vars'.format(e)
+            LOGGER.critical(error)
+            sys.exit(error)
+
+        try:
             yml_file = pre_run_env.get_template(yml_file_name)
             return yml_file.render(variable_data)
 
@@ -374,3 +385,22 @@ class TemplateEngine(object):
         except Exception as e:
             LOGGER.critical(e)
             sys.exit(e)
+
+    @staticmethod
+    def __check_for_vars_section_in_yml(yml_data):
+        """
+        Method to retrieve vars in a yml file
+        :param yml_data: The yml data to search for vars
+        :return:
+            A Dictionary of vars
+
+        """
+        try:
+            config = yaml.safe_load(yml_data)
+
+        except Exception as e:
+            error = 'Error retrieving yml yaml.safe_load(yml_data) Method __check_for_vars_section_in_yml {}'.format(e)
+            LOGGER.critical(error)
+            sys.exit(error)
+
+        return config.get('vars')
