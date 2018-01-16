@@ -46,6 +46,25 @@ This script is for simple config templates, to make life easier on admins/engine
 * In this version you can have multiple input directories, the "yml_directory" group.
 * Added a note key for the yml file, so you can add notes to config sections
 
+### Version 1.0.9.prod information
+* You can now include a vars section in your yml to then fill the variable in you yml
+
+```yaml
+--- # yml example 1
+version: 2
+vars:
+    var_name1: something1
+    var_name2: something2
+data:
+-   template: iosxr_base.jinja2
+    ticket_number: {{ var_name1 }}
+    devices:
+    -   device:
+        -   devicename: {{ var_name2 }}
+            management_ip: 1.1.1.1
+
+```
+
 ### Requirements
 * Jinja2==2.10
 * MarkupSafe==1.0
