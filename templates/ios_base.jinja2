@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
 
 Sample data for this template
 
@@ -14,7 +14,7 @@ common:
 Ticket Number: {{ ticket_number }}
 {% endif %}
 {% if custom_ticket_header %}
-{{ custom_ticket_header }}
+{{ custom_ticket_header|safe }}
 {% endif %}
 {% for device_info in devices %}
     {% for device in device_info.device %}
