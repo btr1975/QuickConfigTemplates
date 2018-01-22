@@ -1,0 +1,64 @@
+{#-
+Version: 1.0.0-dev
+
+Sample data for this template
+
+--- # Test data to for nxos
+version: 2
+data:
+-   template: linux_base.jinja2
+    ticket_number: CHG123456789
+    devices:
+    -   device:
+        -   devicename: SERVER00
+            management_ip: 10.99.222.23
+            apache2:
+
+-#}
+{% for as_path_acl in device.as_path_acls %}
+{% if ansible_os_family|lower == "debian" %}
+<VirtualHost *:{{ site_port }}>
+
+ ServerName {{ server_name }}
+ ServerAdmin {{ server_admin }}
+{% endif %}
+
+ Alias /media/ {{ site_media_directory }}
+
+ <Directory {{ site_media_directory }}>
+ Order deny,allow
+ Require all granted
+ </Directory>
+
+ Alias /static/ {{ site_static_content_directory }}
+
+ <Directory {{ site_static_content_directory }}>
+ Order deny,allow
+ Require all granted
+ </Directory>
+
+ WSGIScriptAlias / {{ site_apache_wsgi_directory }}/django.wsgi process-group={{ site_wsgi_process_group }}
+ WSGIDaemonProcess {{ site_wsgi_process_group }}
+ WSGIProcessGroup {{ site_wsgi_process_group }}
+
+ <Directory {{ site_apache_wsgi_directory }}>
+ Order deny,allow
+ Require all granted
+ </Directory>
+{% if ansible_os_family|lower == "debian" %}
+
+ # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+ # error, crit, alert, emerg.
+ # It is also possible to configure the loglevel for particular
+ # modules, e.g.
+ LogLevel info
+
+ ErrorLog /error.log
+ CustomLog /access.log combined
+
+</VirtualHost>
+{% endif %}
+
+
+
+{% endfor %}

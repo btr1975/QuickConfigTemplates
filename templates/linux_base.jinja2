@@ -1,0 +1,34 @@
+{#-
+Version: 1.0.0-dev
+
+Sample data for this template
+
+---
+version: 2
+data:
+-   template: linux_base.jinja2
+    ticket_number: CHG123456789
+    custom_ticket_header: Something CHG123456789
+
+-#}
+{% if ticket_number %}
+Ticket Number: {{ ticket_number }}
+{% endif %}
+{% if custom_ticket_header %}
+{{ custom_ticket_header|safe }}
+{% endif %}
+{% for device_info in devices %}
+    {% for device in device_info.device %}
+<{{ device.devicename }}, {{ device.management_ip }}>
+
+{% if device.note %}
+{% set note = device.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
+
+</{{ device.devicename }}, {{ device.management_ip }}>
+
+    {% endfor %}
+{% endfor %}
