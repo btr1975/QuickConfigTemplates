@@ -27,6 +27,10 @@ Ticket Number: {{ ticket_number }}
 {% include "common/note.jinja2" %}
 
 {% endif %}
+{% if device.apache2 %}
+{% include "linux_standard/linux_apache2.jinja2" %}
+
+{% endif %}
 
 </{{ device.devicename }}, {{ device.management_ip }}>
 
