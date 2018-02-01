@@ -3,16 +3,25 @@ Version: 1.0.0-dev
 
 Sample data for this template
 
---- # Test data to for nxos
+--- # Test data for linux
 version: 2
 data:
 -   template: linux_base.jinja2
     ticket_number: CHG123456789
+    custom_ticket_header: Something CHG123456789
     devices:
     -   device:
         -   devicename: SERVER00
             management_ip: 10.99.222.23
             apache2:
+            -   os_family: debian
+                site_port: 80
+                server_name: www.example.com
+                server_admin: admin@example.com
+                media_directory: /dir_name/dir_name/dir_name
+                static_content_directory: /dir_name/dir_name/dir_name/dir_name
+                apache_wsgi_directory: /dir_name/dir_name/dir_name
+                wsgi_process_group: process_name
 
 -#}
 {% for apache in device.apache2 %}
@@ -23,25 +32,25 @@ data:
  ServerAdmin {{ apache.server_admin }}
 {% endif %}
 
- Alias /media/ {{ apache.site_media_directory }}
+ Alias /media/ {{ apache.media_directory }}/
 
- <Directory {{ apache.site_media_directory }}>
+ <Directory {{ apache.media_directory }}>
  Order deny,allow
  Require all granted
  </Directory>
 
- Alias /static/ {{ apache.site_static_content_directory }}
+ Alias /static/ {{ apache.static_content_directory }}/
 
- <Directory {{ apache.site_static_content_directory }}>
+ <Directory {{ apache.static_content_directory }}>
  Order deny,allow
  Require all granted
  </Directory>
 
- WSGIScriptAlias / {{ apache.site_apache_wsgi_directory }}/django.wsgi process-group={{ apache.site_wsgi_process_group }}
- WSGIDaemonProcess {{ apache.site_wsgi_process_group }}
- WSGIProcessGroup {{ apache.site_wsgi_process_group }}
+ WSGIScriptAlias / {{ apache.apache_wsgi_directory }}/django.wsgi process-group={{ apache.wsgi_process_group }}
+ WSGIDaemonProcess {{ apache.wsgi_process_group }}
+ WSGIProcessGroup {{ apache.wsgi_process_group }}
 
- <Directory {{ apache.site_apache_wsgi_directory }}>
+ <Directory {{ apache.apache_wsgi_directory }}>
  Order deny,allow
  Require all granted
  </Directory>
