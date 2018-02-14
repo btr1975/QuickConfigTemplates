@@ -65,6 +65,7 @@ if __name__ == '__main__':
                                                                                        'output to file')
     arg_parser_run_build.add_argument('-j', '--json', action='store_true', help='Display the config, in JSON format')
     arg_parser_run_build.add_argument('-p', '--package', help='The zip filename to output the package to')
+    arg_parser_run_build.add_argument('-r', '--remote', action='store_true', help='Remote builder')
     arg_parser_run_build.add_argument('-t', '--typefile', help='The filename of the csv for variable replacement')
     arg_parser_run_build.add_argument('-y', '--yml', action='store_true', help='Display the config, in YML format')
 
@@ -160,7 +161,7 @@ if __name__ == '__main__':
                     sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
             mod.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
-                               args.package, args.typefile, args.auto_build)
+                               args.package, args.typefile, args.auto_build, args.remote)
 
     except AttributeError as e:
         LOGGER.critical(e)

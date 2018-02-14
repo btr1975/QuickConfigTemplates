@@ -5,12 +5,13 @@ import yaml
 import json
 import persistentdatatools as pdt
 import os
+from .arestme import ARestMe
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'prod'
-__version_info__ = (2, 0, 1, __status__)
+__status__ = 'dev'
+__version_info__ = (2, 0, 2, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -24,7 +25,8 @@ class TemplateEngine(object):
     """
 
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
-                 display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None):
+                 display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None,
+                 remote_build=False):
         self.directories = directories
         if auto_build:
             yml_file_name = self.__auto_build_template(variables_file_name)
@@ -36,7 +38,10 @@ class TemplateEngine(object):
         self.display_yml = display_yml
         self.package_name = package_name
         self.template_version = None
-        self.version_runner()
+        if not remote_build:
+            self.version_runner()
+        else:
+            self.server_rest()
 
     def version_runner(self):
         try:
@@ -404,3 +409,15 @@ class TemplateEngine(object):
             sys.exit(error)
 
         return config.get('vars')
+
+    def server_rest(self):
+        server_config = yaml.safe_load(open(os.path.join(self.directories.get_data_dir(), 'config.yml'))).get('server_config')
+        server_api_uri = server_config.get('server_api_uri')
+        b = yaml.safe_load(self.yml_data)
+
+
+        a = ARestMe()
+        a.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
+                              server_config.get('server_port'))
+        a.set_update_headers('QCT', 'ApiVersion1')
+        print(a.send_post('{server_api_uri}postinfo'.format(server_api_uri=server_api_uri), b))
