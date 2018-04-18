@@ -1,0 +1,99 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+This is to get you up and running in a lab at this time
+
+--- # Test data to for nxos
+version: 2
+data:
+-   template: nxos_base.jinja2
+    ticket_number: TKTNUMBER01
+    devices:
+    -   device:
+        -   devicename: NXOS-RTR02
+            management_ip: 10.99.222.23
+            vxlan_evpn_spines:
+            -   protocol_peering_ip: 1.1.1.1
+                anycast_ip: 2.2.2.2
+                vtep_ip: 3.3.3.3
+                bgp_as: 65000
+                anycast_peers:
+                -   4.4.4.4
+                -   5.5.5.5
+                leaf_peers_ospf:
+                -   local_leaf_interface: 1/1
+                    local_leaf_ip: 10.10.10.0
+
+                -   local_leaf_interface: 1/2
+                    local_leaf_ip: 10.10.10.2
+
+                leaf_peers_bgp:
+                -   10.10.10.10
+                -   20.20.20.20
+
+-#}
+{% for vxlan_evpn_spine in device.vxlan_evpn_spines %}
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature bfd
+
+interface loopback0
+  description BGP Peering BGP Router ID OSPF Router ID
+  ip address {{ vxlan_evpn_spine.protocol_peering_ip }}/32
+  ip router ospf UNDERLAY area 0
+  ip ospf point-to-point
+  ip pim sparse-mode
+
+interface loopback1
+  description Anycast RP IP
+  ip address {{ vxlan_evpn_spine.anycast_ip }}/32
+  ip router ospf UNDERLAY area 0
+  ip ospf point-to-point
+  ip pim sparse-mode
+
+interface loopback2
+  description VTEP IP
+  ip address {{ vxlan_evpn_spine.vtep_ip }}/32
+  ip router ospf UNDERLAY area 0
+  ip ospf point-to-point
+  ip pim sparse-mode
+
+ip pim rp-address {{ vxlan_evpn_spine.anycast_ip }} group-list 239.0.0.0/8
+ip pim rp-candidate loopback1 group-list 239.0.0.0/8
+ip pim ssm range 232.0.0.0/8
+ip pim anycast-rp {{ vxlan_evpn_spine.anycast_ip }} {{ vxlan_evpn_spine.protocol_peering_ip }}
+    {% for anycast_peer in vxlan_evpn_spine.anycast_peers %}
+ip pim anycast-rp {{ vxlan_evpn_spine.anycast_ip }} {{ anycast_peer }}
+    {% endfor %}
+
+router ospf UNDERLAY
+  bfd
+
+    {% for leaf_peer_ospf in vxlan_evpn_spine.leaf_peers_ospf %}
+interface Ethernet{{ leaf_peer_ospf.local_leaf_interface }}
+  description Link to leaf
+  ip address {{ leaf_peer_ospf.local_leaf_ip }}/31
+  ip router ospf UNDERLAY area 0
+  ip ospf point-to-point
+  ip pim sparse-mode
+  bfd interval 250 min_rx 250 multiplier 3
+  no shutdown
+
+    {% endfor %}
+
+router bgp {{ vxlan_evpn_spine.bgp_as }}
+  router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
+    {% for leaf_peer_bgp in vxlan_evpn_spine.leaf_peers_bgp %}
+  neighbor {{ leaf_peer_bgp }} remote-as {{ vxlan_evpn_spine.bgp_as }}
+    update-source loopback0
+    address-family l2vpn evpn
+      send-community both
+      route-reflector-client
+
+     {% endfor %}
+
+{% endfor %}

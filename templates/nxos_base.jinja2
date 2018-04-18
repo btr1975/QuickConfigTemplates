@@ -83,6 +83,15 @@ Ticket Number: {{ ticket_number }}
 {% include "nxos_standard/nxos_bgp.jinja2" %}
 
 {% endif %}
+{% if device.vxlan_evpn_spines %}
+{% include "nxos_standard/nxos_vxlan_evpn_spine.jinja2" %}
+
+{% endif %}
+
+{% if device.vxlan_evpn_leafs %}
+{% include "nxos_standard/nxos_vxlan_evpn_leaf.jinja2" %}
+
+{% endif %}
 </{{ device.devicename }}, {{ device.management_ip }}>
 
     {% endfor %}

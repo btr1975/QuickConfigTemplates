@@ -5,7 +5,7 @@ import yaml
 import json
 import persistentdatatools as pdt
 import os
-from .arestme import ARestMe
+# from .arestme import ARestMe
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
