@@ -1,0 +1,74 @@
+{#-
+Version: 1.0.0
+
+Sample data for this template
+
+This is to get you up and running in a lab using 7200's as a spine
+
+--- # Test data to for ios
+version: 2
+data:
+-   template: ios_base.jinja2
+    ticket_number: TKTNUMBER01
+    devices:
+    -   device:
+        -   devicename: IOS-RTR02
+            management_ip: 10.99.222.23
+            vxlan_evpn_spines:
+            -   protocol_peering_ip: 1.1.1.1
+                anycast_ip: 2.2.2.2
+                anycast_peers:
+                -   4.4.4.4
+                -   5.5.5.5
+
+                leaf_peers_ospf:
+                -   local_leaf_interface: 0/0
+                    local_leaf_ip: 10.10.10.0
+
+                -   local_leaf_interface: 0/1
+                    local_leaf_ip: 10.10.10.2
+
+-#}
+{% for vxlan_evpn_spine in device.vxlan_evpn_spines %}
+
+interface loopback0
+  description BGP Peering BGP Router ID OSPF Router ID
+  ip address {{ vxlan_evpn_spine.protocol_peering_ip }} 255.255.255.255
+  ip ospf 1 area 0
+  ip ospf network point-to-point
+  ip pim sparse-mode
+
+interface loopback1
+  description Anycast RP IP
+  ip address {{ vxlan_evpn_spine.anycast_ip }} 255.255.255.255
+  ip ospf 1 area 0
+  ip ospf network point-to-point
+  ip pim sparse-mode
+
+ip access-list standard ACL-MCAST
+  10 permit 239.0.0.0 0.0.0.255
+
+ip pim rp-address {{ vxlan_evpn_spine.anycast_ip }} ACL-MCAST override
+
+    {% for anycast_peer in vxlan_evpn_spine.anycast_peers %}
+ip msdp peer {{ anycast_peer }} connect-source loopback0
+    {% endfor %}
+ip msdp cache-sa-state
+ip msdp cache-rejected-sa 60
+ip msdp originator-ip loopback0
+
+router ospf 1
+  ospf router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
+
+    {% for leaf_peer_ospf in vxlan_evpn_spine.leaf_peers_ospf %}
+interface G{{ leaf_peer_ospf.local_leaf_interface }}
+  description Link to leaf
+  ip address {{ leaf_peer_ospf.local_leaf_ip }} 255.255.255.254
+  ip ospf 1 area 0
+  ip ospf network point-to-point
+  ip pim sparse-mode
+  no shutdown
+
+    {% endfor %}
+
+{% endfor %}

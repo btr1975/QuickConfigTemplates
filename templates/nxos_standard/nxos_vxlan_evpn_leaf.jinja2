@@ -46,6 +46,7 @@ fabric forwarding anycast-gateway-mac {{ vxlan_evpn_leaf.anycast_gw_mac }}
 hardware access-list tcam region arp-ether 256 double-wide
 
 router ospf UNDERLAY
+  router-id {{ vxlan_evpn_leaf.protocol_peering_ip }}
   bfd
 
 interface loopback0

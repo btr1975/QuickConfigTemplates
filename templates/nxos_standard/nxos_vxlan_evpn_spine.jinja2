@@ -71,6 +71,7 @@ ip pim anycast-rp {{ vxlan_evpn_spine.anycast_ip }} {{ anycast_peer }}
     {% endfor %}
 
 router ospf UNDERLAY
+  router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
   bfd
 
     {% for leaf_peer_ospf in vxlan_evpn_spine.leaf_peers_ospf %}

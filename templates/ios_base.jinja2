@@ -83,6 +83,11 @@ Ticket Number: {{ ticket_number }}
 {% include "ios_standard/ios_bgp.jinja2" %}
 
 {% endif %}
+
+{% if device.vxlan_evpn_spines %}
+{% include "ios_standard/ios_vxlan_evpn_spine.jinja2" %}
+
+{% endif %}
 </{{ device.devicename }}, {{ device.management_ip }}>
 
     {% endfor %}
