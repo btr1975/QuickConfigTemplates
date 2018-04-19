@@ -30,9 +30,14 @@ data:
 
 -#}
 {% for vxlan_evpn_spine in device.vxlan_evpn_spines %}
+no logging console
+no ip domain lookup
+ip multicast-routing
 
 interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
+  no ip redirects
+  no ip proxy-arp
   ip address {{ vxlan_evpn_spine.protocol_peering_ip }} 255.255.255.255
   ip ospf 1 area 0
   ip ospf network point-to-point
@@ -40,13 +45,15 @@ interface loopback0
 
 interface loopback1
   description Anycast RP IP
+  no ip redirects
+  no ip proxy-arp
   ip address {{ vxlan_evpn_spine.anycast_ip }} 255.255.255.255
   ip ospf 1 area 0
   ip ospf network point-to-point
   ip pim sparse-mode
 
 ip access-list standard ACL-MCAST
-  10 permit 239.0.0.0 0.0.0.255
+ permit 239.0.0.0 0.0.0.255
 
 ip pim rp-address {{ vxlan_evpn_spine.anycast_ip }} ACL-MCAST override
 
@@ -58,11 +65,14 @@ ip msdp cache-rejected-sa 60
 ip msdp originator-ip loopback0
 
 router ospf 1
-  ospf router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
+  router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
 
     {% for leaf_peer_ospf in vxlan_evpn_spine.leaf_peers_ospf %}
-interface G{{ leaf_peer_ospf.local_leaf_interface }}
+interface GigabitEthernet{{ leaf_peer_ospf.local_leaf_interface }}
+  mtu 4000
   description Link to leaf
+  no ip redirects
+  no ip proxy-arp
   ip address {{ leaf_peer_ospf.local_leaf_ip }} 255.255.255.254
   ip ospf 1 area 0
   ip ospf network point-to-point

@@ -43,7 +43,9 @@ feature interface-vlan
 feature vn-segment-vlan-based
 feature nv overlay
 fabric forwarding anycast-gateway-mac {{ vxlan_evpn_leaf.anycast_gw_mac }}
+hardware access-list tcam region racl 512
 hardware access-list tcam region arp-ether 256 double-wide
+boot nxos bootflash:/nxos.7.0.3.I7.3.bin
 
 router ospf UNDERLAY
   router-id {{ vxlan_evpn_leaf.protocol_peering_ip }}
@@ -53,14 +55,14 @@ interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
   ip address {{ vxlan_evpn_leaf.protocol_peering_ip }}/32
   ip router ospf UNDERLAY area 0
-  ip ospf point-to-point
+  ip ospf network point-to-point
   ip pim sparse-mode
 
 interface loopback1
   description VTEP IP
   ip address {{ vxlan_evpn_leaf.vtep_ip }}/32
   ip router ospf UNDERLAY area 0
-  ip ospf point-to-point
+  ip ospf network point-to-point
   ip pim sparse-mode
 
 ip pim rp-address {{ vxlan_evpn_leaf.anycast_ip }} group-list 239.0.0.0/8
@@ -70,9 +72,11 @@ ip pim ssm range 232.0.0.0/8
 interface Ethernet{{ spine_peer_ospf.local_spine_interface }}
   description Link to Spine
   no switchport
+  mtu 9216
+  no ip redirects
   ip address {{ spine_peer_ospf.local_spine_ip }}/31
   ip router ospf UNDERLAY area 0
-  ip ospf point-to-point
+  ip ospf network point-to-point
   bfd interval 250 min_rx 250 multiplier 3
   ip pim sparse-mode
   no shutdown

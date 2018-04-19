@@ -40,26 +40,27 @@ feature ospf
 feature bgp
 feature pim
 feature bfd
+boot nxos bootflash:/nxos.7.0.3.I7.3.bin
 
 interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
   ip address {{ vxlan_evpn_spine.protocol_peering_ip }}/32
   ip router ospf UNDERLAY area 0
-  ip ospf point-to-point
+  ip ospf network point-to-point
   ip pim sparse-mode
 
 interface loopback1
   description Anycast RP IP
   ip address {{ vxlan_evpn_spine.anycast_ip }}/32
   ip router ospf UNDERLAY area 0
-  ip ospf point-to-point
+  ip ospf network point-to-point
   ip pim sparse-mode
 
 interface loopback2
   description VTEP IP
   ip address {{ vxlan_evpn_spine.vtep_ip }}/32
   ip router ospf UNDERLAY area 0
-  ip ospf point-to-point
+  ip ospf network point-to-point
   ip pim sparse-mode
 
 ip pim rp-address {{ vxlan_evpn_spine.anycast_ip }} group-list 239.0.0.0/8
@@ -77,9 +78,12 @@ router ospf UNDERLAY
     {% for leaf_peer_ospf in vxlan_evpn_spine.leaf_peers_ospf %}
 interface Ethernet{{ leaf_peer_ospf.local_leaf_interface }}
   description Link to leaf
+  no switchport
+  mtu 9216
+  no ip redirects
   ip address {{ leaf_peer_ospf.local_leaf_ip }}/31
   ip router ospf UNDERLAY area 0
-  ip ospf point-to-point
+  ip ospf network point-to-point
   ip pim sparse-mode
   bfd interval 250 min_rx 250 multiplier 3
   no shutdown
