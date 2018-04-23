@@ -19,9 +19,13 @@ data:
                 anycast_ip: 2.2.2.2
                 vtep_ip: 3.3.3.3
                 bgp_as: 65000
+                bfd: true
+                boot_os: nxos.7.0.3.I7.3.bin
+
                 anycast_peers:
                 -   4.4.4.4
                 -   5.5.5.5
+
                 leaf_peers_ospf:
                 -   local_leaf_interface: 1/1
                     local_leaf_ip: 10.10.10.0
@@ -39,8 +43,12 @@ nv overlay evpn
 feature ospf
 feature bgp
 feature pim
+    {% if vxlan_evpn_spine.bfd==true %}
 feature bfd
-boot nxos bootflash:/nxos.7.0.3.I7.3.bin
+    {% endif %}
+    {% if vxlan_evpn_spine.boot_os %}
+boot nxos bootflash:/{{ vxlan_evpn_spine.boot_os }}
+    {% endif %}
 
 interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
@@ -73,7 +81,9 @@ ip pim anycast-rp {{ vxlan_evpn_spine.anycast_ip }} {{ anycast_peer }}
 
 router ospf UNDERLAY
   router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
+    {% if vxlan_evpn_spine.bfd==true %}
   bfd
+    {% endif %}
 
     {% for leaf_peer_ospf in vxlan_evpn_spine.leaf_peers_ospf %}
 interface Ethernet{{ leaf_peer_ospf.local_leaf_interface }}
@@ -85,7 +95,9 @@ interface Ethernet{{ leaf_peer_ospf.local_leaf_interface }}
   ip router ospf UNDERLAY area 0
   ip ospf network point-to-point
   ip pim sparse-mode
+        {% if vxlan_evpn_spine.bfd==true %}
   bfd interval 250 min_rx 250 multiplier 3
+        {% endif %}
   no shutdown
 
     {% endfor %}

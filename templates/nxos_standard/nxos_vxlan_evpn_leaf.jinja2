@@ -20,6 +20,8 @@ data:
                 vtep_ip: 3.3.3.3
                 anycast_gw_mac: 0000.1111.2222.3333
                 bgp_as: 65000
+                bfd: true
+                boot_os: nxos.7.0.3.I7.3.bin
 
                 spine_peers_ospf:
                 -   local_spine_interface: 1/1
@@ -38,18 +40,24 @@ nv overlay evpn
 feature ospf
 feature bgp
 feature pim
+    {% if vxlan_evpn_leaf.bfd==true %}
 feature bfd
+    {% endif %}
 feature interface-vlan
 feature vn-segment-vlan-based
 feature nv overlay
 fabric forwarding anycast-gateway-mac {{ vxlan_evpn_leaf.anycast_gw_mac }}
 hardware access-list tcam region racl 512
 hardware access-list tcam region arp-ether 256 double-wide
-boot nxos bootflash:/nxos.7.0.3.I7.3.bin
+    {% if vxlan_evpn_leaf.boot_os %}
+boot nxos bootflash:/{{ vxlan_evpn_leaf.boot_os }}
+    {% endif %}
 
 router ospf UNDERLAY
   router-id {{ vxlan_evpn_leaf.protocol_peering_ip }}
+    {% if vxlan_evpn_leaf.bfd==true %}
   bfd
+    {% endif %}
 
 interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
@@ -77,7 +85,9 @@ interface Ethernet{{ spine_peer_ospf.local_spine_interface }}
   ip address {{ spine_peer_ospf.local_spine_ip }}/31
   ip router ospf UNDERLAY area 0
   ip ospf network point-to-point
+        {% if vxlan_evpn_leaf.bfd==true %}
   bfd interval 250 min_rx 250 multiplier 3
+        {% endif %}
   ip pim sparse-mode
   no shutdown
 
