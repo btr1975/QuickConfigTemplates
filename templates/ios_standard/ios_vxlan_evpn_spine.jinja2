@@ -62,7 +62,7 @@ ip msdp peer {{ anycast_peer }} connect-source loopback0
     {% endfor %}
 ip msdp cache-sa-state
 ip msdp cache-rejected-sa 60
-ip msdp originator-ip loopback0
+ip msdp originator-id loopback0
 
 router ospf 1
   router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
