@@ -1,11 +1,12 @@
 {#-
-Version: 1.0.1
+Version: 1.0.2
 
 Sample data for this template
 
 --- # Test data to for nxos
-common:
-    template: nxos_base.jinja2
+version: 2
+data:
+-   template: nxos_base.jinja2
     ticket_number: CHG123456789
     devices:
     -   device:
@@ -80,6 +81,9 @@ route-map {{ route_map.route_map_name }} {{ sequence.permit_deny }} {{ sequence.
         {% for match in sequence.match %}
   match {{ match.match_item }} {{ match.match_item_name }}
         {% endfor %}
+        {% if sequence.continue %}
+  continue {{ sequence.continue }}
+        {% endif %}
         {% for set in sequence.set %}
   set {{ set.set_item }} {{ set.set_item_to }}
         {% endfor %}
