@@ -5,11 +5,11 @@ config:
   output_directory:
   logging_directory:
   logging_level:
-# QuickConfigTemplates-Server Version 1.0.0
+# QuickConfigTemplates-Server Version 1.0.0 <-- Not implemented yet
 server_config:
-  protocol: http
-  server_host: 192.168.60.2
-  server_port: 5000
-  server_api_uri: qct/api/v1/
+  protocol:
+  server_host:
+  server_port:
+  server_api_uri:
 
 # Logging level is 3 by default, highest is 1 lowest is 5
