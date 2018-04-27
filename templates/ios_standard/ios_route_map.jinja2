@@ -1,5 +1,5 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
 
 Sample data for this template
 
@@ -15,17 +15,26 @@ data:
             route_maps:
             -   route_map_name: RM-TEST-1
                 sequences:
-                -   description: test description
-                    match:
-                    -   match_item: access-list
-                        match_item_name: ACL-A-in
-                    -   match_item: access-list
-                        match_item_name: ACL-B-in
+                -   sequence: 10
                     permit_deny: permit
-                    sequence: 10
+                    description: DESCRIPTION
+                    continue: 20
+                    match:
+                    -   match_item: ip address prelix-list
+                        match_item_name: PL-A
                     set:
-                    -   set_item: local preference
-                        set_item_to: 200
+                    -   set_item: community
+                        set_item_to: "1:1"
+
+                -   sequence: 20
+                    permit_deny: permit
+                    description: DESCRIPTION
+                    match:
+                    -   match_item: ip address prelix-list
+                        match_item_name: PL-A
+                    set:
+                    -   set_item: community
+                        set_item_to: 1:2 additive
 
                 -   description: test description
                     match:
@@ -80,6 +89,9 @@ route-map {{ route_map.route_map_name }} {{ sequence.permit_deny }} {{ sequence.
         {% for match in sequence.match %}
   match {{ match.match_item }} {{ match.match_item_name }}
         {% endfor %}
+        {% if sequence.continue %}
+  continue
+        {% endif %}
         {% for set in sequence.set %}
   set {{ set.set_item }} {{ set.set_item_to }}
         {% endfor %}
