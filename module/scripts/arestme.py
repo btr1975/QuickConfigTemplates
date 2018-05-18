@@ -1,9 +1,9 @@
 import requests
 import json
 __author__ = 'Benjamin P. Trachtenberg'
-__copyright__ = "Copyright (c) 2018, Benjamin P. Trachtenberg"
-__credits__ = None
-__license__ = 'The MIT License (MIT)'
+__copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
+__credits__ = 'Benjamin P. Trachtenberg'
+__license__ = 'MIT'
 __status__ = 'prod'
 __version_info__ = (1, 0, 2)
 __version__ = '.'.join(map(str, __version_info__))

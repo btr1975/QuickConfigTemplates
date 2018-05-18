@@ -1,6 +1,6 @@
 import logging
 __author__ = 'Benjamin P. Trachtenberg'
-__copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
+__copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
 __status__ = 'prod'

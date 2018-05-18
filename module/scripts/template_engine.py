@@ -7,10 +7,10 @@ import persistentdatatools as pdt
 import os
 # from .arestme import ARestMe
 __author__ = 'Benjamin P. Trachtenberg'
-__copyright__ = "Copyright (c) 2017, Benjamin P. Trachtenberg"
+__copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'dev'
+__status__ = 'prod'
 __version_info__ = (2, 0, 2, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
