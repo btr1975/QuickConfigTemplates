@@ -65,6 +65,10 @@ data:
 
 ```
 
+### Version 1.0.10.prod information
+* Added more templates for defaults
+* Added a rudimentary jinja2 xml for Notepad++
+
 ### Requirements
 * Jinja2==2.10
 * MarkupSafe==1.0
@@ -97,3 +101,5 @@ If you are planning on compiling with pyinstaller 3.2.1 there is a bug you need 
 version of pyinstaller.
 
 See the details here [pyinstaller github bug #2434](https://github.com/pyinstaller/pyinstaller/issues/2434)
+
+Compiles fine with pyinstaller 3.3.1
