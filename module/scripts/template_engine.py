@@ -411,13 +411,15 @@ class TemplateEngine(object):
         return config.get('vars')
 
     def server_rest(self):
-        server_config = yaml.safe_load(open(os.path.join(self.directories.get_data_dir(), 'config.yml'))).get('server_config')
-        server_api_uri = server_config.get('server_api_uri')
-        b = yaml.safe_load(self.yml_data)
+        error = 'Remote build not implemented yet!!'
+        print(error)
+        LOGGER.critical(error)
+        # server_config = yaml.safe_load(open(os.path.join(self.directories.get_data_dir(), 'config.yml'))).get('server_config')
+        # server_api_uri = server_config.get('server_api_uri')
+        # b = yaml.safe_load(self.yml_data)
 
 
-        a = ARestMe()
-        a.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
-                              server_config.get('server_port'))
-        a.set_update_headers('QCT', 'ApiVersion1')
-        print(a.send_post('{server_api_uri}postinfo'.format(server_api_uri=server_api_uri), b))
+        # a = ARestMe()
+        # a.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'), server_config.get('server_port'))
+        # a.set_update_headers('QCT', 'ApiVersion1')
+        # print(a.send_post('{server_api_uri}postinfo'.format(server_api_uri=server_api_uri), b))
