@@ -4,19 +4,114 @@ from jinja2 import Environment, select_autoescape, FileSystemLoader
 import yaml
 import json
 import persistentdatatools as pdt
+import ipaddresstools as ipv4
 import os
 # from .arestme import ARestMe
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'prod'
-__version_info__ = (2, 0, 2, __status__)
+__status__ = 'dev'
+__version_info__ = (2, 0, 3, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
 
 LOGGER = logging.getLogger(__name__)
+TEMPLATE_LOGGER = logging.getLogger('template')
+
+
+def filter_check_u_ip_address(value):
+    """
+    Function to check for a unicast ipv4 address in a template
+    :param value:
+    :return:
+    """
+    if not value:
+        return '{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'.format(value=value)
+
+    elif ipv4.ucast_ip(value, return_tuple=False):
+        return value
+
+    else:
+        return '{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'.format(value=value)
+
+
+def filter_check_u_subnet(value):
+    """
+    Function to check for a subnet and mask combo in a template
+    :param value:
+    :return:
+    """
+    if not value:
+        return '{value} !!!! possible error this is required to be a unicast ipv4 subnet !!!!'.format(value=value)
+
+    elif ipv4.ip_mask(value, return_tuple=False):
+        return value
+
+    else:
+        return '{value} !!!! possible error this is required to be a unicast ipv4 subnet !!!!'.format(value=value)
+
+
+def filter_check_ip_mask_cidr(value):
+    """
+    Function to check to a CIDR mask number in a template
+    :param value:
+    :return:
+    """
+    if not value:
+        return '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(value=value)
+
+    try:
+        if ipv4.mask_conversion.get(int(value)):
+            return value
+
+        else:
+            return '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(
+                value=value)
+
+    except ValueError as e:
+        TEMPLATE_LOGGER.info(e)
+        return '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(value=value)
+
+
+def filter_check_ip_mask_standard(value):
+    """
+    Function to check for a standard mask in a template
+    :param value:
+    :return:
+    """
+    if not value:
+        return '{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'.format(value=value)
+
+    else:
+        not_found = False
+        for key in ipv4.mask_conversion:
+            if ipv4.mask_conversion.get(key).get('MASK') == value:
+                return value
+
+            else:
+                not_found = True
+
+        if not_found:
+            return '{value} !!!! possible error this is required to be a ipv4 standard subnet ' \
+                   'mask!!!!'.format(value=value)
+
+
+def filter_check_m_ip_address(value):
+    """
+    Function to check for a multicast ipv4 address in a template
+    :param value:
+    :return:
+    """
+    if not value:
+        return '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
+
+    elif ipv4.mcast_ip(value, return_tuple=False):
+        return value
+
+    else:
+        return '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
 
 
 class TemplateEngine(object):
@@ -160,6 +255,12 @@ class TemplateEngine(object):
                                                        default_for_string=True),
                           loader=FileSystemLoader(self.directories.get_templates_dir()), lstrip_blocks=True,
                           trim_blocks=True)
+
+        env.filters['u_ip_address'] = filter_check_u_ip_address
+        env.filters['m_ip_address'] = filter_check_m_ip_address
+        env.filters['u_subnet'] = filter_check_u_subnet
+        env.filters['mask_cidr'] = filter_check_ip_mask_cidr
+        env.filters['mask_standard'] = filter_check_ip_mask_standard
 
         self.output_file_name = pdt.file_name_increase(self.output_file_name, self.directories.get_output_dir())
 

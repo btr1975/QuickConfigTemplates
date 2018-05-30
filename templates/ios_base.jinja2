@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.5
+Version: 1.0.6
+Updated: 5/30/2018
 
 Sample data for this template
 
@@ -88,7 +89,11 @@ Ticket Number: {{ ticket_number }}
 {% include "ios_standard/ios_vxlan_evpn_spine.jinja2" %}
 
 {% endif %}
-</{{ device.devicename }}, {{ device.management_ip }}>
+{% if device.management_ip %}
+</{{ device.devicename }}, {{ device.management_ip|u_ip_address }}>
+{% else %}
+</{{ device.devicename }}>
+{% endif %}
 
     {% endfor %}
 {% endfor %}
