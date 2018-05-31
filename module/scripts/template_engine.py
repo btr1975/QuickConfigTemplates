@@ -18,7 +18,7 @@ __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
 
 LOGGER = logging.getLogger(__name__)
-TEMPLATE_LOGGER = logging.getLogger('template')
+TEMPLATE_LOGGER = logging.getLogger('qct_template')
 
 
 def filter_check_u_ip_address(value):
@@ -98,6 +98,29 @@ def filter_check_ip_mask_standard(value):
                    'mask!!!!'.format(value=value)
 
 
+def filter_check_ip_inverse_mask_standard(value):
+    """
+    Function to check for a inverse mask in a template
+    :param value:
+    :return:
+    """
+    if not value:
+        return '{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'.format(value=value)
+
+    else:
+        not_found = False
+        for key in ipv4.mask_conversion:
+            if ipv4.mask_conversion.get(key).get('INVMASK') == value:
+                return value
+
+            else:
+                not_found = True
+
+        if not_found:
+            return '{value} !!!! possible error this is required to be a ipv4 inverse subnet ' \
+                   'mask!!!!'.format(value=value)
+
+
 def filter_check_m_ip_address(value):
     """
     Function to check for a multicast ipv4 address in a template
@@ -112,6 +135,27 @@ def filter_check_m_ip_address(value):
 
     else:
         return '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
+
+
+def filter_check_as_number(value):
+    """
+    Function to check for a good BGP AS, EIGRP AS, OSPF Process in a template
+    :param value:
+    :return:
+    """
+    if not value:
+        return '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
+
+    else:
+        try:
+            if int(value) not in range(1, 65536):
+                return '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
+
+            else:
+                return value
+
+        except ValueError as e:
+            return '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
 
 
 class TemplateEngine(object):
@@ -261,6 +305,8 @@ class TemplateEngine(object):
         env.filters['u_subnet'] = filter_check_u_subnet
         env.filters['mask_cidr'] = filter_check_ip_mask_cidr
         env.filters['mask_standard'] = filter_check_ip_mask_standard
+        env.filters['mask_inv'] = filter_check_ip_inverse_mask_standard
+        env.filters['as_number'] = filter_check_as_number
 
         self.output_file_name = pdt.file_name_increase(self.output_file_name, self.directories.get_output_dir())
 

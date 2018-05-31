@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -35,7 +36,7 @@ ntp
 {% include "common/note.jinja2" %}
 
 {% endif %}
- server {{ ntp_serv }}
+ server {{ ntp_serv|u_ip_address }}
 {% endfor %}
 {% if device.ntp_servers.source %}
  source {{ device.ntp_servers.source }}

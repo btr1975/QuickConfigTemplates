@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -40,8 +41,8 @@ data:
 
 {% endif %}
     {% if multicast_rp.remove %}
-no ip pim rp-address {{ multicast_rp.rp_address }} {{ multicast_rp.standard_acl }} override
+no ip pim rp-address {{ multicast_rp.rp_address|u_ip_address }} {{ multicast_rp.standard_acl }} override
     {% else %}
-ip pim rp-address {{ multicast_rp.rp_address }} {{ multicast_rp.standard_acl }} override
+ip pim rp-address {{ multicast_rp.rp_address|u_ip_address }} {{ multicast_rp.standard_acl }} override
     {% endif %}
 {% endfor %}

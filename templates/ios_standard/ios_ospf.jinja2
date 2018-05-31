@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -39,9 +40,9 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-router ospf {{ device.ospf.ospf_process }}
+router ospf {{ device.ospf.ospf_process|as_number }}
 {% if device.ospf.router_id %}
-  router-id {{ device.ospf.router_id }}
+  router-id {{ device.ospf.router_id|u_ip_address }}
   log-adjacency-changes
 {% endif %}
 {% if device.ospf.passive_interfaces %}

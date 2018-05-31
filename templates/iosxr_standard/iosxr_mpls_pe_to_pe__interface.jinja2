@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.4
+Version: 1.0.5
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -64,7 +65,7 @@ interface {{ interface.interface }}
  {% if interface.remove %}
  no ipv4 address
  {% else %}
- ipv4 address {{ interface.ip }} {{ interface.mask }}
+ ipv4 address {{ interface.ip|u_ip_address }} {{ interface.mask|mask_standard }}
  {% endif %}
  {% if interface.remove %}
  no mpls

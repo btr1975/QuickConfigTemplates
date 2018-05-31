@@ -28,3 +28,15 @@ vars:
     test1: something
 
 Any variables listed overrides any variable if you use a "Variable Build, or Auto Build"
+
+In Version 1.0.11
+
+Custom Filters for Templates:
+
+u_ip_address = Check for a good unicast ipv4 address
+m_ip_address = Check for a good multicast ipv4 address
+u_subnet = Not ready yet
+mask_cidr = Check for a good ipv4 CIDR mask
+mask_standard = Check for a good standard ipv4 mask
+mask_inv = Check for a good inverse ipv4 mask
+as_number = Check for a BGP, EIGRP, OSPF process/AS number 1 to 65535

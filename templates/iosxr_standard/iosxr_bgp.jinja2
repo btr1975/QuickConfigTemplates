@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -82,7 +83,7 @@ data:
 -#}
 router bgp {{ device.bgp.bgp_as }}
 {% if device.bgp.router_id %}
- bgp router-id {{ device.bgp.router_id }}
+ bgp router-id {{ device.bgp.router_id|u_ip_address }}
  address-family ipv4 unicast
  !
  address-family vpnv4 unicast
@@ -97,8 +98,8 @@ router bgp {{ device.bgp.bgp_as }}
 {% include "common/note.jinja2" %}
 
 {% endif %}
- neighbor {{ neighbor.neighbor }}
-  remote-as {{ neighbor.neighbor_as }}
+ neighbor {{ neighbor.neighbor|u_ip_address }}
+  remote-as {{ neighbor.neighbor_as|as_number }}
   timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
   description {{ neighbor.neighbor_description }}
   address-family ipv4 unicast
@@ -140,8 +141,8 @@ router bgp {{ device.bgp.bgp_as }}
    redistribute connected
   !
   {% endif %}
-  neighbor {{ neighbor.neighbor }}
-   remote-as {{ neighbor.neighbor_as }}
+  neighbor {{ neighbor.neighbor|u_ip_address }}
+   remote-as {{ neighbor.neighbor_as|as_number }}
    timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
    description {{ neighbor.neighbor_description }}
    address-family ipv4 unicast

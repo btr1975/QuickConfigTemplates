@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.4
+Version: 1.0.5
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -91,9 +92,9 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-router bgp {{ device.bgp.bgp_as }}
+router bgp {{ device.bgp.bgp_as|as_number }}
 {% if device.bgp.router_id %}
-  router-id {{ device.bgp.router_id }}
+  router-id {{ device.bgp.router_id|u_ip_address }}
   log-neighbor-changes
 {% endif %}
 {% if device.bgp.networks %}
@@ -109,16 +110,16 @@ router bgp {{ device.bgp.bgp_as }}
 {% include "common/note.jinja2" %}
 
 {% endif %}
-  neighbor {{ neighbor.neighbor }}
-    remote-as {{ neighbor.neighbor_as }}
+  neighbor {{ neighbor.neighbor|u_ip_address }}
+    remote-as {{ neighbor.neighbor_as|as_number }}
 {% if neighbor.neighbor_password %}
     password {{ neighbor.neighbor_password }}
 {% endif %}
 {% if neighbor.neighbor_local_as %}
     {% if neighbor.neighbor_no_prepend %}
-    local-as {{ neighbor.neighbor_local_as }} no-prepend
+    local-as {{ neighbor.neighbor_local_as|as_number }} no-prepend
     {% else %}
-    local-as {{ neighbor.neighbor_local_as }}
+    local-as {{ neighbor.neighbor_local_as|as_number }}
     {% endif %}
 {% endif %}
 {% if neighbor.neighbor_description %}

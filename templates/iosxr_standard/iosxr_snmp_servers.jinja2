@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -53,17 +54,17 @@ data:
 {% if snmp_serv.vrf %}
 snmp-server vrf {{ snmp_serv.vrf }}
  {% if snmp_serv.traps %}
- host {{ snmp_serv.server_ip }} traps version 2c {{ snmp_serv.server_key }}
+ host {{ snmp_serv.server_ip|u_ip_address }} traps version 2c {{ snmp_serv.server_key }}
  {% endif %}
  {% if snmp_serv.informs %}
- host {{ snmp_serv.server_ip }} informs version 2c {{ snmp_serv.server_key }}
+ host {{ snmp_serv.server_ip|u_ip_address }} informs version 2c {{ snmp_serv.server_key }}
  {% endif %}
 {% else %}
   {% if snmp_serv.traps %}
-snmp-server host {{ snmp_serv.server_ip }} traps version 2c {{ snmp_serv.server_key }}
+snmp-server host {{ snmp_serv.server_ip|u_ip_address }} traps version 2c {{ snmp_serv.server_key }}
   {% endif %}
   {% if snmp_serv.informs %}
-snmp-server host {{ snmp_serv.server_ip }} informs version 2c {{ snmp_serv.server_key }}
+snmp-server host {{ snmp_serv.server_ip|u_ip_address }} informs version 2c {{ snmp_serv.server_key }}
   {% endif %}
 {% endif %}
 {% endfor %}

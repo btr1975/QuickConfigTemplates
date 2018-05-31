@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.0
+Version: 1.0.1
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -38,7 +39,7 @@ interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
   no ip redirects
   no ip proxy-arp
-  ip address {{ vxlan_evpn_spine.protocol_peering_ip }} 255.255.255.255
+  ip address {{ vxlan_evpn_spine.protocol_peering_ip|u_ip_address }} 255.255.255.255
   ip ospf 1 area 0
   ip ospf network point-to-point
   ip pim sparse-mode
@@ -47,7 +48,7 @@ interface loopback1
   description Anycast RP IP
   no ip redirects
   no ip proxy-arp
-  ip address {{ vxlan_evpn_spine.anycast_ip }} 255.255.255.255
+  ip address {{ vxlan_evpn_spine.anycast_ip|u_ip_address }} 255.255.255.255
   ip ospf 1 area 0
   ip ospf network point-to-point
   ip pim sparse-mode
@@ -55,17 +56,17 @@ interface loopback1
 ip access-list standard ACL-MCAST
  permit 239.0.0.0 0.0.0.255
 
-ip pim rp-address {{ vxlan_evpn_spine.anycast_ip }} ACL-MCAST override
+ip pim rp-address {{ vxlan_evpn_spine.anycast_ip|u_ip_address }} ACL-MCAST override
 
     {% for anycast_peer in vxlan_evpn_spine.anycast_peers %}
-ip msdp peer {{ anycast_peer }} connect-source loopback0
+ip msdp peer {{ anycast_peer|u_ip_address }} connect-source loopback0
     {% endfor %}
 ip msdp cache-sa-state
 ip msdp cache-rejected-sa 60
 ip msdp originator-id loopback0
 
 router ospf 1
-  router-id {{ vxlan_evpn_spine.protocol_peering_ip }}
+  router-id {{ vxlan_evpn_spine.protocol_peering_ip|u_ip_address }}
 
     {% for leaf_peer_ospf in vxlan_evpn_spine.leaf_peers_ospf %}
 interface GigabitEthernet{{ leaf_peer_ospf.local_leaf_interface }}
@@ -73,7 +74,7 @@ interface GigabitEthernet{{ leaf_peer_ospf.local_leaf_interface }}
   description Link to leaf
   no ip redirects
   no ip proxy-arp
-  ip address {{ leaf_peer_ospf.local_leaf_ip }} 255.255.255.254
+  ip address {{ leaf_peer_ospf.local_leaf_ip|u_ip_address }} 255.255.255.254
   ip ospf 1 area 0
   ip ospf network point-to-point
   ip pim sparse-mode

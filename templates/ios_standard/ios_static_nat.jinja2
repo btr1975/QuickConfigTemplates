@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -31,15 +32,15 @@ data:
 {% endif %}
     {% if nat.nat_type == 'inside' %}
         {% if nat.remove %}
-no ip nat inside source static {{ nat.real_ip }} {{ nat.nat_ip }}
+no ip nat inside source static {{ nat.real_ip|u_ip_address }} {{ nat.nat_ip|u_ip_address }}
         {% else %}
-ip nat inside source static {{ nat.real_ip }} {{ nat.nat_ip }}
+ip nat inside source static {{ nat.real_ip|u_ip_address }} {{ nat.nat_ip|u_ip_address }}
         {% endif %}
     {% elif nat.nat_type == 'outside' %}
         {% if nat.remove %}
-no ip nat outside source static {{ nat.nat_ip }} {{ nat.real_ip }}
+no ip nat outside source static {{ nat.nat_ip|u_ip_address }} {{ nat.real_ip|u_ip_address }}
         {% else %}
-ip nat outside source static {{ nat.nat_ip }} {{ nat.real_ip }}
+ip nat outside source static {{ nat.nat_ip|u_ip_address }} {{ nat.real_ip|u_ip_address }}
         {% endif %}
     {% endif %}
 {% endfor %}

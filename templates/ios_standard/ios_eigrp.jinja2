@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -36,9 +37,9 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-router eigrp {{ device.eigrp.eigrp_as }}
+router eigrp {{ device.eigrp.eigrp_as|as_number }}
 {% if device.eigrp.router_id %}
-  eigrp router-id {{ device.eigrp.router_id }}
+  eigrp router-id {{ device.eigrp.router_id|u_ip_address }}
   no auto-summary
 {% endif %}
 {% if device.eigrp.passive_interfaces %}

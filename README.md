@@ -69,6 +69,9 @@ data:
 * Added more templates for defaults
 * Added a rudimentary jinja2 xml for Notepad++
 
+### Version 1.0.11.dev information
+* Added some custom Django filters for use in templates to check for correct data
+
 ### Requirements
 * Jinja2==2.10
 * MarkupSafe==1.0

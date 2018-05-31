@@ -16,7 +16,7 @@ __email__ = 'e_ben_75-python@yahoo.com'
 COMPILE = False
 
 
-LOGGER = logging.getLogger('main_log')
+LOGGER = logging.getLogger('qct_main')
 
 
 def set_directory_structure():

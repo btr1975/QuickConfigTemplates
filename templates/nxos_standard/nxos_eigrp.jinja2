@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -31,4 +32,4 @@ router eigrp {{ device.eigrp.eigrp_process_name }}
   bfd
   {% endif %}
   autonomous-system {{ device.eigrp.eigrp_as }}
-  router-id {{ device.eigrp.router_id }}
+  router-id {{ device.eigrp.router_id|u_ip_address }}

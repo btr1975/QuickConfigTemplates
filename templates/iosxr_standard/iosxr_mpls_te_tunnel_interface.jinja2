@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 5/31/2018
 
 Sample data for this template
 
@@ -54,7 +55,7 @@ interface tunnel-te{{ interface.tunnel_number }}
  {% endif %}
  autoroute announce
  !
- destination {{ interface.destination_ip }}
+ destination {{ interface.destination_ip|u_ip_address }}
  fast-reroute
  record-route
  path-option 1000 dynamic
