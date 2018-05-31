@@ -243,6 +243,19 @@ class TemplateEngine(object):
     """
     Class to render, and clean Jinja2 templates
     """
+    custom_filters = {
+        'u_ip_address': filter_check_u_ip_address,
+        'm_ip_address': filter_check_m_ip_address,
+        'u_subnet': filter_check_u_subnet,
+        'mask_cidr': filter_check_ip_mask_cidr,
+        'mask_standard': filter_check_ip_mask_standard,
+        'mask_inv': filter_check_ip_inverse_mask_standard,
+        'as_number': filter_check_as_number,
+        'vlan': filter_check_vlan_number,
+        'vni': filter_check_vni_number,
+        'required': filter_check_required,
+        'community': filter_check_community,
+    }
 
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
                  display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None,
@@ -381,17 +394,7 @@ class TemplateEngine(object):
                           loader=FileSystemLoader(self.directories.get_templates_dir()), lstrip_blocks=True,
                           trim_blocks=True)
 
-        env.filters['u_ip_address'] = filter_check_u_ip_address
-        env.filters['m_ip_address'] = filter_check_m_ip_address
-        env.filters['u_subnet'] = filter_check_u_subnet
-        env.filters['mask_cidr'] = filter_check_ip_mask_cidr
-        env.filters['mask_standard'] = filter_check_ip_mask_standard
-        env.filters['mask_inv'] = filter_check_ip_inverse_mask_standard
-        env.filters['as_number'] = filter_check_as_number
-        env.filters['vlan'] = filter_check_vlan_number
-        env.filters['vni'] = filter_check_vni_number
-        env.filters['required'] = filter_check_required
-        env.filters['community'] = filter_check_community
+        env.filters.update(self.custom_filters)
 
         self.output_file_name = pdt.file_name_increase(self.output_file_name, self.directories.get_output_dir())
 
@@ -521,6 +524,8 @@ class TemplateEngine(object):
             autoescape=select_autoescape(enabled_extensions=('yml', 'yaml'), default_for_string=True),
             loader=FileSystemLoader([self.directories.get_yml_dir(yml_file_name)]), lstrip_blocks=True,
             trim_blocks=True)
+
+        pre_run_env.filters.update(self.custom_filters)
 
         try:
             temp_file = pre_run_env.get_template(yml_file_name)

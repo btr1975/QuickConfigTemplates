@@ -42,5 +42,5 @@ mask_inv = Check for a good inverse ipv4 mask
 as_number = Check for a BGP, EIGRP, OSPF process/AS number 1 to 65535
 vlan = Check for a VLAN number 1 - 4096
 vni = Check for a VNI number 1 - 16777214
-required
+required = Check for a required item in a yml file
 community = Check for a community in the following format XXXX:XXXX

@@ -92,9 +92,12 @@ Ticket Number: {{ ticket_number }}
 {% include "nxos_standard/nxos_vxlan_evpn_spine.jinja2" %}
 
 {% endif %}
-
 {% if device.vxlan_evpn_leafs %}
 {% include "nxos_standard/nxos_vxlan_evpn_leaf.jinja2" %}
+
+{% endif %}
+{% if device.vxlan_evpn_l3vnis %}
+{% include "nxos_standard/nxos_vxlan_evpn_l3vni.jinja2" %}
 
 {% endif %}
 {% if device.vxlan_evpn_l2vnis %}

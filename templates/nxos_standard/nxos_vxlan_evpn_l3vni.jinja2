@@ -1,0 +1,75 @@
+{#-
+Version: 1.0.0
+Updated: 5/31/2018
+
+Sample data for this template
+
+This is to get you up and running in a lab at this time, it allows you to focus on the vxlan/evpn config
+
+--- # Test data to for nxos
+version: 2
+data:
+-   template: nxos_base.jinja2
+    ticket_number: TKTNUMBER01
+    devices:
+    -   device:
+        -   devicename: NXOS-RTR02
+            management_ip: 10.99.222.23
+            vxlan_evpn_l3vnis:
+            -   vni: 2001001
+                vrf: vxlan-900001
+                vlan: 1001
+                vlan_name: test_vlan
+                bgp_as: 65000
+                rd: '65000:1'
+                route_targets:
+                    export_rts:
+                    -   '65000:1'
+                    import_rts:
+                    -   '65000:2'
+
+-#}
+{% for vxlan_evpn_l3vni in device.vxlan_evpn_l3vnis %}
+vlan {{ vxlan_evpn_l3vni.vlan|required|vlan }}
+  name {{ vxlan_evpn_l3vni.vlan_name|required }}
+  vn-segment {{ vxlan_evpn_l3vni.vni|required|vni }}
+
+vrf context {{ vxlan_evpn_l3vni.vrf|required }}
+  vni {{ vxlan_evpn_l3vni.vni|required|vni }}
+  {% if vxlan_evpn_l3vni.rd %}
+  rd {{ vxlan_evpn_l3vni.rd|community }}
+  {% else %}
+  rd auto
+  {% endif %}
+  address-family ipv4 unicast
+  {% if vxlan_evpn_l3vni.route_targets %}
+      {% for import_rt in vxlan_evpn_l3vni.route_targets.import_rts %}
+    route-target import {{ import_rt|community }}
+    route-target import {{ import_rt|community }} evpn
+      {% endfor %}
+      {% for export_rt in vxlan_evpn_l3vni.route_targets.export_rts %}
+    route-target export {{ export_rt|community }}
+    route-target export {{ export_rt|community }} evpn
+      {% endfor %}
+  {% else %}
+    route-target import auto
+    route-target import auto evpn
+    route-target export auto
+    route-target export auto evpn
+  {% endif %}
+
+interface Vlan{{ vxlan_evpn_l3vni.vlan|required|vlan }}
+  description {{ vxlan_evpn_l3vni.description|required }}
+  no shutdown
+  vrf member {{ vxlan_evpn_l3vni.vrf|required }}
+  ip forward
+
+interface nve1
+  member vni {{ vxlan_evpn_l3vni.vni|required|vni }} associate-vrf
+
+router bgp {{ vxlan_evpn_l3vni.bgp_as|required|as_number }}
+  vrf {{ vxlan_evpn_l3vni.vrf|required }}
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+
+{% endfor %}
