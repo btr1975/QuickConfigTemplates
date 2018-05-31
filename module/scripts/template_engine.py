@@ -6,6 +6,7 @@ import json
 import persistentdatatools as pdt
 import ipaddresstools as ipv4
 import os
+import re
 # from .arestme import ARestMe
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
@@ -27,14 +28,15 @@ def filter_check_u_ip_address(value):
     :param value:
     :return:
     """
+    error = '{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'.format(value=value)
     if not value:
-        return '{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'.format(value=value)
+        return error
 
     elif ipv4.ucast_ip(value, return_tuple=False):
         return value
 
     else:
-        return '{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'.format(value=value)
+        return error
 
 
 def filter_check_u_subnet(value):
@@ -43,14 +45,15 @@ def filter_check_u_subnet(value):
     :param value:
     :return:
     """
+    error = '{value} !!!! possible error this is required to be a unicast ipv4 subnet !!!!'.format(value=value)
     if not value:
-        return '{value} !!!! possible error this is required to be a unicast ipv4 subnet !!!!'.format(value=value)
+        return error
 
     elif ipv4.ip_mask(value, return_tuple=False):
         return value
 
     else:
-        return '{value} !!!! possible error this is required to be a unicast ipv4 subnet !!!!'.format(value=value)
+        return error
 
 
 def filter_check_ip_mask_cidr(value):
@@ -59,20 +62,20 @@ def filter_check_ip_mask_cidr(value):
     :param value:
     :return:
     """
+    error = '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(value=value)
     if not value:
-        return '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(value=value)
+        return error
 
     try:
         if ipv4.mask_conversion.get(int(value)):
             return value
 
         else:
-            return '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(
-                value=value)
+            return error
 
     except ValueError as e:
         TEMPLATE_LOGGER.info(e)
-        return '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(value=value)
+        return error
 
 
 def filter_check_ip_mask_standard(value):
@@ -81,8 +84,9 @@ def filter_check_ip_mask_standard(value):
     :param value:
     :return:
     """
+    error = '{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'.format(value=value)
     if not value:
-        return '{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'.format(value=value)
+        return error
 
     else:
         not_found = False
@@ -94,8 +98,51 @@ def filter_check_ip_mask_standard(value):
                 not_found = True
 
         if not_found:
-            return '{value} !!!! possible error this is required to be a ipv4 standard subnet ' \
-                   'mask!!!!'.format(value=value)
+            return error
+
+
+def filter_check_vlan_number(value):
+    """
+    Function to check for a good VLAN number in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error the VLAN# should be between 1 and 4096!!!!'.format(value=value)
+    if not value:
+        return error
+
+    else:
+        try:
+            if int(value) not in range(1, 4097):
+                return error
+
+            else:
+                return value
+
+        except ValueError as e:
+            return error
+
+
+def filter_check_vni_number(value):
+    """
+    Function to check for a good VNI number in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error the VNI# should be between 1 and 16777214!!!!'.format(value=value)
+    if not value:
+        return error
+
+    else:
+        try:
+            if int(value) not in range(1, 16777215):
+                return error
+
+            else:
+                return value
+
+        except ValueError as e:
+            return error
 
 
 def filter_check_ip_inverse_mask_standard(value):
@@ -104,8 +151,9 @@ def filter_check_ip_inverse_mask_standard(value):
     :param value:
     :return:
     """
+    error = '{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'.format(value=value)
     if not value:
-        return '{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'.format(value=value)
+        return error
 
     else:
         not_found = False
@@ -117,8 +165,7 @@ def filter_check_ip_inverse_mask_standard(value):
                 not_found = True
 
         if not_found:
-            return '{value} !!!! possible error this is required to be a ipv4 inverse subnet ' \
-                   'mask!!!!'.format(value=value)
+            return error
 
 
 def filter_check_m_ip_address(value):
@@ -127,14 +174,15 @@ def filter_check_m_ip_address(value):
     :param value:
     :return:
     """
+    error = '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
     if not value:
-        return '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
+        return error
 
     elif ipv4.mcast_ip(value, return_tuple=False):
         return value
 
     else:
-        return '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
+        return error
 
 
 def filter_check_as_number(value):
@@ -143,19 +191,52 @@ def filter_check_as_number(value):
     :param value:
     :return:
     """
+    error = '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
     if not value:
-        return '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
+        return error
 
     else:
         try:
             if int(value) not in range(1, 65536):
-                return '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
+                return error
 
             else:
                 return value
 
         except ValueError as e:
-            return '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
+            return error
+
+
+def filter_check_required(value):
+    """
+    Function to check for a required value in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! This is a required value!!!!'.format(value=value)
+    if not value:
+        return error
+
+    else:
+        return value
+
+
+def filter_check_community(value):
+    """
+    Function to check for a community in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error the community should be in this format XXX:XXX!!!!'.format(value=value)
+    regex_community = re.compile(r'^[0-9]+:[0-9]+$')
+    if not value:
+        return error
+
+    elif not regex_community.match(str(value)):
+        return error
+
+    else:
+        return value
 
 
 class TemplateEngine(object):
@@ -307,6 +388,10 @@ class TemplateEngine(object):
         env.filters['mask_standard'] = filter_check_ip_mask_standard
         env.filters['mask_inv'] = filter_check_ip_inverse_mask_standard
         env.filters['as_number'] = filter_check_as_number
+        env.filters['vlan'] = filter_check_vlan_number
+        env.filters['vni'] = filter_check_vni_number
+        env.filters['required'] = filter_check_required
+        env.filters['community'] = filter_check_community
 
         self.output_file_name = pdt.file_name_increase(self.output_file_name, self.directories.get_output_dir())
 

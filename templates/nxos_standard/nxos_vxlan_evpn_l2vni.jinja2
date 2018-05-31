@@ -1,0 +1,84 @@
+{#-
+Version: 1.0.0
+Updated: 5/31/2018
+
+Sample data for this template
+
+This is to get you up and running in a lab at this time, it allows you to focus on the vxlan/evpn config
+
+--- # Test data to for nxos
+version: 2
+data:
+-   template: nxos_base.jinja2
+    ticket_number: TKTNUMBER01
+    devices:
+    -   device:
+        -   devicename: NXOS-RTR02
+            management_ip: 10.99.222.23
+            vxlan_evpn_l2vnis:
+            -   vni: 2001001
+                vrf: vxlan-900001
+                vlan: 1001
+                ip: 192.168.1.1
+                mask: 24
+                description: Host/Server facing SVI
+                vlan_name: test_vlan
+                mcast_group: 239.0.0.1
+                rd: '65000:1'
+                route_targets:
+                    export_rts:
+                    -   '65000:1'
+                    import_rts:
+                    -   '65000:2'
+                interfaces:
+                -   interface: Ethernet1/48
+                    description: Host 1
+                -   interface: Ethernet1/46
+                    description: Host 2
+                -   interface: Ethernet1/45
+                    description: Host 3
+
+-#}
+{% for vxlan_evpn_l2vni in device.vxlan_evpn_l2vnis %}
+vlan {{ vxlan_evpn_l2vni.vlan|required|vlan }}
+  name {{ vxlan_evpn_l2vni.vlan_name|required }}
+  vn-segment {{ vxlan_evpn_l2vni.vni|required|vni }}
+
+interface nve1
+  member vni {{ vxlan_evpn_l2vni.vni|required|vni }}
+    suppress-arp
+    mcast-group {{ vxlan_evpn_l2vni.mcast_group|required|m_ip_address }}
+
+interface Vlan{{ vxlan_evpn_l2vni.vlan|required|vlan }}
+  description {{ vxlan_evpn_l2vni.description|required }}
+  no shutdown
+  vrf member {{ vxlan_evpn_l2vni.vrf|required }}
+  ip address {{ vxlan_evpn_l2vni.ip|required|u_ip_address }}/{{ vxlan_evpn_l2vni.mask|required|mask_cidr }}
+  fabric forwarding mode anycast-gateway
+
+{% for interface in vxlan_evpn_l2vni.interfaces %}
+interface {{ interface.interface|required }}
+  description {{ interface.description|required }}
+  switchport access vlan {{ vxlan_evpn_l2vni.vlan|required|vlan }}
+
+{% endfor %}
+evpn
+  vni {{ vxlan_evpn_l2vni.vni|required|vni }} l2
+    {% if vxlan_evpn_l2vni.rd %}
+    rd {{ vxlan_evpn_l2vni.rd|community }}
+    {% else %}
+    rd auto
+    {% endif %}
+    {% if vxlan_evpn_l2vni.route_targets %}
+        {% for import_rt in vxlan_evpn_l2vni.route_targets.import_rts %}
+    route-target import {{ import_rt|community }}
+        {% endfor %}
+        {% for export_rt in vxlan_evpn_l2vni.route_targets.export_rts %}
+    route-target export {{ export_rt|community }}
+        {% endfor %}
+    {% else %}
+    route-target import auto
+    route-target export auto
+    {% endif %}
+
+{% endfor %}
