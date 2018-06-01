@@ -30,12 +30,14 @@ def filter_check_u_ip_address(value):
     """
     error = '{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_u_ip_address {}'.format(error))
         return error
 
     elif ipv4.ucast_ip(value, return_tuple=False):
         return value
 
     else:
+        TEMPLATE_LOGGER.info('filter_check_u_ip_address {}'.format(error))
         return error
 
 
@@ -47,12 +49,14 @@ def filter_check_subnet(value):
     """
     error = '{value} !!!! possible error this is required to be a ipv4 subnet !!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_subnet {}'.format(error))
         return error
 
     elif ipv4.ip_mask(value, return_tuple=False):
         return value
 
     else:
+        TEMPLATE_LOGGER.info('filter_check_subnet {}'.format(error))
         return error
 
 
@@ -64,6 +68,7 @@ def filter_check_ip_mask_cidr(value):
     """
     error = '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_ip_mask_cidr {}'.format(error))
         return error
 
     try:
@@ -74,7 +79,7 @@ def filter_check_ip_mask_cidr(value):
             return error
 
     except ValueError as e:
-        TEMPLATE_LOGGER.info(e)
+        TEMPLATE_LOGGER.info('filter_check_ip_mask_cidr {}'.format(error))
         return error
 
 
@@ -86,6 +91,7 @@ def filter_check_ip_mask_standard(value):
     """
     error = '{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_ip_mask_standard {}'.format(error))
         return error
 
     else:
@@ -98,6 +104,7 @@ def filter_check_ip_mask_standard(value):
                 not_found = True
 
         if not_found:
+            TEMPLATE_LOGGER.info('filter_check_ip_mask_standard {}'.format(error))
             return error
 
 
@@ -109,6 +116,7 @@ def filter_check_vlan_number(value):
     """
     error = '{value} !!!! possible error the VLAN# should be between 1 and 4096!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_vlan_number {}'.format(error))
         return error
 
     else:
@@ -120,6 +128,7 @@ def filter_check_vlan_number(value):
                 return value
 
         except ValueError as e:
+            TEMPLATE_LOGGER.info('filter_check_vlan_number {}, caught {}'.format(error, e))
             return error
 
 
@@ -131,6 +140,7 @@ def filter_check_vni_number(value):
     """
     error = '{value} !!!! possible error the VNI# should be between 1 and 16777214!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_vni_number {}'.format(error))
         return error
 
     else:
@@ -142,6 +152,7 @@ def filter_check_vni_number(value):
                 return value
 
         except ValueError as e:
+            TEMPLATE_LOGGER.info('filter_check_vni_number {}, caught {}'.format(error, e))
             return error
 
 
@@ -153,6 +164,7 @@ def filter_check_ip_inverse_mask_standard(value):
     """
     error = '{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_ip_inverse_mask_standard {}'.format(error))
         return error
 
     else:
@@ -165,6 +177,7 @@ def filter_check_ip_inverse_mask_standard(value):
                 not_found = True
 
         if not_found:
+            TEMPLATE_LOGGER.info('filter_check_ip_inverse_mask_standard {}'.format(error))
             return error
 
 
@@ -176,12 +189,14 @@ def filter_check_m_ip_address(value):
     """
     error = '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_m_ip_address {}'.format(error))
         return error
 
     elif ipv4.mcast_ip(value, return_tuple=False):
         return value
 
     else:
+        TEMPLATE_LOGGER.info('filter_check_m_ip_address {}'.format(error))
         return error
 
 
@@ -193,17 +208,20 @@ def filter_check_as_number(value):
     """
     error = '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_as_number {}'.format(error))
         return error
 
     else:
         try:
             if int(value) not in range(1, 65536):
+                TEMPLATE_LOGGER.info('filter_check_as_number {}'.format(error))
                 return error
 
             else:
                 return value
 
         except ValueError as e:
+            TEMPLATE_LOGGER.info('filter_check_as_number {}, caught {}'.format(error, e))
             return error
 
 
@@ -215,6 +233,7 @@ def filter_check_required(value):
     """
     error = '{value} !!!! This is a required value!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_required {}'.format(error))
         return error
 
     else:
@@ -230,9 +249,11 @@ def filter_check_community(value):
     error = '{value} !!!! possible error the community should be in this format XXX:XXX!!!!'.format(value=value)
     regex_community = re.compile(r'^[0-9]+:[0-9]+$')
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_community {}'.format(error))
         return error
 
     elif not regex_community.match(str(value)):
+        TEMPLATE_LOGGER.info('filter_check_community {}'.format(error))
         return error
 
     else:
@@ -249,9 +270,11 @@ def filter_check_mac_address(value):
             'xxxx.xxxx.xxxx, and only contain 0-9 or a-f!!!!'.format(value=value)
     regex_mac = re.compile(r'^([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}$', re.IGNORECASE)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_mac_address {}'.format(error))
         return error
 
     elif not regex_mac.match(str(value)):
+        TEMPLATE_LOGGER.info('filter_check_mac_address {}'.format(error))
         return error
 
     else:
@@ -266,9 +289,11 @@ def filter_check_permit_or_deny(value):
     """
     error = '{value} !!!! possible error should be permit or deny!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_permit_or_deny {}'.format(error))
         return error
 
     elif value not in ('permit', 'deny'):
+        TEMPLATE_LOGGER.info('filter_check_permit_or_deny {}'.format(error))
         return error
 
     else:
@@ -283,9 +308,11 @@ def filter_check_inside_or_outside(value):
     """
     error = '{value} !!!! possible error should be inside or outside!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_inside_or_outside {}'.format(error))
         return error
 
     elif value not in ('inside', 'outside'):
+        TEMPLATE_LOGGER.info('filter_check_inside_or_outside {}'.format(error))
         return error
 
     else:
@@ -300,6 +327,7 @@ def filter_check_number(value):
     """
     error = '{value} !!!! possible error this should be any number!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_number {}'.format(error))
         return error
 
     try:
@@ -307,6 +335,7 @@ def filter_check_number(value):
             return value
 
     except ValueError as e:
+        TEMPLATE_LOGGER.info('filter_check_number {}, caught {}'.format(error, e))
         return error
 
 
@@ -318,10 +347,12 @@ def filter_check_route_map_match_items(value):
     """
     error = '{value} !!!! possible error check template for possible match items!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_route_map_match_items {}'.format(error))
         return error
 
     elif value not in ('ip address prefix-list', 'as-path', 'ip address', 'community', 'extcommunity',
                        'ip multicast group'):
+        TEMPLATE_LOGGER.info('filter_check_route_map_match_items {}'.format(error))
         return error
 
     else:
@@ -336,9 +367,11 @@ def filter_check_route_map_set_items(value):
     """
     error = '{value} !!!! possible error check template for possible set items!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_route_map_set_items {}'.format(error))
         return error
 
     elif value not in ('local-preference', 'weight', 'community', 'as-path prepend', 'as-path prepend last-as'):
+        TEMPLATE_LOGGER.info('filter_check_route_map_set_items {}'.format(error))
         return error
 
     else:
@@ -353,17 +386,20 @@ def filter_check_protocol_port_number(value):
     """
     error = '{value} !!!! possible error should be between 0 and 65535!!!!'.format(value=value)
     if not value:
+        TEMPLATE_LOGGER.info('filter_check_protocol_port_number {}'.format(error))
         return error
 
     else:
         try:
             if int(value) not in range(0, 65536):
+                TEMPLATE_LOGGER.info('filter_check_protocol_port_number {}'.format(error))
                 return error
 
             else:
                 return value
 
         except ValueError as e:
+            TEMPLATE_LOGGER.info('filter_check_protocol_port_number {}, caught {}'.format(error, e))
             return error
 
 
