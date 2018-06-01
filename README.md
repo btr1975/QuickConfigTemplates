@@ -70,7 +70,7 @@ data:
 * Added a rudimentary jinja2 xml for Notepad++
 
 ### Version 1.0.11.dev information
-* Added some custom Django filters for use in templates to check for correct data
+* Added some custom Django filters for use in templates to check for correct data see Directions for filters
 
 ### Requirements
 * Jinja2==2.10

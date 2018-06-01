@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -49,8 +50,8 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-ip access-list standard {{ acl.acl_name }}
+ip access-list standard {{ acl.acl_name|required }}
     {% for sequence in acl.sequences %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.source_network }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.source_network }}
     {% endfor %}
 {% endfor %}

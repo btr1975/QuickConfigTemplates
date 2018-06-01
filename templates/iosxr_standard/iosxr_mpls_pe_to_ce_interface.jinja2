@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.5
-Updated: 5/31/2018
+Version: 1.0.6
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -56,9 +56,9 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-interface {{ interface.interface }}
- description {{ interface.description }}
- vrf {{ interface.vrf }}
+interface {{ interface.interface|required }}
+ description {{ interface.description|required }}
+ vrf {{ interface.vrf|required }}
  {% if not interface.tag %}
  cdp
  {% endif %}
@@ -68,14 +68,14 @@ interface {{ interface.interface }}
  ipv4 address {{ interface.ip|u_ip_address }} {{ interface.mask|mask_standard }}
  {% endif %}
  {% if interface.tag %}
- encapsulation dot1q {{ interface.tag }}
+ encapsulation dot1q {{ interface.tag|vlan }}
  {% endif %}
 
 {% if interface.multicast %}
 router pim
- vrf {{ interface.vrf }}
+ vrf {{ interface.vrf|required }}
   address-family ipv4
-   interface {{ interface.interface }}
+   interface {{ interface.interface|required }}
    {% if interface.remove %}
     disable
    {% else %}
@@ -83,9 +83,9 @@ router pim
    {% endif %}
 
 multicast-routing
- vrf {{ interface.vrf }}
+ vrf {{ interface.vrf|required }}
   address-family ipv4
-   interface {{ interface.interface }}
+   interface {{ interface.interface|required }}
    {% if interface.remove %}
     disable
    {% else %}

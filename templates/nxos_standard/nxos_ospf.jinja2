@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.3
-Updated: 5/31/2018
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -26,7 +26,7 @@ data:
 
 {% endif %}
 feature ospf
-router ospf {{ device.ospf.ospf_process }}
+router ospf {{ device.ospf.ospf_process|required }}
   {% if device.ospf.bfd %}
   bfd
   {% endif %}

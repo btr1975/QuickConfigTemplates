@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -41,9 +42,9 @@ data:
 {% endif %}
     {% for sequence in prefix_list.sequences %}
         {% if sequence.le_ge %}
-ip prefix-list {{ prefix_list.prefix_list_name }} seq {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.network }} {{ sequence.le_ge }} {{ sequence.le_ge_value }}
+ip prefix-list {{ prefix_list.prefix_list_name|required }} seq {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.network }} {{ sequence.le_ge }} {{ sequence.le_ge_value|mask_cidr }}
         {% else %}
-ip prefix-list {{ prefix_list.prefix_list_name }} seq {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.network }}
+ip prefix-list {{ prefix_list.prefix_list_name|required }} seq {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.network }}
         {% endif %}
     {% endfor %}
 {% endfor %}

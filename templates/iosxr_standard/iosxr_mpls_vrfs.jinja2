@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -39,19 +40,19 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-vrf {{ vrf.vrf }}
+vrf {{ vrf.vrf|required }}
  address-family ipv4 unicast
 {% if vrf.import_rts %}
   import route-target
 {% for import_rt in vrf.import_rts %}
-   {{ import_rt }}
+   {{ import_rt|community }}
 {% endfor %}
   !
 {% endif %}
 {% if vrf.export_rts %}
   export route-target
 {% for export_rt in vrf.export_rts %}
-   {{ export_rt }}
+   {{ export_rt|community }}
 {% endfor %}
 {% endif %}
 

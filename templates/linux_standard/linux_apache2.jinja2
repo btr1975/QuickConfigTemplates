@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.0-dev
+Version: 1.0.1-dev
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -26,31 +27,31 @@ data:
 -#}
 {% for apache in device.apache2 %}
 {% if apache.os_family|lower == "debian" %}
-<VirtualHost *:{{ apache.site_port }}>
+<VirtualHost *:{{ apache.site_port|protocol_port }}>
 
- ServerName {{ apache.server_name }}
- ServerAdmin {{ apache.server_admin }}
+ ServerName {{ apache.server_name|required }}
+ ServerAdmin {{ apache.server_admin|required }}
 {% endif %}
 
- Alias /media/ {{ apache.media_directory }}/
+ Alias /media/ {{ apache.media_directory|required }}/
 
- <Directory {{ apache.media_directory }}>
+ <Directory {{ apache.media_directory|required }}>
  Order deny,allow
  Require all granted
  </Directory>
 
- Alias /static/ {{ apache.static_content_directory }}/
+ Alias /static/ {{ apache.static_content_directory|required }}/
 
- <Directory {{ apache.static_content_directory }}>
+ <Directory {{ apache.static_content_directory|required }}>
  Order deny,allow
  Require all granted
  </Directory>
 
- WSGIScriptAlias / {{ apache.apache_wsgi_directory }}/django.wsgi process-group={{ apache.wsgi_process_group }}
- WSGIDaemonProcess {{ apache.wsgi_process_group }}
- WSGIProcessGroup {{ apache.wsgi_process_group }}
+ WSGIScriptAlias / {{ apache.apache_wsgi_directory|required }}/django.wsgi process-group={{ apache.wsgi_process_group|required }}
+ WSGIDaemonProcess {{ apache.wsgi_process_group|required }}
+ WSGIProcessGroup {{ apache.wsgi_process_group|required }}
 
- <Directory {{ apache.apache_wsgi_directory }}>
+ <Directory {{ apache.apache_wsgi_directory|required }}>
  Order deny,allow
  Require all granted
  </Directory>

@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -32,6 +33,6 @@ data:
 
 {% endif %}
     {% for sequence in community_list.sequences %}
-ip community-list expanded {{ community_list.community_list_name }} {{ sequence.permit_deny }} {{ sequence.regex }}
+ip community-list expanded {{ community_list.community_list_name|required }} {{ sequence.permit_deny|p_or_d }} {{ sequence.regex }}
     {% endfor %}
 {% endfor %}

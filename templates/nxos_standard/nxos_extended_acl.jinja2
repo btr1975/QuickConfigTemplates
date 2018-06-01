@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.3
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -106,31 +107,31 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-ip access-list {{ acl.acl_name }}
+ip access-list {{ acl.acl_name|required }}
     {% for sequence in acl.sequences %}
         {% if sequence.source_port %}
             {% if sequence.destination_port %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} eq {{ sequence.source_port }} {{ sequence.destination_network }} eq {{ sequence.destination_port }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} eq {{ sequence.source_port|protocol_port }} {{ sequence.destination_network|subnet }} eq {{ sequence.destination_port|protocol_port }}
             {% elif sequence.destination_port_range %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} eq {{ sequence.source_port }} {{ sequence.destination_network }} range {{ sequence.destination_port_range }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} eq {{ sequence.source_port|protocol_port }} {{ sequence.destination_network|subnet }} range {{ sequence.destination_port_range }}
             {%  else %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} eq {{ sequence.source_port }} {{ sequence.destination_network }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} eq {{ sequence.source_port|protocol_port }} {{ sequence.destination_network|subnet }}
             {% endif %}
         {% elif sequence.source_port_range %}
             {% if sequence.destination_port %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} range {{ sequence.source_port_range }} {{ sequence.destination_network }} eq {{ sequence.destination_port }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} range {{ sequence.source_port_range }} {{ sequence.destination_network|subnet }} eq {{ sequence.destination_port|protocol_port }}
             {% elif sequence.destination_port_range %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} range {{ sequence.source_port_range }} {{ sequence.destination_network }} range {{ sequence.destination_port_range }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} range {{ sequence.source_port_range }} {{ sequence.destination_network|subnet }} range {{ sequence.destination_port_range }}
             {%  else %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} range {{ sequence.source_port_range }} {{ sequence.destination_network }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} range {{ sequence.source_port_range }} {{ sequence.destination_network|subnet }}
             {% endif %}
         {% else %}
             {% if sequence.destination_port %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} {{ sequence.destination_network }} eq {{ sequence.destination_port }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} {{ sequence.destination_network|subnet }} eq {{ sequence.destination_port|protocol_port }}
             {% elif sequence.destination_port_range %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} {{ sequence.destination_network }} range {{ sequence.destination_port_range }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} {{ sequence.destination_network|subnet }} range {{ sequence.destination_port_range }}
             {%  else %}
-  {{ sequence.sequence }} {{ sequence.permit_deny }} {{ sequence.protocol }} {{ sequence.source_network }} {{ sequence.destination_network }}
+  {{ sequence.sequence|number }} {{ sequence.permit_deny|p_or_d }} {{ sequence.protocol }} {{ sequence.source_network|subnet }} {{ sequence.destination_network|subnet }}
             {% endif %}
         {% endif %}
     {% endfor %}

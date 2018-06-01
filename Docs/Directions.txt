@@ -35,12 +35,19 @@ Custom Filters for Templates:
 
 u_ip_address = Check for a good unicast ipv4 address
 m_ip_address = Check for a good multicast ipv4 address
-u_subnet = Not ready yet
+subnet = Checks for any ipv4 subnet in the following format x.x.x.x/x
 mask_cidr = Check for a good ipv4 CIDR mask
 mask_standard = Check for a good standard ipv4 mask
 mask_inv = Check for a good inverse ipv4 mask
 as_number = Check for a BGP, EIGRP, OSPF process/AS number 1 to 65535
 vlan = Check for a VLAN number 1 - 4096
 vni = Check for a VNI number 1 - 16777214
-required = Check for a required item in a yml file
+required = Check for a required item in a template
 community = Check for a community in the following format XXXX:XXXX
+mac = Check for a good mac address
+p_or_d = Check for the word permit, or deny
+number = Check for any number
+rmap_match_items = Check for these route-map match items ('ip address prefix-list', 'as-path', 'ip address', 'community', 'extcommunity', 'ip multicast group')
+rmap_set_items = Check for these route-map set items ('local-preference', 'weight', 'community', 'as-path prepend', 'as-path prepend last-as')
+protocol_port = Check for a number between 0 and 65535
+i_or_o = Check for the word inside, or outside

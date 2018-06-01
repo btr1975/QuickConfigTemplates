@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.4
-Updated: 5/31/2018
+Version: 1.0.5
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -39,5 +39,5 @@ ntp
  server {{ ntp_serv|u_ip_address }}
 {% endfor %}
 {% if device.ntp_servers.source %}
- source {{ device.ntp_servers.source }}
+ source {{ device.ntp_servers.source|required }}
 {% endif %}

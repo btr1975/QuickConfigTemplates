@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.5
-Updated: 5/31/2018
+Version: 1.0.6
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -14,14 +14,14 @@ data:
         -   devicename: NXOS-RTR00
             management_ip: 10.99.222.21
             bgp:
-                bgp_as: 22650
+                bgp_as: 65000
                 router_id: 172.16.1.1
                 neighbors:
                 -   neighbor: 192.168.5.1
-                    neighbor_as: 123456
+                    neighbor_as: 65001
                     neighbor_bfd: true
                     neighbor_description: Test description
-                    neighbor_local_as: 22650
+                    neighbor_local_as: 65002
                     neighbor_next_hop_self: true
                     neighbor_no_prepend: true
                     neighbor_password: poop
@@ -34,9 +34,9 @@ data:
                     neighbor_update_source: Loopback100
 
                 -   neighbor: 192.168.6.1
-                    neighbor_as: 11111
+                    neighbor_as: 65003
                     neighbor_description: Test description 2
-                    neighbor_local_as: 5231
+                    neighbor_local_as: 65004
                     neighbor_next_hop_self: true
                     neighbor_route_maps:
                         route_map_in: RM-TEST-IN-2
@@ -46,21 +46,21 @@ data:
                     neighbor_update_source: Loopback100
 
                 networks:
-                - 192.168.1.1/24
-                - 192.168.2.1/24
+                - 192.168.1.0/24
+                - 192.168.2.0/24
 
     -   device:
         -   devicename: NXOS-RTR01
             management_ip: 10.99.222.22
             bgp:
-                bgp_as: 22650
+                bgp_as: 65000
                 router_id: 172.16.1.1
                 neighbors:
                 -   neighbor: 192.168.25.1
-                    neighbor_as: 123456
+                    neighbor_as: 124
                     neighbor_bfd: true
                     neighbor_description: Test description
-                    neighbor_local_as: 22650
+                    neighbor_local_as: 65005
                     neighbor_next_hop_self: true
                     neighbor_no_prepend: true
                     neighbor_password: poop
@@ -70,9 +70,9 @@ data:
                     neighbor_update_source: Loopback100
 
                 -   neighbor: 192.168.10.1
-                    neighbor_as: 11111
+                    neighbor_as: 65006
                     neighbor_description: Test description 2
-                    neighbor_local_as: 5231
+                    neighbor_local_as: 65007
                     neighbor_next_hop_self: true
                     neighbor_route_maps:
                         route_map_in: RM-TEST-IN-2
@@ -82,8 +82,8 @@ data:
                     neighbor_update_source: Loopback100
 
                 networks:
-                - 192.168.25.1/24
-                - 192.168.42.1/24
+                - 192.168.25.0/24
+                - 192.168.42.0/24
 
 -#}
 {% if device.bgp.note %}
@@ -100,7 +100,7 @@ router bgp {{ device.bgp.bgp_as|as_number }}
 {% if device.bgp.networks %}
   address-family ipv4 unicast
    {% for network in device.bgp.networks %}
-   network {{ network }}
+   network {{ network|subnet }}
    {% endfor %}
 {% endif %}
 {% for neighbor in device.bgp.neighbors %}
@@ -113,7 +113,7 @@ router bgp {{ device.bgp.bgp_as|as_number }}
   neighbor {{ neighbor.neighbor|u_ip_address }}
     remote-as {{ neighbor.neighbor_as|as_number }}
 {% if neighbor.neighbor_password %}
-    password {{ neighbor.neighbor_password }}
+    password {{ neighbor.neighbor_password|required }}
 {% endif %}
 {% if neighbor.neighbor_local_as %}
     {% if neighbor.neighbor_no_prepend %}
@@ -123,25 +123,25 @@ router bgp {{ device.bgp.bgp_as|as_number }}
     {% endif %}
 {% endif %}
 {% if neighbor.neighbor_description %}
-    description {{ neighbor.neighbor_description }}
+    description {{ neighbor.neighbor_description|required }}
 {% endif %}
 {% if neighbor.neighbor_update_source %}
-    update-source {{ neighbor.neighbor_update_source }}
+    update-source {{ neighbor.neighbor_update_source|required }}
 {% endif %}
 {% if neighbor.neighbor_bfd %}
     bfd
 {% endif %}
 {% if neighbor.neighbor_timers %}
-    timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
+    timers {{ neighbor.neighbor_timers.keep_alive|number }} {{ neighbor.neighbor_timers.hold_time|number }}
 {% endif %}
     address-family ipv4 unicast
       send-community
 {% if neighbor.neighbor_route_maps %}
     {% if neighbor.neighbor_route_maps.route_map_in %}
-      route-map {{ neighbor.neighbor_route_maps.route_map_in }} in
+      route-map {{ neighbor.neighbor_route_maps.route_map_in|required }} in
     {% endif %}
     {% if neighbor.neighbor_route_maps.route_map_out %}
-      route-map {{ neighbor.neighbor_route_maps.route_map_out }} out
+      route-map {{ neighbor.neighbor_route_maps.route_map_out|required }} out
     {% endif %}
 {% endif %}
 {% if neighbor.neighbor_next_hop_self %}

@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.4
-Updated: 5/31/2018
+Version: 1.0.5
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -14,14 +14,14 @@ data:
         -   devicename: IOS-RTR00
             management_ip: 10.99.222.21
             bgp:
-                bgp_as: 22650
+                bgp_as: 65000
                 router_id: 172.16.1.1
                 neighbors:
                 -   neighbor: 192.168.5.1
-                    neighbor_as: 123456
+                    neighbor_as: 65001
                     neighbor_bfd: true
                     neighbor_description: Test description
-                    neighbor_local_as: 22650
+                    neighbor_local_as: 65002
                     neighbor_next_hop_self: true
                     neighbor_no_prepend: true
                     neighbor_password: poop
@@ -34,9 +34,9 @@ data:
                     neighbor_update_source: Loopback100
 
                 -   neighbor: 192.168.6.1
-                    neighbor_as: 11111
+                    neighbor_as: 65003
                     neighbor_description: Test description 2
-                    neighbor_local_as: 5231
+                    neighbor_local_as: 65004
                     neighbor_next_hop_self: true
                     neighbor_route_maps:
                         route_map_in: RM-TEST-IN-2
@@ -56,13 +56,13 @@ data:
         -   devicename: IOS-RTR01
             management_ip: 10.99.222.22
             bgp:
-                bgp_as: 22650
+                bgp_as: 65000
                 neighbors:
                 -   neighbor: 192.168.25.1
-                    neighbor_as: 123456
+                    neighbor_as: 65001
                     neighbor_bfd: true
                     neighbor_description: Test description
-                    neighbor_local_as: 22650
+                    neighbor_local_as: 65002
                     neighbor_next_hop_self: true
                     neighbor_no_prepend: true
                     neighbor_password: poop
@@ -71,9 +71,9 @@ data:
                         route_map_out: RM-TEST-OUT
                     neighbor_update_source: Loopback100
                 -   neighbor: 192.168.10.1
-                    neighbor_as: 11111
+                    neighbor_as: 65003
                     neighbor_description: Test description 2
-                    neighbor_local_as: 5231
+                    neighbor_local_as: 65004
                     neighbor_next_hop_self: true
                     neighbor_route_maps:
                         route_map_in: RM-TEST-IN-2
@@ -103,7 +103,7 @@ router bgp {{ device.bgp.bgp_as|as_number }}
 {% endif %}
 {% if device.bgp.networks %}
    {% for network in device.bgp.networks %}
-  network {{ network.network }} mask {{ network.mask }}
+  network {{ network.network|u_ip_address }} mask {{ network.mask|mask_standard }}
    {% endfor %}
 {% endif %}
 {% for neighbor in device.bgp.neighbors %}
@@ -115,7 +115,7 @@ router bgp {{ device.bgp.bgp_as|as_number }}
 {% endif %}
   neighbor {{ neighbor.neighbor|u_ip_address }} remote-as {{ neighbor.neighbor_as|as_number }}
 {% if neighbor.neighbor_password %}
-  neighbor {{ neighbor.neighbor|u_ip_address }} password {{ neighbor.neighbor_password }}
+  neighbor {{ neighbor.neighbor|u_ip_address }} password {{ neighbor.neighbor_password|required }}
 {% endif %}
 {% if neighbor.neighbor_local_as %}
     {% if neighbor.neighbor_no_prepend %}
@@ -125,13 +125,13 @@ router bgp {{ device.bgp.bgp_as|as_number }}
     {% endif %}
 {% endif %}
 {% if neighbor.neighbor_description %}
-  neighbor {{ neighbor.neighbor|u_ip_address }} description {{ neighbor.neighbor_description }}
+  neighbor {{ neighbor.neighbor|u_ip_address }} description {{ neighbor.neighbor_description|required }}
 {% endif %}
 {% if neighbor.neighbor_update_source %}
-  neighbor {{ neighbor.neighbor|u_ip_address }} update-source {{ neighbor.neighbor_update_source }}
+  neighbor {{ neighbor.neighbor|u_ip_address }} update-source {{ neighbor.neighbor_update_source|required }}
 {% endif %}
 {% if neighbor.neighbor_timers %}
-  neighbor {{ neighbor.neighbor|u_ip_address }} timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
+  neighbor {{ neighbor.neighbor|u_ip_address }} timers {{ neighbor.neighbor_timers.keep_alive|number }} {{ neighbor.neighbor_timers.hold_time|number }}
 {% else %}
   neighbor {{ neighbor.neighbor|u_ip_address }} timers 7 21
 {% endif %}
@@ -145,10 +145,10 @@ router bgp {{ device.bgp.bgp_as|as_number }}
   neighbor {{ neighbor.neighbor|u_ip_address }} soft-reconfiguration inbound
 {% if neighbor.neighbor_route_maps %}
     {% if neighbor.neighbor_route_maps.route_map_in %}
-  neighbor {{ neighbor.neighbor|u_ip_address }} route-map {{ neighbor.neighbor_route_maps.route_map_in }} in
+  neighbor {{ neighbor.neighbor|u_ip_address }} route-map {{ neighbor.neighbor_route_maps.route_map_in|required }} in
     {% endif %}
     {% if neighbor.neighbor_route_maps.route_map_out %}
-  neighbor {{ neighbor.neighbor|u_ip_address }} route-map {{ neighbor.neighbor_route_maps.route_map_out }} out
+  neighbor {{ neighbor.neighbor|u_ip_address }} route-map {{ neighbor.neighbor_route_maps.route_map_out|required }} out
     {% endif %}
 {% endif %}
 {% endfor %}

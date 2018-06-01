@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.4
-Updated: 5/30/2018
+Version: 1.0.5
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -49,24 +49,24 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-interface {{ interface.interface }}
+interface {{ interface.interface|required }}
  {% if interface.remove %}
  no description
  {% else %}
- description {{ interface.description }}
+ description {{ interface.description|required }}
  {% endif %}
  {% if interface.vrf %}
      {% if interface.remove %}
- no ip vrf forwarding {{ interface.vrf }}
+ no ip vrf forwarding {{ interface.vrf|required }}
      {% else %}
- ip vrf forwarding {{ interface.vrf }}
+ ip vrf forwarding {{ interface.vrf|required }}
      {% endif %}
  {% endif %}
  {% if interface.tag %}
      {% if interface.remove %}
- no ncapsulation dot1q {{ interface.tag }}
+ no ncapsulation dot1q {{ interface.tag|vlan }}
      {% else %}
- encapsulation dot1q {{ interface.tag }}
+ encapsulation dot1q {{ interface.tag|vlan }}
      {% endif %}
  {% endif %}
  no switchport
@@ -83,16 +83,16 @@ interface {{ interface.interface }}
  arp timeout 270
  {% if interface.acl_in %}
      {% if interface.remove %}
- no ip access-group {{ interface.acl_in }} in
+ no ip access-group {{ interface.acl_in|required }} in
      {% else %}
- ip access-group {{ interface.acl_in }} in
+ ip access-group {{ interface.acl_in|required }} in
      {% endif %}
  {% endif %}
  {% if interface.acl_out %}
      {% if interface.remove %}
- no ip access-group {{ interface.acl_out }} out
+ no ip access-group {{ interface.acl_out|required }} out
      {% else %}
- ip access-group {{ interface.acl_out }} out
+ ip access-group {{ interface.acl_out|required }} out
      {% endif %}
  {% endif %}
 end

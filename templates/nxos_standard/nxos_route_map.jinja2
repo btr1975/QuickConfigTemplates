@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -21,7 +22,7 @@ data:
                     description: DESCRIPTION
                     continue: 20
                     match:
-                    -   match_item: ip address prelix-list
+                    -   match_item: ip address prefix-list
                         match_item_name: PL-A
                     set:
                     -   set_item: community
@@ -31,29 +32,12 @@ data:
                     permit_deny: permit
                     description: DESCRIPTION
                     match:
-                    -   match_item: ip address prelix-list
+                    -   match_item: ip address prefix-list
                         match_item_name: PL-A
                     set:
                     -   set_item: community
                         set_item_to: 1:2 additive
-
-                -   description: test description
-                    match:
-                    -   match_item: ip address prefix-list
-                        match_item_name: PL-TEST-1
-                    permit_deny: deny
-                    sequence: 20
-                    set:
-                    -   set_item: local preference
-                        set_item_to: 500
-
-                -   match:
-                    -   match_item: access-list
-                        match_item_name: ACL-C-in
-                    permit_deny: permit
-                    sequence: 30
-                    set:
-                    -   set_item: local preference
+                    -   set_item: local-preference
                         set_item_to: 200
 
 Notes:
@@ -84,18 +68,18 @@ as-path prepend last-as
 
 {% endif %}
     {% for sequence in route_map.sequences %}
-route-map {{ route_map.route_map_name }} {{ sequence.permit_deny }} {{ sequence.sequence }}
+route-map {{ route_map.route_map_name|required }} {{ sequence.permit_deny|p_or_d }} {{ sequence.sequence|number }}
 {% if sequence.description %}
-  description {{ sequence.description }}
+  description {{ sequence.description|required }}
 {% endif %}
         {% for match in sequence.match %}
-  match {{ match.match_item }} {{ match.match_item_name }}
+  match {{ match.match_item|rmap_match_items }} {{ match.match_item_name|required }}
         {% endfor %}
         {% if sequence.continue %}
   continue {{ sequence.continue }}
         {% endif %}
         {% for set in sequence.set %}
-  set {{ set.set_item }} {{ set.set_item_to }}
+  set {{ set.set_item|rmap_set_items }} {{ set.set_item_to|required }}
         {% endfor %}
     {% endfor %}
 {% endfor %}

@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.5
-Updated: 5/31/2018
+Version: 1.0.6
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -41,7 +41,7 @@ data:
 -#}
 {% for interface in device.mpls_pe_to_pe_interfaces %}
 
-***** BEGIN config for {{ interface.interface }} *****
+***** BEGIN config for {{ interface.interface|required }} *****
 
 {% if interface.note %}
 {% set note = interface.note %}
@@ -49,11 +49,11 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-interface {{ interface.interface }}
+interface {{ interface.interface|required }}
  {% if interface.remove %}
  no description
  {% else %}
- description {{ interface.description }}
+ description {{ interface.description|required }}
  {% endif %}
  bandwidth 10000000
  cdp
@@ -76,7 +76,7 @@ interface {{ interface.interface }}
 
 router pim
  address-family ipv4
-  interface {{ interface.interface }}
+  interface {{ interface.interface|required }}
   {% if interface.remove %}
    disable
   {% else %}
@@ -85,7 +85,7 @@ router pim
 
 multicast-routing
  address-family ipv4
-  interface {{ interface.interface }}
+  interface {{ interface.interface|required }}
   {% if interface.remove %}
    disable
   {% else %}
@@ -94,35 +94,35 @@ multicast-routing
 
 mpls ldp
  {% if interface.remove %}
- no interface {{ interface.interface }}
+ no interface {{ interface.interface|required }}
  {% else %}
- interface {{ interface.interface }}
+ interface {{ interface.interface|required }}
  {% endif %}
 
 mpls traffic-eng
  {% if interface.remove %}
- no interface {{ interface.interface }}
+ no interface {{ interface.interface|required }}
  {% else %}
- interface {{ interface.interface }}
+ interface {{ interface.interface|required }}
   admin-weight 1
  {% endif %}
 
 rsvp
  {% if interface.remove %}
- no interface {{ interface.interface }}
+ no interface {{ interface.interface|required }}
  {% else %}
- interface {{ interface.interface }}
+ interface {{ interface.interface|required }}
   bandwidth 5000000
  {% endif %}
 
 router ospf 1
  area 0
   {% if interface.remove %}
-  no interface {{ interface.interface }}
+  no interface {{ interface.interface|required }}
   {% else %}
-  interface {{ interface.interface }}
+  interface {{ interface.interface|required }}
   {% endif %}
 
-***** END config for {{ interface.interface }} *****
+***** END config for {{ interface.interface|required }} *****
 
 {% endfor %}

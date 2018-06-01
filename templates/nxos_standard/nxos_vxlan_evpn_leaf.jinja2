@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.1
-Updated: 5/31/2018
+Version: 1.0.2
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -47,7 +47,7 @@ feature bfd
 feature interface-vlan
 feature vn-segment-vlan-based
 feature nv overlay
-fabric forwarding anycast-gateway-mac {{ vxlan_evpn_leaf.anycast_gw_mac }}
+fabric forwarding anycast-gateway-mac {{ vxlan_evpn_leaf.anycast_gw_mac|required|mac }}
 hardware access-list tcam region racl 512
 hardware access-list tcam region arp-ether 256 double-wide
     {% if vxlan_evpn_leaf.boot_os %}
@@ -55,26 +55,26 @@ boot nxos bootflash:/{{ vxlan_evpn_leaf.boot_os }}
     {% endif %}
 
 router ospf UNDERLAY
-  router-id {{ vxlan_evpn_leaf.protocol_peering_ip|u_ip_address }}
+  router-id {{ vxlan_evpn_leaf.protocol_peering_ip|required|u_ip_address }}
     {% if vxlan_evpn_leaf.bfd==true %}
   bfd
     {% endif %}
 
 interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
-  ip address {{ vxlan_evpn_leaf.protocol_peering_ip|u_ip_address }}/32
+  ip address {{ vxlan_evpn_leaf.protocol_peering_ip|required|u_ip_address }}/32
   ip router ospf UNDERLAY area 0
   ip ospf network point-to-point
   ip pim sparse-mode
 
 interface loopback1
   description VTEP IP
-  ip address {{ vxlan_evpn_leaf.vtep_ip|u_ip_address }}/32
+  ip address {{ vxlan_evpn_leaf.vtep_ip|required|u_ip_address }}/32
   ip router ospf UNDERLAY area 0
   ip ospf network point-to-point
   ip pim sparse-mode
 
-ip pim rp-address {{ vxlan_evpn_leaf.anycast_ip|u_ip_address }} group-list 239.0.0.0/8
+ip pim rp-address {{ vxlan_evpn_leaf.anycast_ip|required|u_ip_address }} group-list 239.0.0.0/8
 ip pim ssm range 232.0.0.0/8
 
     {% for spine_peer_ospf in vxlan_evpn_leaf.spine_peers_ospf %}
@@ -83,7 +83,7 @@ interface Ethernet{{ spine_peer_ospf.local_spine_interface }}
   no switchport
   mtu 9216
   no ip redirects
-  ip address {{ spine_peer_ospf.local_spine_ip|u_ip_address }}/31
+  ip address {{ spine_peer_ospf.local_spine_ip|required|u_ip_address }}/31
   ip router ospf UNDERLAY area 0
   ip ospf network point-to-point
         {% if vxlan_evpn_leaf.bfd==true %}
@@ -99,10 +99,10 @@ interface nve1
   source-interface loopback1
   host-reachability protocol bgp
 
-router bgp {{ vxlan_evpn_leaf.bgp_as|as_number }}
-  router-id {{ vxlan_evpn_leaf.protocol_peering_ip|u_ip_address }}
+router bgp {{ vxlan_evpn_leaf.bgp_as|required|as_number }}
+  router-id {{ vxlan_evpn_leaf.protocol_peering_ip|required|u_ip_address }}
     {% for spine_peer_bgp in vxlan_evpn_leaf.spine_peers_bgp %}
-  neighbor {{ spine_peer_bgp|u_ip_address }} remote-as {{ vxlan_evpn_leaf.bgp_as|as_number }}
+  neighbor {{ spine_peer_bgp|required|u_ip_address }} remote-as {{ vxlan_evpn_leaf.bgp_as|required|as_number }}
     update-source loopback0
     address-family l2vpn evpn
       send-community both

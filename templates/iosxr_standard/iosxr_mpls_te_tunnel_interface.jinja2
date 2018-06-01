@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.3
-Updated: 5/31/2018
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -45,17 +45,19 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-interface tunnel-te{{ interface.tunnel_number }}
- description {{ interface.description }}
+interface tunnel-te{{ interface.tunnel_number|number }}
+ description {{ interface.description|required }}
  bandwidth 10000000
  {% if interface.remove %}
  no ipv4 unnumbered
  {% else %}
- ipv4 unnumbered {{ interface.unnumbered_interface }}
+ ipv4 unnumbered {{ interface.unnumbered_interface|required }}
  {% endif %}
  autoroute announce
  !
+ {% if not interface.remove %}
  destination {{ interface.destination_ip|u_ip_address }}
+ {% endif %}
  fast-reroute
  record-route
  path-option 1000 dynamic

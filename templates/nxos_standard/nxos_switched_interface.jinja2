@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -47,12 +48,12 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-interface {{ interface.interface }}
-  description {{ interface.description }}
+interface {{ interface.interface|required }}
+  description {{ interface.description|required  }}
   switchport
   {% if interface.port_type == 'access' %}
   switchport mode access
-  switchport access vlan {{ interface.vlan }}
+  switchport access vlan {{ interface.vlan|vlan }}
   {% if interface.portfast %}
   spanning-tree port type edge
   spanning-tree bpduguard enable

@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.4
-Updated: 5/30/2018
+Version: 1.0.5
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -60,13 +60,13 @@ data:
 {% include "common/note.jinja2" %}
 
 {% endif %}
-interface {{ interface.interface }}
+interface {{ interface.interface|required }}
  {% if interface.speed == '1g' %}
  speed 1000
  {% endif %}
- description {{ interface.description }}
+ description {{ interface.description|required }}
  {% if interface.tag %}
- encapsulation dot1q {{ interface.tag }}
+ encapsulation dot1q {{ interface.tag|vlan }}
  {% endif %}
  no switchport
  {% if interface.bfd %}

@@ -1,5 +1,6 @@
 {#-
-Version: 1.0.2
+Version: 1.0.3
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -32,6 +33,6 @@ data:
 
 {% endif %}
     {% for sequence in as_path_acl.sequences %}
-ip as-path access-list {{ as_path_acl.as_path_acl_name }} {{ sequence.permit_deny }} {{ sequence.regex }}
+ip as-path access-list {{ as_path_acl.as_path_acl_name|required }} {{ sequence.permit_deny|p_or_d }} {{ sequence.regex }}
     {% endfor %}
 {% endfor %}

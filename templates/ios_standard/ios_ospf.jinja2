@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.3
-Updated: 5/31/2018
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -47,7 +47,7 @@ router ospf {{ device.ospf.ospf_process|as_number }}
 {% endif %}
 {% if device.ospf.passive_interfaces %}
     {% for interface in device.ospf.passive_interfaces %}
-  passive-interface {{ interface }}
+  passive-interface {{ interface|required }}
     {% endfor %}
 {% endif %}
 {% if device.ospf.networks %}

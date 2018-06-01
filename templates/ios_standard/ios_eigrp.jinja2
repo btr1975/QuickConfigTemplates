@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.3
-Updated: 5/31/2018
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -44,11 +44,11 @@ router eigrp {{ device.eigrp.eigrp_as|as_number }}
 {% endif %}
 {% if device.eigrp.passive_interfaces %}
     {% for interface in device.eigrp.passive_interfaces %}
-  passive-interface {{ interface }}
+  passive-interface {{ interface|required }}
     {% endfor %}
 {% endif %}
 {% if device.eigrp.networks %}
     {% for network in device.eigrp.networks %}
-  network {{ network.network }} {{ network.inverse_mask }}
+  network {{ network.network|u_ip_address }} {{ network.inverse_mask|mask_inv }}
     {% endfor %}
 {% endif %}

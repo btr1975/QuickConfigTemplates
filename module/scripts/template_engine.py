@@ -12,7 +12,7 @@ __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'dev'
+__status__ = 'prod'
 __version_info__ = (2, 0, 3, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
@@ -39,13 +39,13 @@ def filter_check_u_ip_address(value):
         return error
 
 
-def filter_check_u_subnet(value):
+def filter_check_subnet(value):
     """
     Function to check for a subnet and mask combo in a template
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error this is required to be a unicast ipv4 subnet !!!!'.format(value=value)
+    error = '{value} !!!! possible error this is required to be a ipv4 subnet !!!!'.format(value=value)
     if not value:
         return error
 
@@ -239,6 +239,134 @@ def filter_check_community(value):
         return value
 
 
+def filter_check_mac_address(value):
+    """
+    Function to check for a mac-address in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error the mac-address should be in this format ' \
+            'xxxx.xxxx.xxxx, and only contain 0-9 or a-f!!!!'.format(value=value)
+    regex_mac = re.compile(r'^([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}$', re.IGNORECASE)
+    if not value:
+        return error
+
+    elif not regex_mac.match(str(value)):
+        return error
+
+    else:
+        return value
+
+
+def filter_check_permit_or_deny(value):
+    """
+    Function to check for permit, or deny in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error should be permit or deny!!!!'.format(value=value)
+    if not value:
+        return error
+
+    elif value not in ('permit', 'deny'):
+        return error
+
+    else:
+        return value
+
+
+def filter_check_inside_or_outside(value):
+    """
+    Function to check for inside, or outside in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error should be inside or outside!!!!'.format(value=value)
+    if not value:
+        return error
+
+    elif value not in ('inside', 'outside'):
+        return error
+
+    else:
+        return value
+
+
+def filter_check_number(value):
+    """
+    Function to check for any number in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error this should be any number!!!!'.format(value=value)
+    if not value:
+        return error
+
+    try:
+        if isinstance(int(value), int):
+            return value
+
+    except ValueError as e:
+        return error
+
+
+def filter_check_route_map_match_items(value):
+    """
+    Function to check route-map match options in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error check template for possible match items!!!!'.format(value=value)
+    if not value:
+        return error
+
+    elif value not in ('ip address prefix-list', 'as-path', 'ip address', 'community', 'extcommunity',
+                       'ip multicast group'):
+        return error
+
+    else:
+        return value
+
+
+def filter_check_route_map_set_items(value):
+    """
+    Function to check route-map set options in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error check template for possible set items!!!!'.format(value=value)
+    if not value:
+        return error
+
+    elif value not in ('local-preference', 'weight', 'community', 'as-path prepend', 'as-path prepend last-as'):
+        return error
+
+    else:
+        return value
+
+
+def filter_check_protocol_port_number(value):
+    """
+    Function to check for a good protocol port number in a template
+    :param value:
+    :return:
+    """
+    error = '{value} !!!! possible error should be between 0 and 65535!!!!'.format(value=value)
+    if not value:
+        return error
+
+    else:
+        try:
+            if int(value) not in range(0, 65536):
+                return error
+
+            else:
+                return value
+
+        except ValueError as e:
+            return error
+
+
 class TemplateEngine(object):
     """
     Class to render, and clean Jinja2 templates
@@ -246,7 +374,7 @@ class TemplateEngine(object):
     custom_filters = {
         'u_ip_address': filter_check_u_ip_address,
         'm_ip_address': filter_check_m_ip_address,
-        'u_subnet': filter_check_u_subnet,
+        'subnet': filter_check_subnet,
         'mask_cidr': filter_check_ip_mask_cidr,
         'mask_standard': filter_check_ip_mask_standard,
         'mask_inv': filter_check_ip_inverse_mask_standard,
@@ -255,6 +383,13 @@ class TemplateEngine(object):
         'vni': filter_check_vni_number,
         'required': filter_check_required,
         'community': filter_check_community,
+        'mac': filter_check_mac_address,
+        'p_or_d': filter_check_permit_or_deny,
+        'number': filter_check_number,
+        'rmap_match_items': filter_check_route_map_match_items,
+        'rmap_set_items': filter_check_route_map_set_items,
+        'protocol_port': filter_check_protocol_port_number,
+        'i_or_o': filter_check_inside_or_outside,
     }
 
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,

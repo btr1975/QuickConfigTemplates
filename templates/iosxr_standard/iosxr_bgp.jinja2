@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.3
-Updated: 5/31/2018
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -14,14 +14,14 @@ data:
         -   devicename: IOSXR-RTR00
             management_ip: 10.99.222.21
             bgp:
-                bgp_as: 22650
+                bgp_as: 65000
                 router_id: 172.16.1.1
                 neighbors:
                 -   neighbor: 192.168.5.1
-                    neighbor_as: 123456
+                    neighbor_as: 65001
                     neighbor_bfd: true
                     neighbor_description: Test description
-                    neighbor_local_as: 22650
+                    neighbor_local_as: 65002
                     neighbor_next_hop_self: true
                     neighbor_no_prepend: true
                     neighbor_password: poop
@@ -34,9 +34,9 @@ data:
                     neighbor_update_source: Loopback100
 
                 -   neighbor: 192.168.6.1
-                    neighbor_as: 11111
+                    neighbor_as: 65003
                     neighbor_description: Test description 2
-                    neighbor_local_as: 5231
+                    neighbor_local_as: 65004
                     neighbor_next_hop_self: true
                     neighbor_route_maps:
                         route_map_in: RM-TEST-IN-2
@@ -51,14 +51,14 @@ data:
 
                 vrf_neighbors:
                 -   neighbor: 192.168.5.1
-                    neighbor_as: 123456
+                    neighbor_as: 65005
                     neighbor_bfd: true
                     neighbor_description: Test description
-                    neighbor_local_as: 22650
+                    neighbor_local_as: 65006
                     neighbor_next_hop_self: true
                     neighbor_no_prepend: true
                     neighbor_password: poop
-                    neighbor_rd: '22650:1'
+                    neighbor_rd: '65000:1'
                     neighbor_route_maps:
                         route_map_in: RM-TEST-IN
                         route_map_out: RM-TEST-OUT
@@ -66,12 +66,12 @@ data:
                         hold_time: 21
                         keep_alive: 7
                     neighbor_update_source: Loopback100
-                    neighbor_vrf: CDMI_MAIN
+                    neighbor_vrf: VRF_NAME
 
                 -   neighbor: 192.168.6.1
-                    neighbor_as: 11111
+                    neighbor_as: 65007
                     neighbor_description: Test description 2
-                    neighbor_local_as: 5231
+                    neighbor_local_as: 65008
                     neighbor_next_hop_self: true
                     neighbor_route_maps:
                         route_map_in: RM-TEST-IN-2
@@ -79,9 +79,10 @@ data:
                         hold_time: 63
                         keep_alive: 21
                     neighbor_update_source: Loopback100
+                    neighbor_vrf: VRF_NAME
 
 -#}
-router bgp {{ device.bgp.bgp_as }}
+router bgp {{ device.bgp.bgp_as|as_number }}
 {% if device.bgp.router_id %}
  bgp router-id {{ device.bgp.router_id|u_ip_address }}
  address-family ipv4 unicast
@@ -100,15 +101,15 @@ router bgp {{ device.bgp.bgp_as }}
 {% endif %}
  neighbor {{ neighbor.neighbor|u_ip_address }}
   remote-as {{ neighbor.neighbor_as|as_number }}
-  timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
-  description {{ neighbor.neighbor_description }}
+  timers {{ neighbor.neighbor_timers.keep_alive|number }} {{ neighbor.neighbor_timers.hold_time|number }}
+  description {{ neighbor.neighbor_description|required }}
   address-family ipv4 unicast
    {% if neighbor.neighbor_route_policies %}
        {% if neighbor.neighbor_route_policies.route_policy_in %}
-   route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_in|required }} in
        {% endif %}
        {% if neighbor.neighbor_route_policies.route_policy_out %}
-   route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_out|required }} out
        {% endif %}
    {% endif %}
    soft-reconfiguration inbound
@@ -116,43 +117,43 @@ router bgp {{ device.bgp.bgp_as }}
   address-family vpnv4 unicast
    {% if neighbor.neighbor_route_policies %}
        {% if neighbor.neighbor_route_policies.route_policy_in %}
-   route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_in|required }} in
        {% endif %}
        {% if neighbor.neighbor_route_policies.route_policy_out %}
-   route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_out|required }} out
        {% endif %}
    {% endif %}
   !
   address-family ipv4 mdt
    {% if neighbor.neighbor_route_policies %}
        {% if neighbor.neighbor_route_policies.route_policy_in %}
-   route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_in|required }} in
        {% endif %}
        {% if neighbor.neighbor_route_policies.route_policy_out %}
-   route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+   route-policy {{ neighbor.neighbor_route_policies.route_policy_out|required }} out
        {% endif %}
    {% endif %}
 {% endfor %}
 {% for neighbor in device.bgp.vrf_neighbors %}
- vrf {{ neighbor.neighbor_vrf }}
+ vrf {{ neighbor.neighbor_vrf|required }}
   {% if neighbor.neighbor_rd %}
-  rd {{ neighbor.neighbor_rd }}
+  rd {{ neighbor.neighbor_rd|community }}
   address-family ipv4 unicast
    redistribute connected
   !
   {% endif %}
   neighbor {{ neighbor.neighbor|u_ip_address }}
    remote-as {{ neighbor.neighbor_as|as_number }}
-   timers {{ neighbor.neighbor_timers.keep_alive }} {{ neighbor.neighbor_timers.hold_time }}
-   description {{ neighbor.neighbor_description }}
+   timers {{ neighbor.neighbor_timers.keep_alive|number }} {{ neighbor.neighbor_timers.hold_time|number }}
+   description {{ neighbor.neighbor_description|required }}
    address-family ipv4 unicast
     send-community-ebgp
     {% if neighbor.neighbor_route_policies %}
         {% if neighbor.neighbor_route_policies.route_policy_in %}
-    route-policy {{ neighbor.neighbor_route_policies.route_policy_in }} in
+    route-policy {{ neighbor.neighbor_route_policies.route_policy_in|required }} in
         {% endif %}
         {% if neighbor.neighbor_route_policies.route_policy_out %}
-    route-policy {{ neighbor.neighbor_route_policies.route_policy_out }} out
+    route-policy {{ neighbor.neighbor_route_policies.route_policy_out|required }} out
         {% endif %}
     {% endif %}
     soft-reconfiguration inbound

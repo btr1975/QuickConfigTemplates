@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.3
-Updated: 5/31/2018
+Version: 1.0.4
+Updated: 6/1/2018
 
 Sample data for this template
 
@@ -27,9 +27,9 @@ data:
 
 {% endif %}
 feature eigrp
-router eigrp {{ device.eigrp.eigrp_process_name }}
+router eigrp {{ device.eigrp.eigrp_process_name|required }}
   {% if device.eigrp.bfd %}
   bfd
   {% endif %}
-  autonomous-system {{ device.eigrp.eigrp_as }}
+  autonomous-system {{ device.eigrp.eigrp_as|as_number }}
   router-id {{ device.eigrp.router_id|u_ip_address }}
