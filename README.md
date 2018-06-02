@@ -6,12 +6,20 @@
 ### If you have any questions e-mail me
 
 ### LinkedIn: [Ben Trachtenberg](https://www.linkedin.com/in/ben-trachtenberg-3a78496)
+### PyPi: [My PyPi](https://pypi.org/user/btr1975/)
 ### Docker Hub: [Docker Hub](https://hub.docker.com/r/btr1975)
 ### Ansible Galaxy: [Ansible Galaxy](https://galaxy.ansible.com/btr1975/)
 
 ### About
 
 This script is for simple config templates, to make life easier on admins/engineers
+
+### Reference Information
+* [License](https://github.com/btr1975/QuickConfigTemplates/blob/master/LICENSE)
+* [Directions](https://github.com/btr1975/QuickConfigTemplates/blob/master/Docs/Directions.txt)
+* [YAML Format](http://yaml.org/)
+* [Jinja2 Template Language](http://jinja.pocoo.org)
+* [Example Configs](https://github.com/btr1975/QuickConfigTemplates/tree/master/Docs/Examples)
 
 ### Version 1.0.3.prod information
 

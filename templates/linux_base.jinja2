@@ -36,7 +36,6 @@ Ticket Number: {{ ticket_number }}
 {% include "linux_standard/linux_apache2.jinja2" %}
 
 {% endif %}
-
 {% if device.management_ip %}
 </{{ device.devicename }}, {{ device.management_ip|u_ip_address }}>
 {% else %}

@@ -20,7 +20,6 @@ Ticket Number: {{ ticket_number }}
 {% endif %}
 {% for device_info in devices %}
     {% for device in device_info.device %}
-
 {% if device.management_ip %}
 <{{ device.devicename }}, {{ device.management_ip|u_ip_address }}>
 {% else %}

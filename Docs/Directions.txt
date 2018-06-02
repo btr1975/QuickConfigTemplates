@@ -18,7 +18,8 @@ There are 2 Versions of yml file, Version 2 should be they way to use it from no
    
 Reference Documents:
 
-Variable format. http://jinja.pocoo.org
+YAML Format: http://yaml.org/
+Template Language: http://jinja.pocoo.org
 Example Files: ./Examples
 
 In Version 1.0.9 using version 2 yaml you can add vars in the yaml like so
