@@ -7,8 +7,8 @@
 
 ### LinkedIn: [Ben Trachtenberg](https://www.linkedin.com/in/ben-trachtenberg-3a78496)
 ### PyPi: [My PyPi](https://pypi.org/user/btr1975/)
-### Docker Hub: [Docker Hub](https://hub.docker.com/r/btr1975)
-### Ansible Galaxy: [Ansible Galaxy](https://galaxy.ansible.com/btr1975/)
+### Docker Hub: [My Docker Hub](https://hub.docker.com/r/btr1975)
+### Ansible Galaxy: [My Ansible Galaxy](https://galaxy.ansible.com/btr1975/)
 
 ### About
 
