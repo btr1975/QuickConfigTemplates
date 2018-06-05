@@ -36,9 +36,6 @@ data:
                 server_key: somekey
                 informs: true
 
--   template: iosxr_base.jinja2
-    ticket_number: TKTNUMBER02
-    devices:
     -   device:
         -   devicename: SOME-ROUTER02
             management_ip: 1.1.1.1

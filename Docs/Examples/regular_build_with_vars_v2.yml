@@ -1,0 +1,42 @@
+version: 2
+vars:
+    vrf_name: SOME_VRF
+    the_key_1: one_two
+    the_key_2: somekey
+    ticket: C123456
+data:
+-   template: iosxr_base.jinja2
+    ticket_number: {{ ticket }}
+    devices:
+    -   device:
+        -   devicename: SOME-ROUTER01
+            management_ip: 1.1.1.1
+            snmp_servers:
+            -   server_ip: 192.168.1.1
+                server_key: {{ the_key_1 }}
+                vrf: {{ vrf_name }}
+                traps: true
+                informs: true
+
+            -   server_ip: 192.168.2.1
+                server_key: {{ the_key_2 }}
+                vrf: {{ vrf_name }}
+                traps: true
+
+            -   server_ip: 192.168.3.1
+                server_key: {{ the_key_1 }}
+                vrf: {{ vrf_name }}
+                informs: true
+
+            -   server_ip: 192.168.4.1
+                server_key: {{ the_key_1 }}
+                traps: true
+                informs: true
+
+            -   server_ip: 192.168.5.1
+                server_key: {{ the_key_2 }}
+                traps: true
+
+            -   server_ip: 192.168.6.1
+                server_key: abcdef
+                informs: true
