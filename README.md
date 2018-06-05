@@ -92,6 +92,8 @@ data:
 
 ### Some instructions
 
+* [Wiki](https://github.com/btr1975/QuickConfigTemplates/wiki)
+
 In the Data directory there is a **config.yml** file, this file is used to change directories for the data. It looks
 like this.
 
