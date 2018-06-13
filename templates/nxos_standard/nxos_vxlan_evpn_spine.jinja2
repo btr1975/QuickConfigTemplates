@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.2
-Updated: 6/1/2018
+Version: 1.0.3
+Updated: 6/13/2018
 
 Sample data for this template
 
@@ -20,6 +20,7 @@ data:
                 anycast_ip: 2.2.2.2
                 vtep_ip: 3.3.3.3
                 bgp_as: 65000
+                trm: true
                 bfd: true
                 boot_os: nxos.7.0.3.I7.3.bin
 
@@ -46,6 +47,7 @@ feature bgp
 feature pim
     {% if vxlan_evpn_spine.bfd==true %}
 feature bfd
+ip pim bfd
     {% endif %}
     {% if vxlan_evpn_spine.boot_os %}
 boot nxos bootflash:/{{ vxlan_evpn_spine.boot_os }}
@@ -106,11 +108,18 @@ interface Ethernet{{ leaf_peer_ospf.local_leaf_interface }}
 router bgp {{ vxlan_evpn_spine.bgp_as|as_number }}
   router-id {{ vxlan_evpn_spine.protocol_peering_ip|u_ip_address }}
     {% for leaf_peer_bgp in vxlan_evpn_spine.leaf_peers_bgp %}
-  neighbor {{ leaf_peer_bgp|u_ip_address }} remote-as {{ vxlan_evpn_spine.bgp_as|as_number }}
+  neighbor {{ leaf_peer_bgp|u_ip_address }}
+    remote-as {{ vxlan_evpn_spine.bgp_as|as_number }}
     update-source loopback0
     address-family l2vpn evpn
       send-community both
       route-reflector-client
+         {% if vxlan_evpn_spine.trm==true %}      
+    address-family ipv4 mvpn
+      {# rewrite-rt-asn Checking on this line if required #}
+      send-community both
+      route-reflector-client
+         {% endif %}
 
      {% endfor %}
 
