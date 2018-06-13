@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.0
-Updated: 5/31/2018
+Version: 1.0.1
+Updated: 6/13/2018
 
 Sample data for this template
 
@@ -18,6 +18,13 @@ data:
             vxlan_evpn_l3vnis:
             -   vni: 2001001
                 vrf: vxlan-900001
+                mcast: true
+                mcast_route_targets:
+                    export_rts:
+                    -   '65000:3'
+                    import_rts:
+                    -   '65000:4'
+                mcast_underlay_ip: 239.2.2.1
                 vlan: 1001
                 vlan_name: test_vlan
                 bgp_as: 65000
@@ -57,15 +64,34 @@ vrf context {{ vxlan_evpn_l3vni.vrf|required }}
     route-target export auto
     route-target export auto evpn
   {% endif %}
+  {% if vxlan_evpn_l3vni.mcast==true %}
+      {% if vxlan_evpn_l3vni.mcast_route_targets %}
+          {% for import_rt in vxlan_evpn_l3vni.mcast_route_targets.import_rts %}
+    route-target import {{ import_rt|community }} mvpn
+          {% endfor %}
+          {% for export_rt in vxlan_evpn_l3vni.mcast_route_targets.export_rts %}
+    route-target export {{ export_rt|community }} mvpn
+          {% endfor %}
+      {% else %}
+    route-target import auto mvpn
+    route-target export auto mvpn
+      {% endif %}
+  {% endif %}
 
 interface Vlan{{ vxlan_evpn_l3vni.vlan|required|vlan }}
   description {{ vxlan_evpn_l3vni.description|required }}
   no shutdown
+  {% if vxlan_evpn_l3vni.mcast==true %}
+  ip pim sparse-mode
+  {% endif %}
   vrf member {{ vxlan_evpn_l3vni.vrf|required }}
   ip forward
 
 interface nve1
   member vni {{ vxlan_evpn_l3vni.vni|required|vni }} associate-vrf
+  {% if vxlan_evpn_l3vni.mcast %}
+    mcast-group {{ vxlan_evpn_l3vni.mcast_underlay_ip|m_ip_address }}
+  {% endif %}
 
 router bgp {{ vxlan_evpn_l3vni.bgp_as|required|as_number }}
   vrf {{ vxlan_evpn_l3vni.vrf|required }}
