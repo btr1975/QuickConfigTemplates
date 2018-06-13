@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.2
-Updated: 6/1/2018
+Version: 1.0.3
+Updated: 6/13/2018
 
 Sample data for this template
 
@@ -21,6 +21,7 @@ data:
                 vtep_ip: 3.3.3.3
                 anycast_gw_mac: 0000.1111.3333
                 bgp_as: 65000
+                trm: true
                 bfd: true
                 boot_os: nxos.7.0.3.I7.3.bin
 
@@ -43,13 +44,19 @@ feature bgp
 feature pim
     {% if vxlan_evpn_leaf.bfd==true %}
 feature bfd
+ip pim bfd
     {% endif %}
 feature interface-vlan
 feature vn-segment-vlan-based
 feature nv overlay
+    {% if vxlan_evpn_leaf.trm==true %}
+feature ngmvpn
+ip igmp snooping vxlan
+ip multicast overlay-spt-only
+    {% endif %}
 fabric forwarding anycast-gateway-mac {{ vxlan_evpn_leaf.anycast_gw_mac|required|mac }}
-hardware access-list tcam region racl 512
-hardware access-list tcam region arp-ether 256 double-wide
+----- hardware access-list tcam region racl 512 -----
+----- hardware access-list tcam region arp-ether 256 double-wide -----
     {% if vxlan_evpn_leaf.boot_os %}
 boot nxos bootflash:/{{ vxlan_evpn_leaf.boot_os }}
     {% endif %}
@@ -102,10 +109,15 @@ interface nve1
 router bgp {{ vxlan_evpn_leaf.bgp_as|required|as_number }}
   router-id {{ vxlan_evpn_leaf.protocol_peering_ip|required|u_ip_address }}
     {% for spine_peer_bgp in vxlan_evpn_leaf.spine_peers_bgp %}
-  neighbor {{ spine_peer_bgp|required|u_ip_address }} remote-as {{ vxlan_evpn_leaf.bgp_as|required|as_number }}
+  neighbor {{ spine_peer_bgp|required|u_ip_address }} 
+    remote-as {{ vxlan_evpn_leaf.bgp_as|required|as_number }}
     update-source loopback0
     address-family l2vpn evpn
       send-community both
+        {% if vxlan_evpn_leaf.trm==true %}
+    address-family ipv4 mvpn
+      send-community both
+        {% endif %}        
     {% endfor %}
 
 {% endfor %}
