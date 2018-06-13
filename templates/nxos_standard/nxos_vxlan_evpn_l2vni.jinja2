@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.0
-Updated: 5/31/2018
+Version: 1.0.1
+Updated: 6/18/2018
 
 Sample data for this template
 
@@ -18,6 +18,7 @@ data:
             vxlan_evpn_l2vnis:
             -   vni: 2001001
                 vrf: vxlan-900001
+                mcast: true
                 vlan: 1001
                 ip: 192.168.1.1
                 mask: 24
@@ -54,12 +55,20 @@ interface Vlan{{ vxlan_evpn_l2vni.vlan|required|vlan }}
   no shutdown
   vrf member {{ vxlan_evpn_l2vni.vrf|required }}
   ip address {{ vxlan_evpn_l2vni.ip|required|u_ip_address }}/{{ vxlan_evpn_l2vni.mask|required|mask_cidr }}
+  {% if vxlan_evpn_l2vni.mcast==true %}
+  ip pim sparse-mode
+  ip pim neighbor-policy NONE*
+  {% endif %}
   fabric forwarding mode anycast-gateway
 
 {% for interface in vxlan_evpn_l2vni.interfaces %}
 interface {{ interface.interface|required }}
   description {{ interface.description|required }}
+  switchport mode access
   switchport access vlan {{ vxlan_evpn_l2vni.vlan|required|vlan }}
+  spanning-tree port type edge
+  spanning-tree bpduguard enable
+  no shutdown
 
 {% endfor %}
 evpn
