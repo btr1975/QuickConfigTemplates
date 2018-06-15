@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.7
-Updated: 6/2/2018
+Version: 1.0.8
+Updated: 6/15/2018
 
 Sample data for this template
 
@@ -30,6 +30,10 @@ Ticket Number: {{ ticket_number }}
 {% set note = device.note %}
 
 {% include "common/note.jinja2" %}
+
+{% endif %}
+{% if device.mpls_vrfs %}
+{% include "ios_standard/ios_mpls_vrfs.jinja2" %}
 
 {% endif %}
 {% if device.routed_interfaces %}

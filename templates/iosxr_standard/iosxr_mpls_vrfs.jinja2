@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.4
-Updated: 6/1/2018
+Version: 1.0.5
+Updated: 6/15/2018
 
 Sample data for this template
 
@@ -15,22 +15,22 @@ data:
             management_ip: 10.99.222.21
             mpls_vrfs:
             -   export_rts:
-                -   '22650:1'
+                -   '65000:1'
                 import_rts:
-                -   '22650:1'
-                -   '22650:2'
-                vrf: CDMI_MAIN
+                -   '65000:1'
+                -   '65000:2'
+                vrf: VRF_NAME
 
     -   device:
         -   devicename: DEVICE01
             management_ip: 10.99.222.22
             mpls_vrfs:
             -   export_rts:
-                -   '22650:1'
+                -   '65000:1'
                 import_rts:
-                -   '22650:1'
-                -   '22650:2'
-                vrf: CDMI_MAIN
+                -   '65000:1'
+                -   '65000:2'
+                vrf: VRF_NAME
 
 -#}
 {% for vrf in device.mpls_vrfs %}
