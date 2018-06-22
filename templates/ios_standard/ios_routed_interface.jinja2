@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.5
-Updated: 6/1/2018
+Version: 1.0.6
+Updated: 6/22/2018
 
 Sample data for this template
 
@@ -76,7 +76,9 @@ interface {{ interface.interface|required }}
  {% if interface.remove %}
  no ip address
  {% else %}
+     {% if interface.ip != 'no_ip' %}
  ip address {{ interface.ip|u_ip_address }} {{ interface.mask|mask_standard }}
+     {% endif %}
  {% endif %}
  no ip redirects
  no ip proxy-arp
