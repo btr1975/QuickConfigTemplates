@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.3
-Updated: 6/13/2018
+Version: 1.0.4
+Updated: 6/23/2018
 
 Sample data for this template
 
@@ -41,6 +41,12 @@ data:
 
 -#}
 {% for vxlan_evpn_spine in device.vxlan_evpn_spines %}
+{% if vxlan_evpn_spine.note %}
+{% set note = vxlan_evpn_spine.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 nv overlay evpn
 feature ospf
 feature bgp

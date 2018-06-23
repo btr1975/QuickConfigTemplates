@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.1
-Updated: 6/18/2018
+Version: 1.0.2
+Updated: 6/23/2018
 
 Sample data for this template
 
@@ -41,6 +41,12 @@ data:
 
 -#}
 {% for vxlan_evpn_l2vni in device.vxlan_evpn_l2vnis %}
+{% if vxlan_evpn_l2vni.note %}
+{% set note = vxlan_evpn_l2vni.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
 vlan {{ vxlan_evpn_l2vni.vlan|required|vlan }}
   name {{ vxlan_evpn_l2vni.vlan_name|required }}
   vn-segment {{ vxlan_evpn_l2vni.vni|required|vni }}
