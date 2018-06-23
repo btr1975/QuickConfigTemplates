@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.5
-Updated: 6/1/2018
+Version: 1.0.6
+Updated: 6/23/2018
 
 Sample data for this template
 
@@ -87,6 +87,33 @@ data:
                 -   mask: 255.255.255.0
                     network: 192.168.2.0
 
+                vrf_neighbors:
+                -   neighbor: 192.168.25.1
+                    neighbor_as: 65001
+                    neighbor_bfd: true
+                    neighbor_description: Test description
+                    neighbor_local_as: 65002
+                    neighbor_next_hop_self: true
+                    neighbor_no_prepend: true
+                    neighbor_password: poop
+                    neighbor_route_maps:
+                        route_map_in: RM-TEST-IN
+                        route_map_out: RM-TEST-OUT
+                    neighbor_update_source: Loopback100
+                    neighbor_vrf: VRF_TEST
+                -   neighbor: 192.168.10.1
+                    neighbor_as: 65003
+                    neighbor_description: Test description 2
+                    neighbor_local_as: 65004
+                    neighbor_next_hop_self: true
+                    neighbor_route_maps:
+                        route_map_in: RM-TEST-IN-2
+                    neighbor_timers:
+                        hold_time: 45
+                        keep_alive: 15
+                    neighbor_update_source: Loopback100
+                    neighbor_vrf: VRF_TEST
+
 -#}
 {% if device.bgp.note %}
 {% set note = device.bgp.note %}
@@ -151,4 +178,52 @@ router bgp {{ device.bgp.bgp_as|as_number }}
   neighbor {{ neighbor.neighbor|u_ip_address }} route-map {{ neighbor.neighbor_route_maps.route_map_out|required }} out
     {% endif %}
 {% endif %}
+{% endfor %}
+{% for neighbor in device.bgp.vrf_neighbors %}
+{% if neighbor.note %}
+{% set note = neighbor.note %}
+
+{% include "common/note.jinja2" %}
+
+{% endif %}
+ address-family ipv4 vrf {{ neighbor.neighbor_vrf|required }}
+  neighbor {{ neighbor.neighbor|u_ip_address }} remote-as {{ neighbor.neighbor_as|as_number }}
+{% if neighbor.neighbor_password %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} password {{ neighbor.neighbor_password|required }}
+{% endif %}
+{% if neighbor.neighbor_local_as %}
+    {% if neighbor.neighbor_no_prepend %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} local-as {{ neighbor.neighbor_local_as|as_number }} no-prepend
+    {% else %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} local-as {{ neighbor.neighbor_local_as|as_number }}
+    {% endif %}
+{% endif %}
+{% if neighbor.neighbor_description %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} description {{ neighbor.neighbor_description|required }}
+{% endif %}
+{% if neighbor.neighbor_update_source %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} update-source {{ neighbor.neighbor_update_source|required }}
+{% endif %}
+{% if neighbor.neighbor_timers %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} timers {{ neighbor.neighbor_timers.keep_alive|number }} {{ neighbor.neighbor_timers.hold_time|number }}
+{% else %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} timers 7 21
+{% endif %}
+{% if neighbor.neighbor_next_hop_self %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} next_hop_self
+{% endif %}
+{% if neighbor.neighbor_bfd %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} fall-over bfd
+{% endif %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} send-community
+  neighbor {{ neighbor.neighbor|u_ip_address }} soft-reconfiguration inbound
+{% if neighbor.neighbor_route_maps %}
+    {% if neighbor.neighbor_route_maps.route_map_in %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} route-map {{ neighbor.neighbor_route_maps.route_map_in|required }} in
+    {% endif %}
+    {% if neighbor.neighbor_route_maps.route_map_out %}
+  neighbor {{ neighbor.neighbor|u_ip_address }} route-map {{ neighbor.neighbor_route_maps.route_map_out|required }} out
+    {% endif %}
+{% endif %}
+ exit-address-family
 {% endfor %}
