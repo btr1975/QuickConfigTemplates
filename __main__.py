@@ -69,6 +69,14 @@ if __name__ == '__main__':
     arg_parser_run_build.add_argument('-t', '--typefile', help='The filename of the csv for variable replacement')
     arg_parser_run_build.add_argument('-y', '--yml', action='store_true', help='Display the config, in YML format')
 
+    # This is the sub parser to run a server to receive config builds
+    arg_parser_run_server = subparsers.add_parser('run_server', help='Run a server to build configs')
+    arg_parser_run_server.set_defaults(which_sub='run_server')
+    arg_parser_run_server.add_argument('-i', '--ip', help='The IP to listen on.')
+    arg_parser_run_server.add_argument('-d', '--debug', action='store_true', help='Debug')
+    arg_parser_run_server.add_argument('-p', '--port', help='The port to listen on.')
+    arg_parser_run_server.add_argument('-u', '--uri', help='The base api uri, default is /qct/api/v1')
+
     # This is the sub parser to run a conversion to Prefix-List to YML
     arg_parser_create_yml_from_prefix_list = subparsers.add_parser('pl_create', help='Create Prefix-List YML '
                                                                                      'from a Prefix-List')
@@ -162,6 +170,27 @@ if __name__ == '__main__':
 
             mod.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
                                args.package, args.typefile, args.auto_build, args.remote)
+
+        elif args.which_sub == 'run_server':
+            if args.ip:
+                ip = args.ip
+
+            else:
+                ip = '127.0.0.1'
+
+            if args.port:
+                port = args.port
+
+            else:
+                port = 5000
+
+            if args.uri:
+                base_api_uri = args.uri
+
+            else:
+                base_api_uri = '/qct/api/v1'
+
+            mod.run_server(ip, port, base_api_uri, args.debug)
 
     except AttributeError as e:
         LOGGER.critical(e)

@@ -5,8 +5,8 @@ config:
   output_directory:
   logging_directory:
   logging_level:
-# QuickConfigTemplates-Server Version 1.0.0 <-- Not implemented yet
-server_config:
+# QuickConfigTemplatesVersion 1.0.13
+remote_build_server_config:
   protocol:
   server_host:
   server_port:

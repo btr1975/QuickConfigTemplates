@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 name = "pypi"
 verify_ssl = true
 
-
 [packages]
-
 "jinja2" = "==2.10"
 markupsafe = "==1.0"
 py = "==1.5.2"
@@ -15,13 +12,11 @@ pytest = "==3.3.1"
 pyyaml = "==3.12"
 persistentdatatools = "==2.2.9"
 ipaddresstools = "==1.2.8"
-requests = "*"
-
+requests = "==2.18.4"
+flask = "==0.12.2"
+flask-restful = "==0.3.6"
 
 [requires]
-
 python_version = "3.5"
 
-
 [dev-packages]
-

@@ -7,7 +7,7 @@ import persistentdatatools as pdt
 import ipaddresstools as ipv4
 import os
 import re
-# from .arestme import ARestMe
+from .arestme import ARestMe
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
@@ -819,15 +819,42 @@ class TemplateEngine(object):
         return config.get('vars')
 
     def server_rest(self):
-        error = 'Remote build not implemented yet!!'
-        print(error)
-        LOGGER.critical(error)
-        # server_config = yaml.safe_load(open(os.path.join(self.directories.get_data_dir(), 'config.yml'))).get('server_config')
-        # server_api_uri = server_config.get('server_api_uri')
-        # b = yaml.safe_load(self.yml_data)
+        """
+        Method to send a restful request to build on a remote server
+        :return:
+            Nothing yet
 
+        """
+        server_config = yaml.safe_load(open(os.path.join(self.directories.get_data_dir(),
+                                                         'config.yml'))).get('remote_build_server_config')
 
-        # a = ARestMe()
-        # a.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'), server_config.get('server_port'))
-        # a.set_update_headers('QCT', 'ApiVersion1')
-        # print(a.send_post('{server_api_uri}postinfo'.format(server_api_uri=server_api_uri), b))
+        error = 'Missing parameter in remote_build_server_config: {}'.format(server_config)
+        if not server_config.get('protocol'):
+            LOGGER.critical(error)
+            raise EnvironmentError(error)
+
+        elif not server_config.get('server_host'):
+            LOGGER.critical(error)
+            raise EnvironmentError(error)
+
+        elif not server_config.get('server_api_uri'):
+            LOGGER.critical(error)
+            raise EnvironmentError(error)
+
+        elif not server_config.get('server_port'):
+            LOGGER.critical(error)
+            raise EnvironmentError(error)
+
+        server_api_uri = server_config.get('server_api_uri')
+        b = yaml.safe_load(self.yml_data)
+
+        a = ARestMe()
+        a.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
+                              server_config.get('server_port'))
+        a.set_update_headers('QCT', 'ApiVersion1')
+        response_data = a.send_post('{server_api_uri}postinfo'.format(server_api_uri=server_api_uri), b)
+        if response_data.get('status_code') == 200:
+            print(response_data.get('config'))
+
+        else:
+            print(response_data.get('error'))
