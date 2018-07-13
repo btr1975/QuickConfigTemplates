@@ -1,15 +1,16 @@
---- # QuickConfigTemplates Version 1.0.2
+--- # QuickConfigTemplates Version: 1.0.13
 config:
   yml_directory:
   templates_directory:
   output_directory:
   logging_directory:
   logging_level:
-# QuickConfigTemplatesVersion 1.0.13
+# QuickConfigTemplates Version: 1.0.13
 remote_build_server_config:
   protocol:
   server_host:
   server_port:
   server_api_uri:
 
+# Default server_api_uri: 'qct/api/v1/'
 # Logging level is 3 by default, highest is 1 lowest is 5
