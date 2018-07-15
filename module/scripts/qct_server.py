@@ -2,6 +2,7 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 import logging
 import json
+from .template_engine import ServerTemplateEngine
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018, Benjamin P. Trachtenberg"
 __credits__ = None
@@ -30,8 +31,12 @@ class PostInfo(Resource):
                 LOGGER.critical(error)
                 return {'status_code': 400, 'error': error}, 400
 
+
         print(json.dumps(request.json, sort_keys=True, indent=4))
         # print(request.data)
+        a = ServerTemplateEngine()
+        print(type(a))
+        print(type(request.json))
         return {'status_code': 200, 'config': 'some_config'}, 200
 
 

@@ -7,10 +7,10 @@ config:
   logging_level:
 # QuickConfigTemplates Version: 1.0.13
 remote_build_server_config:
-  protocol:
-  server_host:
-  server_port:
-  server_api_uri:
+  protocol: http
+  server_host: 127.0.0.1
+  server_port: 5000
+  server_api_uri: qct/api/v1/
 
 # Default server_api_uri: 'qct/api/v1/'
 # Logging level is 3 by default, highest is 1 lowest is 5
