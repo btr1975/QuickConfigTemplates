@@ -15,6 +15,8 @@ __email__ = 'e_ben_75-python@yahoo.com'
 
 LOGGER = logging.getLogger('qct_server')
 
+DIRECTORIES = None
+
 
 class PostInfo(Resource):
 
@@ -31,18 +33,20 @@ class PostInfo(Resource):
                 LOGGER.critical(error)
                 return {'status_code': 400, 'error': error}, 400
 
+        template_engine_obj = ServerTemplateEngine(directories=DIRECTORIES, config=request.json)
 
-        print(json.dumps(request.json, sort_keys=True, indent=4))
-        # print(request.data)
-        a = ServerTemplateEngine()
-        print(type(a))
-        print(type(request.json))
-        return {'status_code': 200, 'config': 'some_config'}, 200
+        if template_engine_obj.version_check() == 2:
+            return {'status_code': 200, 'config': template_engine_obj.run_template_v2()}, 200
+
+        else:
+            return {'status_code': 400, 'error': template_engine_obj.version_check()}, 400
 
 
-def run_server(ip, port, base_api_uri, debug):
+def run_server(ip, port, base_api_uri, debug, directories):
     LOGGER.debug('Starting server with the following ip: {}, '
                  'port: {}, base_api_uri: {}, server_debug: {}'.format(ip, port, base_api_uri, debug))
+    global DIRECTORIES
+    DIRECTORIES = directories
     app = Flask(__name__)
     api = Api(app)
     api.add_resource(PostInfo, '{base_api_uri}/postinfo'.format(base_api_uri=base_api_uri))

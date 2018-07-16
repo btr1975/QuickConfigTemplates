@@ -20,6 +20,7 @@ __email__ = 'e_ben_75-python@yahoo.com'
 
 LOGGER = logging.getLogger(__name__)
 TEMPLATE_LOGGER = logging.getLogger('qct_template')
+SERVER_LOGGER = logging.getLogger('qct_server')
 
 
 def filter_check_u_ip_address(value):
@@ -79,7 +80,7 @@ def filter_check_ip_mask_cidr(value):
             return error
 
     except ValueError as e:
-        TEMPLATE_LOGGER.info('filter_check_ip_mask_cidr {}'.format(error))
+        TEMPLATE_LOGGER.info('filter_check_ip_mask_cidr {} {}'.format(error, e))
         return error
 
 
@@ -403,9 +404,9 @@ def filter_check_protocol_port_number(value):
             return error
 
 
-class BaseTemplateEngine(object):
+class TemplateEngine(object):
     """
-    Class to render, and clean Jinja2 templates
+    Class to render, and clean Jinja2 templates from the client side
     """
     custom_filters = {
         'u_ip_address': filter_check_u_ip_address,
@@ -428,16 +429,25 @@ class BaseTemplateEngine(object):
         'i_or_o': filter_check_inside_or_outside,
     }
 
-    def __init__(self):
-        self.directories = None
-        self.yml_data = None
-        self.yml_file_name = None
-        self.output_file_name = None
-        self.display_only = None
-        self.display_json = None
-        self.display_yml = None
-        self.package_name = None
+    def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
+                 display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None,
+                 remote_build=False):
+        super().__init__()
+        self.directories = directories
+        if auto_build:
+            yml_file_name = self.__auto_build_template(variables_file_name)
+        self.yml_data = self.__pre_run_yml_input_file(yml_file_name, variables_file_name)
+        self.yml_file_name = yml_file_name
+        self.output_file_name = output_file_name
+        self.display_only = display_only
+        self.display_json = display_json
+        self.display_yml = display_yml
+        self.package_name = package_name
         self.template_version = None
+        if not remote_build:
+            self.version_runner()
+        else:
+            self.server_rest()
 
     def version_runner(self):
         try:
@@ -710,7 +720,7 @@ class BaseTemplateEngine(object):
             LOGGER.critical(error)
             sys.exit(error)
 
-    def _pre_run_yml_input_file(self, yml_file_name=None, variables_file_name=None):
+    def __pre_run_yml_input_file(self, yml_file_name=None, variables_file_name=None):
         """
         Method to pre run the yaml file to replace variables
         :param yml_file_name: The name of the input yml file
@@ -852,88 +862,75 @@ class BaseTemplateEngine(object):
             print(response_data.get('error'))
 
 
-class TemplateEngine(BaseTemplateEngine):
-    """
-    Class to render, and clean Jinja2 templates from the client side
-    """
-    def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
-                 display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None,
-                 remote_build=False):
-        super().__init__()
-        self.directories = directories
-        if auto_build:
-            yml_file_name = self.__auto_build_template(variables_file_name)
-        self.yml_data = self._pre_run_yml_input_file(yml_file_name, variables_file_name)
-        self.yml_file_name = yml_file_name
-        self.output_file_name = output_file_name
-        self.display_only = display_only
-        self.display_json = display_json
-        self.display_yml = display_yml
-        self.package_name = package_name
-        self.template_version = None
-        if not remote_build:
-            self.version_runner()
-        else:
-            self.server_rest()
-
-
-class ServerTemplateEngine(BaseTemplateEngine):
+class ServerTemplateEngine(object):
     """
     Class to render, and clean Jinja2 templates from the server side
     """
-    def __init__(self, directories=None):
-        super().__init__()
+    custom_filters = {
+        'u_ip_address': filter_check_u_ip_address,
+        'm_ip_address': filter_check_m_ip_address,
+        'subnet': filter_check_subnet,
+        'mask_cidr': filter_check_ip_mask_cidr,
+        'mask_standard': filter_check_ip_mask_standard,
+        'mask_inv': filter_check_ip_inverse_mask_standard,
+        'as_number': filter_check_as_number,
+        'vlan': filter_check_vlan_number,
+        'vni': filter_check_vni_number,
+        'required': filter_check_required,
+        'community': filter_check_community,
+        'mac': filter_check_mac_address,
+        'p_or_d': filter_check_permit_or_deny,
+        'number': filter_check_number,
+        'rmap_match_items': filter_check_route_map_match_items,
+        'rmap_set_items': filter_check_route_map_set_items,
+        'protocol_port': filter_check_protocol_port_number,
+        'i_or_o': filter_check_inside_or_outside,
+    }
+
+    def __init__(self, directories=None, config=None):
         self.directories = directories
-        #self.yml_data = self._pre_run_yml_input_file(None, None)
+        self.config = config
         self.yml_file_name = None
         self.output_file_name = None
-        self.display_only = False
+        self.display_only = True
         self.display_json = False
         self.display_yml = False
         self.package_name = None
         self.template_version = None
 
-    def __yml_variable_pre_run_environment(self, yml_file_name):
+    def version_check(self):
+        if self.config.get('common'):
+            return 1
+
+        elif self.config.get('version'):
+            return int(self.config.get('version'))
+
+        else:
+            error = 'Error method version_runner could not retrieve common, or version.'
+            SERVER_LOGGER.critical(error)
+            return error
+
+    def run_template_v2(self):
         """
-        Method to run the pre run Jinja2 environment
-        :param yml_file_name: The yml file name
-        :return:
-            A rendered yml file with variables filled in
+        Method to build, and output the template
 
         """
-        pre_run_env = Environment(
-            autoescape=select_autoescape(enabled_extensions=('yml', 'yaml'), default_for_string=True),
-            loader=FileSystemLoader([self.directories.get_yml_dir(yml_file_name)]), lstrip_blocks=True,
-            trim_blocks=True)
-
-        pre_run_env.filters.update(self.custom_filters)
-
         try:
-            temp_file = pre_run_env.get_template(yml_file_name)
-            vars_yml_dict = self.__check_for_vars_section_in_yml(temp_file.render())
-            if vars_yml_dict:
-                variable_data.update(vars_yml_dict)
+            common_data = self.config.get('data')
 
         except Exception as e:
-            error = 'Error when running __yml_variable_pre_run_environment file name {} looking for vars'.format(e)
-            LOGGER.critical(error)
-            sys.exit(error)
+            SERVER_LOGGER.critical('Error could not retrieve common_data {}'.format(e))
+            sys.exit(e)
 
-        try:
-            yml_file = pre_run_env.get_template(yml_file_name)
-            return yml_file.render(variable_data)
+        env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
+                                                       default_for_string=True),
+                          loader=FileSystemLoader(self.directories.get_templates_dir()), lstrip_blocks=True,
+                          trim_blocks=True)
 
-        except Exception as e:
-            error = 'Error when running __yml_variable_pre_run_environment file name {}'.format(e)
-            LOGGER.critical(error)
-            sys.exit(error)
+        env.filters.update(self.custom_filters)
 
-    def _pre_run_yml_input_file(self, yml_file_name=None):
-        """
-        Method to pre run the yaml file to replace variables
-        :param yml_file_name: The name of the input yml file
-        :return
-            A yml file with variables filled
-
-        """
-        return self.__yml_variable_pre_run_environment(yml_file_name)
+        rendered = str()
+        for group in common_data:
+            template = env.get_template(group.get('template'))
+            rendered += template.render(group)
+        return rendered

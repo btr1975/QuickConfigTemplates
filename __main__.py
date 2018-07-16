@@ -190,7 +190,7 @@ if __name__ == '__main__':
             else:
                 base_api_uri = '/qct/api/v1'
 
-            mod.run_server(ip, port, base_api_uri, args.debug)
+            mod.run_server(ip, port, base_api_uri, args.debug, directories)
 
     except AttributeError as e:
         LOGGER.critical(e)
