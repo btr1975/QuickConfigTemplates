@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.8
-Updated: 5/31/2018
+Version: 1.0.9
+Updated: 6/18/2018
 
 Sample data for this template
 
@@ -15,8 +15,8 @@ data:
 {% if ticket_number %}
 Ticket Number: {{ ticket_number }}
 {% endif %}
-{% if custom_ticket_header|safe %}
-{{ custom_ticket_header }}
+{% if custom_ticket_header %}
+{{ custom_ticket_header|safe }}
 {% endif %}
 {% for device_info in devices %}
     {% for device in device_info.device %}
