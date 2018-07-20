@@ -35,6 +35,11 @@ class PostInfo(Resource):
 
         template_engine_obj = ServerTemplateEngine(directories=DIRECTORIES, config=request.json)
 
+        if LOGGER.getEffectiveLevel() == logging.DEBUG:
+            message = 'From: {} Received Data: {}'.format(request.remote_addr, request.json)
+            print(message)
+            LOGGER.debug(message)
+
         if template_engine_obj.version_check() == 2:
             return {'status_code': 200, 'config': template_engine_obj.run_template_v2()}, 200
 
@@ -43,6 +48,8 @@ class PostInfo(Resource):
 
 
 def run_server(ip, port, base_api_uri, debug, directories):
+    if debug:
+        LOGGER.setLevel(logging.DEBUG)
     LOGGER.debug('Starting server with the following ip: {}, '
                  'port: {}, base_api_uri: {}, server_debug: {}'.format(ip, port, base_api_uri, debug))
     global DIRECTORIES
