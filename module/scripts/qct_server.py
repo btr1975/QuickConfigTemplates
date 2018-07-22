@@ -18,8 +18,11 @@ LOGGER = logging.getLogger('qct_server')
 DIRECTORIES = None
 
 
-class PostInfo(Resource):
-
+class PostBasicBuild(Resource):
+    """
+    Class for a basic build this receives full yaml and operates on the
+    template in data.template
+    """
     def post(self):
         if not request.headers.get('Qct'):
             error = 'Could not find Qct in request header!! Here are the headers found \n{}'.format(request.headers)
@@ -47,6 +50,28 @@ class PostInfo(Resource):
             return {'status_code': 400, 'error': template_engine_obj.version_check()}, 400
 
 
+class PostRemoteYamlBuild(Resource):
+    """
+    Class for a remote yaml build this receives vars, and a yaml template to build
+    """
+    def post(self):
+        if not request.headers.get('Qct'):
+            error = 'Could not find Qct in request header!! Here are the headers found \n{}'.format(request.headers)
+            LOGGER.critical(error)
+            return {'status_code': 400, 'error': error}, 400
+
+        else:
+            if request.headers.get('Qct') not in ['ApiVersion1']:
+                error = 'Could not find ApiVersion1 in Qct request header!! ' \
+                        'Here are the headers found \n{}'.format(request.headers)
+                LOGGER.critical(error)
+                return {'status_code': 400, 'error': error}, 400
+
+        template_engine_obj = ServerTemplateEngine(directories=DIRECTORIES, config=request.json)
+
+        template_engine_obj.get_remote_yaml_template()
+
+
 def run_server(ip, port, base_api_uri, debug, directories):
     if debug:
         LOGGER.setLevel(logging.DEBUG)
@@ -56,7 +81,8 @@ def run_server(ip, port, base_api_uri, debug, directories):
     DIRECTORIES = directories
     app = Flask(__name__)
     api = Api(app)
-    api.add_resource(PostInfo, '{base_api_uri}/postinfo'.format(base_api_uri=base_api_uri))
+    api.add_resource(PostBasicBuild, '{base_api_uri}/basic_build'.format(base_api_uri=base_api_uri))
+    api.add_resource(PostRemoteYamlBuild, '{base_api_uri}/remote_yaml_build'.format(base_api_uri=base_api_uri))
     app.run(port=int(port), host=ip, debug=debug)
 
 

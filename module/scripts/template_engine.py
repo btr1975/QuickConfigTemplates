@@ -854,7 +854,7 @@ class TemplateEngine(object):
         a.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
                               server_config.get('server_port'))
         a.set_update_headers('QCT', 'ApiVersion1')
-        response_data = a.send_post('{server_api_uri}postinfo'.format(server_api_uri=server_api_uri), b)
+        response_data = a.send_post('{server_api_uri}basic_build'.format(server_api_uri=server_api_uri), b)
         if response_data.get('status_code') == 200:
             print(response_data.get('config'))
 
@@ -934,3 +934,7 @@ class ServerTemplateEngine(object):
             template = env.get_template(group.get('template'))
             rendered += template.render(group)
         return rendered
+
+    def get_remote_yaml_template(self):
+        if self.config.get('remote_yaml_template'):
+            print(self.config.get('remote_yaml_template'))
