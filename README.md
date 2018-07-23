@@ -16,7 +16,7 @@ This script is for simple config templates, to make life easier on admins/engine
 
 ### Reference Information
 * [License](https://github.com/btr1975/QuickConfigTemplates/blob/master/LICENSE)
-* [Directions](https://github.com/btr1975/QuickConfigTemplates/blob/master/Docs/Directions.txt)
+* [Directions](https://github.com/btr1975/QuickConfigTemplates/wiki)
 * [YAML Format](http://yaml.org/)
 * [Jinja2 Template Language](http://jinja.pocoo.org)
 * [Example Configs](https://github.com/btr1975/QuickConfigTemplates/tree/master/Docs/Examples)
