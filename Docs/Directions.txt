@@ -18,6 +18,7 @@ There are 2 Versions of yml file, Version 2 should be they way to use it from no
    
 Reference Documents:
 
+WiKi: https://github.com/btr1975/QuickConfigTemplates/wiki
 YAML Format: http://yaml.org/
 Template Language: http://jinja.pocoo.org
 Example Files: ./Examples
