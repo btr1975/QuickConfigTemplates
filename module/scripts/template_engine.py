@@ -909,7 +909,7 @@ class ServerTemplateEngine(object):
     def run_template_version(self):
         """
         Method to check the version of yaml, and build a config
-        :return: 
+        :return:
             A Tuple with the following
             (dict, int)
 

@@ -1,7 +1,6 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
 import logging
-import json
 from .template_engine import ServerTemplateEngine
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018, Benjamin P. Trachtenberg"
@@ -73,7 +72,23 @@ class PostRemoteYamlBuild(Resource):
         return template_engine_obj.get_remote_yaml_template()
 
 
-def run_server(ip, port, base_api_uri, debug, directories):
+def run_wsgi_server(directories):
+    global DIRECTORIES
+    DIRECTORIES = directories
+
+
+def run_local_server(ip, port, base_api_uri, debug, directories):
+    """
+    Function to run the local flask server
+    :param ip: The IP address to listen on
+    :param port: The port to listen on
+    :param base_api_uri: The base uri, for the server
+    :param debug: True to turn on debug
+    :param directories: A Directories object
+    :return:
+        None
+
+    """
     if debug:
         LOGGER.setLevel(logging.DEBUG)
     LOGGER.debug('Starting server with the following ip: {}, '
