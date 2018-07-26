@@ -26,14 +26,14 @@ class PostBasicBuild(Resource):
     def post(self):
         if not request.headers.get('Qct'):
             error = 'Could not find Qct in request header!! Here are the headers found \n{}'.format(request.headers)
-            LOGGER.critical(error)
+            LOGGER.critical('PostBasicBuild: {}'.format(error))
             return {'status_code': 400, 'error': error}, 400
 
         else:
             if request.headers.get('Qct') not in ['ApiVersion1']:
                 error = 'Could not find ApiVersion1 in Qct request header!! ' \
                         'Here are the headers found \n{}'.format(request.headers)
-                LOGGER.critical(error)
+                LOGGER.critical('PostBasicBuild: {}'.format(error))
                 return {'status_code': 400, 'error': error}, 400
 
         template_engine_obj = ServerTemplateEngine(directories=DIRECTORIES, config=request.json)
@@ -41,13 +41,9 @@ class PostBasicBuild(Resource):
         if LOGGER.getEffectiveLevel() == logging.DEBUG:
             message = 'From: {} Received Data: {}'.format(request.remote_addr, request.json)
             print(message)
-            LOGGER.debug(message)
+            LOGGER.debug('PostBasicBuild: {}'.format(message))
 
-        if template_engine_obj.version_check() == 2:
-            return {'status_code': 200, 'config': template_engine_obj.run_template_v2()}, 200
-
-        else:
-            return {'status_code': 400, 'error': template_engine_obj.version_check()}, 400
+        return template_engine_obj.run_template_version()
 
 
 class PostRemoteYamlBuild(Resource):
@@ -57,19 +53,24 @@ class PostRemoteYamlBuild(Resource):
     def post(self):
         if not request.headers.get('Qct'):
             error = 'Could not find Qct in request header!! Here are the headers found \n{}'.format(request.headers)
-            LOGGER.critical(error)
+            LOGGER.critical('PostRemoteYamlBuild: {}'.format(error))
             return {'status_code': 400, 'error': error}, 400
 
         else:
             if request.headers.get('Qct') not in ['ApiVersion1']:
                 error = 'Could not find ApiVersion1 in Qct request header!! ' \
                         'Here are the headers found \n{}'.format(request.headers)
-                LOGGER.critical(error)
+                LOGGER.critical('PostRemoteYamlBuild: {}'.format(error))
                 return {'status_code': 400, 'error': error}, 400
 
         template_engine_obj = ServerTemplateEngine(directories=DIRECTORIES, config=request.json)
 
-        template_engine_obj.get_remote_yaml_template()
+        if LOGGER.getEffectiveLevel() == logging.DEBUG:
+            message = 'From: {} Received Data: {}'.format(request.remote_addr, request.json)
+            print(message)
+            LOGGER.debug('PostRemoteYamlBuild: {}'.format(message))
+
+        return template_engine_obj.get_remote_yaml_template()
 
 
 def run_server(ip, port, base_api_uri, debug, directories):

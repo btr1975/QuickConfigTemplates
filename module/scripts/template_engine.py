@@ -1,6 +1,7 @@
 import logging
 import sys
 from jinja2 import Environment, select_autoescape, FileSystemLoader
+from jinja2 import exceptions as j2_exceptions
 import yaml
 import json
 import persistentdatatools as pdt
@@ -12,8 +13,8 @@ __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'prod'
-__version_info__ = (2, 0, 3, __status__)
+__status__ = 'dev'
+__version_info__ = (2, 0, 4, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -432,7 +433,6 @@ class TemplateEngine(object):
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
                  display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None,
                  remote_build=False):
-        super().__init__()
         self.directories = directories
         if auto_build:
             yml_file_name = self.__auto_build_template(variables_file_name)
@@ -848,13 +848,21 @@ class TemplateEngine(object):
             raise EnvironmentError(error)
 
         server_api_uri = server_config.get('server_api_uri')
-        b = yaml.safe_load(self.yml_data)
+        yaml_data = yaml.safe_load(self.yml_data)
 
-        a = ARestMe()
-        a.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
-                              server_config.get('server_port'))
-        a.set_update_headers('QCT', 'ApiVersion1')
-        response_data = a.send_post('{server_api_uri}basic_build'.format(server_api_uri=server_api_uri), b)
+        rest_object = ARestMe()
+        rest_object.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
+                                        server_config.get('server_port'))
+        rest_object.set_update_headers('QCT', 'ApiVersion1')
+
+        if yaml_data.get('remote_build_server_yaml_template'):
+            response_data = rest_object.send_post('{server_api_uri}remote_yaml_'
+                                                  'build'.format(server_api_uri=server_api_uri), yaml_data)
+
+        else:
+            response_data = rest_object.send_post('{server_api_uri}basic_build'.format(server_api_uri=server_api_uri),
+                                                  yaml_data)
+
         if response_data.get('status_code') == 200:
             print(response_data.get('config'))
 
@@ -898,43 +906,93 @@ class ServerTemplateEngine(object):
         self.package_name = None
         self.template_version = None
 
-    def version_check(self):
+    def run_template_version(self):
+        """
+        Method to check the version of yaml, and build a config
+        :return: 
+            A Tuple with the following
+            (dict, int)
+
+        """
         if self.config.get('common'):
-            return 1
+            error = 'Error method version_runner could not retrieve common, or version.'
+            SERVER_LOGGER.critical(error)
+            return {'status_code': 400, 'error': error}, 400
 
         elif self.config.get('version'):
-            return int(self.config.get('version'))
+            if int(self.config.get('version')) == 2:
+                return self.__run_template_v2(self.config)
+
+            else:
+                error = 'Error template version {} is not supported.'.format(self.config.get('version'))
+                SERVER_LOGGER.critical(error)
+                return {'status_code': 400, 'error': error}, 400
 
         else:
             error = 'Error method version_runner could not retrieve common, or version.'
             SERVER_LOGGER.critical(error)
-            return error
+            return {'status_code': 400, 'error': error}, 400
 
-    def run_template_v2(self):
+    def __run_template_v2(self, config):
         """
         Method to build, and output the template
+        :param config: A dict from a yaml, or json
+        :return:
+            A Tuple with the following
+            (dict, int)
 
         """
         try:
-            common_data = self.config.get('data')
+            common_data = config.get('data')
 
         except Exception as e:
             SERVER_LOGGER.critical('Error could not retrieve common_data {}'.format(e))
             sys.exit(e)
 
-        env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
-                                                       default_for_string=True),
-                          loader=FileSystemLoader(self.directories.get_templates_dir()), lstrip_blocks=True,
-                          trim_blocks=True)
+        try:
+            env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
+                                                           default_for_string=True),
+                              loader=FileSystemLoader(self.directories.get_templates_dir()), lstrip_blocks=True,
+                              trim_blocks=True)
 
-        env.filters.update(self.custom_filters)
+            env.filters.update(self.custom_filters)
 
-        rendered = str()
-        for group in common_data:
-            template = env.get_template(group.get('template'))
-            rendered += template.render(group)
-        return rendered
+            rendered = str()
+            for group in common_data:
+                template = env.get_template(group.get('template'))
+                rendered += template.render(group)
+            return {'status_code': 200, 'config': rendered}, 200
+
+        except j2_exceptions.TemplateNotFound as e:
+            error = 'Error can not find template {} in any of these {}.'.format(e, self.directories.get_templates_dir())
+            SERVER_LOGGER.critical(error)
+            return {'status_code': 400, 'error': error}, 400
 
     def get_remote_yaml_template(self):
-        if self.config.get('remote_yaml_template'):
-            print(self.config.get('remote_yaml_template'))
+        """
+        Method to build, a yaml file to then run a jinja2 template
+        :return:
+            A Tuple with the following
+            (dict, int)
+
+        """
+        if self.config.get('remote_build_server_yaml_template'):
+            try:
+                env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
+                                                               default_for_string=True),
+                                  loader=FileSystemLoader(self.directories.get_templates_dir()), lstrip_blocks=True,
+                                  trim_blocks=True)
+
+                env.filters.update(self.custom_filters)
+
+                template = env.get_template(self.config.get('remote_build_server_yaml_template'))
+
+                config = yaml.safe_load(template.render(self.config.get('vars')))
+
+                return self.__run_template_v2(config)
+
+            except j2_exceptions.TemplateNotFound as e:
+                error = 'Error can not find template {} in any of these ' \
+                        '{}.'.format(e, self.directories.get_templates_dir())
+                SERVER_LOGGER.critical(error)
+                return {'status_code': 400, 'error': error}, 400
