@@ -69,8 +69,9 @@ if __name__ == '__main__':
     arg_parser_run_build.add_argument('-t', '--typefile', help='The filename of the csv for variable replacement')
     arg_parser_run_build.add_argument('-y', '--yml', action='store_true', help='Display the config, in YML format')
 
-    # This is the sub parser to run a server to receive config builds
-    arg_parser_run_server = subparsers.add_parser('run_server', help='Run a server to build configs')
+    # This is the sub parser to run a dev server to receive config builds
+    arg_parser_run_server = subparsers.add_parser('run_server', help='Run a server to build configs, this is a dev '
+                                                                     'server only!')
     arg_parser_run_server.set_defaults(which_sub='run_server')
     arg_parser_run_server.add_argument('-i', '--ip', help='The IP to listen on.')
     arg_parser_run_server.add_argument('-d', '--debug', action='store_true', help='Debug')

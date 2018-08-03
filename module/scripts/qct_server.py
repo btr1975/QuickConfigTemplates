@@ -6,7 +6,7 @@ __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018, Benjamin P. Trachtenberg"
 __credits__ = None
 __license__ = 'The MIT License (MIT)'
-__status__ = 'dev'
+__status__ = 'always-dev'
 __version_info__ = (1, 0, 1)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
@@ -70,11 +70,6 @@ class PostRemoteYamlBuild(Resource):
             LOGGER.debug('PostRemoteYamlBuild: {}'.format(message))
 
         return template_engine_obj.get_remote_yaml_template()
-
-
-def run_wsgi_server(directories):
-    global DIRECTORIES
-    DIRECTORIES = directories
 
 
 def run_local_server(ip, port, base_api_uri, debug, directories):

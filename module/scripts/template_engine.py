@@ -12,7 +12,7 @@ __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'dev'
+__status__ = 'prod'
 __version_info__ = (2, 0, 5, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
@@ -452,7 +452,8 @@ class TemplateEngine(object):
         rest_object = ARestMe()
         rest_object.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
                                         server_config.get('server_port'))
-        rest_object.set_update_headers('QCT', 'ApiVersion1')
+        rest_object.set_update_headers('Qct', 'ApiVersion1')
+        rest_object.set_update_headers('Qct-Te', __version__)
 
         if yaml_data.get('remote_build_server_yaml_template'):
             response_data = rest_object.send_post('{server_api_uri}remote_yaml_'
@@ -463,7 +464,23 @@ class TemplateEngine(object):
                                                   yaml_data)
 
         if response_data.get('status_code') == 200:
-            print(response_data.get('config'))
+            config = response_data.get('config')
+            print(config)
+            if not self.display_only:
+                self.output_file_name = pdt.file_name_increase(self.output_file_name, self.directories.get_output_dir())
+                try:
+                    pdt.list_to_file(config.splitlines(), self.output_file_name,
+                                     self.directories.get_output_dir())
+
+                except FileNotFoundError as e:
+                    LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+                    sys.exit(e)
+
+            if self.display_json:
+                self.__config_as_json(yaml_data)
+
+            if self.display_yml:
+                self.__config_as_yml(yaml_data)
 
         else:
             print(response_data.get('error'))

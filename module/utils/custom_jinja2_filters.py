@@ -6,7 +6,7 @@ __copyright__ = "Copyright (c) 2018, Benjamin P. Trachtenberg"
 __credits__ = None
 __license__ = 'The MIT License (MIT)'
 __status__ = 'prod'
-__version_info__ = (1, 0, 0)
+__version_info__ = (1, 0, 1)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -396,6 +396,58 @@ def filter_check_protocol_port_number(value):
             return error
 
 
+def filter_calculate_neighbor_ip_mask_30(value):
+    """
+    Function to calculate a neighbors IP using a 30 bit mask
+    :param value:
+    :return: An error, or a IP address
+    """
+    error = '{value} !!!! possible error should be a valid ipv4 address!!!!'.format(value=value)
+    if not value:
+        J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 {}'.format(error))
+        return error
+
+    else:
+        try:
+            if ipv4.ip(value, return_tuple=False):
+                this_ip, nei_ip = ipv4.get_neighbor_ip(value, '30')
+                return nei_ip
+
+            else:
+                J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 {}'.format(error))
+                return error
+
+        except ValueError as e:
+            J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 {}, caught {}'.format(error, e))
+            return error
+
+
+def filter_calculate_neighbor_ip_mask_31(value):
+    """
+    Function to calculate a neighbors IP using a 31 bit mask
+    :param value:
+    :return: An error, or a IP address
+    """
+    error = '{value} !!!! possible error should be a valid ipv4 address!!!!'.format(value=value)
+    if not value:
+        J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 {}'.format(error))
+        return error
+
+    else:
+        try:
+            if ipv4.ip(value, return_tuple=False):
+                this_ip, nei_ip = ipv4.get_neighbor_ip(value, '31')
+                return nei_ip
+
+            else:
+                J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 {}'.format(error))
+                return error
+
+        except ValueError as e:
+            J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 {}, caught {}'.format(error, e))
+            return error
+
+
 custom_filters = {
     'u_ip_address': filter_check_u_ip_address,
     'm_ip_address': filter_check_m_ip_address,
@@ -415,4 +467,6 @@ custom_filters = {
     'rmap_set_items': filter_check_route_map_set_items,
     'protocol_port': filter_check_protocol_port_number,
     'i_or_o': filter_check_inside_or_outside,
+    'nei_ip_30': filter_calculate_neighbor_ip_mask_30,
+    'nei_ip_31': filter_calculate_neighbor_ip_mask_31,
 }
