@@ -38,20 +38,9 @@ This script is for simple config templates, to make life easier on admins/engine
 ### Some Instructions
 
 * [Wiki](https://github.com/btr1975/QuickConfigTemplates/wiki)
+* [Using config.yml](https://github.com/btr1975/QuickConfigTemplates/wiki/Using-the-config.yml)
 
-In the Data directory there is a **config.yml** file, this file is used to change directories for the data. It looks
-like this.
-	
-```yaml
---- # Version 1.0.1
-config:
-  yml_directory: <-- This can be a list if you want multiple directories.  They will be searched in order. First file found wins.
-  templates_directory: <-- This can be a list if you want multiple directories.  They will be searched in order. First file found wins.
-  output_directory:
-  logging_directory:
-  logging_level:
-```
-### Some important notes
+### Some Important Notes
 If you are planning on compiling with pyinstaller 3.2.1 there is a bug you need to either fix, or download the dev 
 version of pyinstaller.
 
