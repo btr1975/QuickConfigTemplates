@@ -1,3 +1,4 @@
+--- # See the directions at https://github.com/btr1975/QuickConfigTemplates/wiki
 version: 2
 vars:
     vrf_name: SOME_VRF

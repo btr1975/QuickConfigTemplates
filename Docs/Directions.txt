@@ -1,3 +1,5 @@
+See complete directions at https://github.com/btr1975/QuickConfigTemplates/wiki
+
 There are 3 ways to use this config builder.
 
 1) Regular Build, for this way you create a yml file for your configuration following the examples im the templates directory.  In the CLI 
