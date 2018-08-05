@@ -6,14 +6,15 @@ import yaml
 import json
 import persistentdatatools as pdt
 import os
+import re
 from .arestme import ARestMe
 from ..utils import custom_filters
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
-__status__ = 'prod'
-__version_info__ = (2, 0, 5, __status__)
+__status__ = 'dev'
+__version_info__ = (2, 0, 6, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -31,7 +32,7 @@ class TemplateEngine(object):
 
     def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
                  display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None,
-                 remote_build=False):
+                 remote_build=False, begin_string=None, include_string=None):
         self.directories = directories
         if auto_build:
             yml_file_name = self.__auto_build_template(variables_file_name)
@@ -43,6 +44,8 @@ class TemplateEngine(object):
         self.display_yml = display_yml
         self.package_name = package_name
         self.template_version = None
+        self.begin_string = begin_string
+        self.include_string = include_string
         if not remote_build:
             self.version_runner()
         else:
@@ -183,6 +186,8 @@ class TemplateEngine(object):
                     sys.exit(e)
 
             print(template.render(group))
+            if self.begin_string or self.include_string:
+                self.__get_found_data(template.render(group))
 
         if self.display_json:
             self.__config_as_json(config)
@@ -419,6 +424,31 @@ class TemplateEngine(object):
 
         return config.get('vars')
 
+    def __get_found_data(self, config):
+        """
+        Method to search the config text, like a Cisco device
+        :param config: The text to search
+        :return:
+            None
+
+        """
+        if self.include_string:
+            regex_include = re.compile(r'.*{}'.format(' '.join(self.include_string)))
+            print('\n!!!!!-- Include "{}"--!!!!!'.format(' '.join(self.include_string)))
+            for line in config.splitlines():
+                if re.match(regex_include, line):
+                    print(line)
+
+        if self.begin_string:
+            regex_begin = re.compile(r'.*{}'.format(' '.join(self.begin_string)))
+            print('\n!!!!!-- Begin "{}"--!!!!!'.format(' '.join(self.begin_string)))
+            found_match = False
+            for line in config.splitlines():
+                if re.match(regex_begin, line):
+                    found_match = True
+                if found_match:
+                    print(line)
+
     def server_rest(self):
         """
         Method to send a restful request to build on a remote server
@@ -466,6 +496,9 @@ class TemplateEngine(object):
         if response_data.get('status_code') == 200:
             config = response_data.get('config')
             print(config)
+            if self.begin_string or self.include_string:
+                self.__get_found_data(config)
+
             if not self.display_only:
                 self.output_file_name = pdt.file_name_increase(self.output_file_name, self.directories.get_output_dir())
                 try:

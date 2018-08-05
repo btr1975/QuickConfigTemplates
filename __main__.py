@@ -61,8 +61,11 @@ if __name__ == '__main__':
     arg_parser_run_build.add_argument('-a', '--auto_build', action='store_true',
                                       help='This option uses a csv only to build a config.  If you use this option '
                                            'you are also required to use the -t option.')
+    arg_parser_run_build.add_argument('-b', '--begin', nargs='+', help='Begin config from your selection, like Cisco')
     arg_parser_run_build.add_argument('-c', '--config_only', action='store_true', help='Display the config, do not '
                                                                                        'output to file')
+    arg_parser_run_build.add_argument('-i', '--include', nargs='+', help='Include config from your selection, like '
+                                                                         'Cisco')
     arg_parser_run_build.add_argument('-j', '--json', action='store_true', help='Display the config, in JSON format')
     arg_parser_run_build.add_argument('-p', '--package', help='The zip filename to output the package to')
     arg_parser_run_build.add_argument('-r', '--remote', action='store_true', help='Remote builder')
@@ -170,7 +173,7 @@ if __name__ == '__main__':
                     sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
             mod.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
-                               args.package, args.typefile, args.auto_build, args.remote)
+                               args.package, args.typefile, args.auto_build, args.remote, args.begin, args.include)
 
         elif args.which_sub == 'run_server':
             if args.ip:
