@@ -432,11 +432,19 @@ class TemplateEngine(object):
             None
 
         """
+        regex_device_config_start = re.compile(r'^<.*>$')
+        regex_device_config_end = re.compile(r'^</.*>$')
         if self.include_string:
             regex_include = re.compile(r'.*{}'.format(' '.join(self.include_string)))
             print('\n!!!!!-- Include "{}"--!!!!!'.format(' '.join(self.include_string)))
             for line in config.splitlines():
-                if re.match(regex_include, line):
+                if re.match(regex_device_config_start, line):
+                    print(line)
+
+                elif re.match(regex_include, line):
+                    print(line)
+
+                elif re.match(regex_device_config_end, line):
                     print(line)
 
         if self.begin_string:
@@ -446,7 +454,13 @@ class TemplateEngine(object):
             for line in config.splitlines():
                 if re.match(regex_begin, line):
                     found_match = True
-                if found_match:
+                if re.match(regex_device_config_start, line):
+                    print(line)
+
+                elif found_match:
+                    print(line)
+
+                elif re.match(regex_device_config_end, line):
                     print(line)
 
     def server_rest(self):
