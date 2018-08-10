@@ -14,7 +14,7 @@ __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
 __status__ = 'prod'
-__version_info__ = (2, 0, 6, __status__)
+__version_info__ = (2, 0, 7, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -631,9 +631,14 @@ class ServerTemplateEngine(object):
 
                 template = env.get_template(self.config.get('remote_build_server_yaml_template'))
 
-                config = yaml.safe_load(template.render(self.config.get('vars')))
+                if self.config.get('vars'):
+                    config = yaml.safe_load(template.render(self.config.get('vars')))
+                    return self.__run_template_v2(config)
 
-                return self.__run_template_v2(config)
+                else:
+                    error = 'Error can not find vars in your yaml'
+                    SERVER_LOGGER.critical(error)
+                    return {'status_code': 400, 'error': error}, 400
 
             except j2_exceptions.TemplateNotFound as e:
                 error = 'Error can not find template {} in any of these ' \
