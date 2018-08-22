@@ -1,10 +1,16 @@
 {#-
-Version: 1.0.4
-Updated: 6/23/2018
+Version: 1.0.5
+Updated: 8/22/2018
 
 Sample data for this template
 
 This is to get you up and running in a lab at this time, it allows you to focus on the vxlan/evpn config
+
+Depending on your leaf type you may need to adjust TACM's
+
+Example TCAMs Adjust
+hardware access-list tcam region racl 512
+hardware access-list tcam region arp-ether 256 double-wide
 
 --- # Test data to for nxos
 version: 2
@@ -61,8 +67,6 @@ ip igmp snooping vxlan
 ip multicast overlay-spt-only
     {% endif %}
 fabric forwarding anycast-gateway-mac {{ vxlan_evpn_leaf.anycast_gw_mac|required|mac }}
------ hardware access-list tcam region racl 512 -----
------ hardware access-list tcam region arp-ether 256 double-wide -----
     {% if vxlan_evpn_leaf.boot_os %}
 boot nxos bootflash:/{{ vxlan_evpn_leaf.boot_os }}
     {% endif %}
