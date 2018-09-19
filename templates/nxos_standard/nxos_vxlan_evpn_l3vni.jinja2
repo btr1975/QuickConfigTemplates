@@ -1,10 +1,8 @@
 {#-
-Version: 1.0.3
-Updated: 8/22/2018
+Version: 1.0.4
+Updated: 9/19/2018
 
 Sample data for this template
-
-This is to get you up and running in a lab at this time, it allows you to focus on the vxlan/evpn config
 
 --- # Test data to for nxos
 version: 2
@@ -17,7 +15,7 @@ data:
             management_ip: 10.99.222.23
             vxlan_evpn_l3vnis:
             -   l3_vni_id: 900001
-                vrf: vxlan-900001
+                vrf: l3vni_test
                 mcast: true
                 mcast_route_targets:
                     export_rts:
@@ -25,10 +23,8 @@ data:
                     import_rts:
                     -   '65000:4'
                 mcast_underlay_ip: 239.2.2.1
-                l2_vni_id: 2001001
                 vlan: 1001
-                vlan_name: test_vlan
-                mcast_group: 239.0.0.1
+                vlan_name: l2vni_for_l3vni_test
                 bgp_as: 65000
                 rd: '65000:1'
                 route_targets:
@@ -47,18 +43,10 @@ data:
 {% endif %}
 vlan {{ vxlan_evpn_l3vni.vlan|required|vlan }}
   name {{ vxlan_evpn_l3vni.vlan_name|required }}
-  {%  if vxlan_evpn_l3vni.l2_vni_id == vxlan_evpn_l3vni.l3_vni_id %}
-  !!!! l2_vni_id {{ vxlan_evpn_l3vni.l2_vni_id }} is equal to l3_vni_id {{ vxlan_evpn_l3vni.l3_vni_id }} This is not allowed !!!!
-  {% else %}
-  vn-segment {{ vxlan_evpn_l3vni.l2_vni_id|required|vni }}
-  {% endif %}
+  vn-segment {{ vxlan_evpn_l3vni.l3_vni_id|required|vni }}
 
 vrf context {{ vxlan_evpn_l3vni.vrf|required }}
-  {%  if vxlan_evpn_l3vni.l2_vni_id == vxlan_evpn_l3vni.l3_vni_id %}
-  !!!! l2_vni_id {{ vxlan_evpn_l3vni.l2_vni_id }} is equal to l3_vni_id {{ vxlan_evpn_l3vni.l3_vni_id }} This is not allowed !!!!
-  {% else %}
   vni {{ vxlan_evpn_l3vni.l3_vni_id|required|vni }}
-  {% endif %}
   {% if vxlan_evpn_l3vni.rd %}
   rd {{ vxlan_evpn_l3vni.rd|community }}
   {% else %}
@@ -108,23 +96,10 @@ interface nve1
   {% if vxlan_evpn_l3vni.mcast %}
     mcast-group {{ vxlan_evpn_l3vni.mcast_underlay_ip|m_ip_address }}
   {% endif %}
-  member vni {{ vxlan_evpn_l3vni.l2_vni_id|required|vni }}
-    suppress-arp
-    mcast-group {{ vxlan_evpn_l3vni.mcast_group|required|m_ip_address }}
 
 router bgp {{ vxlan_evpn_l3vni.bgp_as|required|as_number }}
   vrf {{ vxlan_evpn_l3vni.vrf|required }}
     address-family ipv4 unicast
       advertise l2vpn evpn
-
-evpn
-  {%  if vxlan_evpn_l3vni.l2_vni_id == vxlan_evpn_l3vni.l3_vni_id %}
-  !!!! l2_vni_id {{ vxlan_evpn_l3vni.l2_vni_id }} is equal to l3_vni_id {{ vxlan_evpn_l3vni.l3_vni_id }} This is not allowed !!!!
-  {% else %}
-  vni {{ vxlan_evpn_l3vni.l2_vni_id|required|vni }} l2
-  {% endif %}
-    rd auto
-    route-target import auto
-    route-target export auto
 
 {% endfor %}
