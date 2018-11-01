@@ -12,7 +12,7 @@ pytest = "==3.3.1"
 pyyaml = "==3.12"
 persistentdatatools = "==2.2.9"
 ipaddresstools = "==1.2.8"
-requests = "==2.18.4"
+requests = "==2.20.0"
 flask = "==0.12.2"
 flask-restful = "==0.3.6"
 
