@@ -31,7 +31,7 @@ This script is for simple config templates, to make life easier on admins/engine
 * [1.0.10.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.10.prod)
 * [1.0.11.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.11.prod)
 * [1.0.13.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.13.prod)
-* [1.0.14.dev](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.14.dev)
+* [1.0.14.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.14.prod)
 
 ### Requirements
 * [See Pipfile](https://github.com/btr1975/QuickConfigTemplates/blob/master/Pipfile)
