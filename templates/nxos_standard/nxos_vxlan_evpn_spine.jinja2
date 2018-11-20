@@ -1,10 +1,8 @@
 {#-
-Version: 1.0.4
-Updated: 6/23/2018
+Version: 1.0.5
+Updated: 11/20/2018
 
 Sample data for this template
-
-This is to get you up and running in a lab at this time
 
 --- # Test data to for nxos
 version: 2
@@ -23,6 +21,7 @@ data:
                 trm: true
                 bfd: true
                 boot_os: nxos.7.0.3.I7.3.bin
+                system_jumbo_mtu: 9000
 
                 anycast_peers:
                 -   4.4.4.4
@@ -58,6 +57,16 @@ ip pim bfd
     {% if vxlan_evpn_spine.boot_os %}
 boot nxos bootflash:/{{ vxlan_evpn_spine.boot_os }}
     {% endif %}
+
+{% if vxlan_evpn_spine.system_jumbo_mtu %}
+    {% if vxlan_evpn_spine.system_jumbo_mtu > 9216 %}
+system jumbomtu {{ vxlan_evpn_spine.system_jumbo_mtu }} !!!!! You have set the system_jumbo_mtu to larger than 9216 this is not a valid configuration !!!!!
+    {% else %}
+system jumbomtu {{ vxlan_evpn_spine.system_jumbo_mtu }}
+    {% endif %}
+{% else %}
+system jumbomtu 9000
+{% endif %}
 
 interface loopback0
   description BGP Peering BGP Router ID OSPF Router ID
