@@ -1,6 +1,6 @@
 {#-
-Version: 1.0.4
-Updated: 9/19/2018
+Version: 1.0.5
+Updated: 11/20/2018
 
 Sample data for this template
 
@@ -16,6 +16,7 @@ data:
             vxlan_evpn_l3vnis:
             -   l3_vni_id: 900001
                 vrf: l3vni_test
+                mtu: 9216
                 mcast: true
                 mcast_route_targets:
                     export_rts:
@@ -84,6 +85,9 @@ vrf context {{ vxlan_evpn_l3vni.vrf|required }}
 
 interface Vlan{{ vxlan_evpn_l3vni.vlan|required|vlan }}
   description IP Forwarding for vrf {{ vxlan_evpn_l3vni.vrf|required }}
+  {% if vxlan_evpn_l3vni.mtu %}
+  mtu {{ vxlan_evpn_l3vni.mtu }}
+  {% endif %}
   no shutdown
   {% if vxlan_evpn_l3vni.mcast==true %}
   ip pim sparse-mode
