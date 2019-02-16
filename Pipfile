@@ -14,9 +14,10 @@ ipaddresstools = "==1.2.8"
 requests = "==2.20.0"
 flask = "==1.0.2"
 flask-restful = "==0.3.6"
+colorama = "*"
 
 [requires]
-python_version = "3.5"
+python_version = "3.7"
 
 [dev-packages]
 pyinstaller = "*"

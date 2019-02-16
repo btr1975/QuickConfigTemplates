@@ -7,6 +7,7 @@ import json
 import persistentdatatools as pdt
 import os
 import re
+import colorama
 from .arestme import ARestMe
 from ..utils import custom_filters
 __author__ = 'Benjamin P. Trachtenberg'
@@ -14,7 +15,7 @@ __copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
 __credits__ = 'Benjamin P. Trachtenberg'
 __license__ = 'MIT'
 __status__ = 'prod'
-__version_info__ = (2, 0, 7, __status__)
+__version_info__ = (2, 0, 8, __status__)
 __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
@@ -185,7 +186,15 @@ class TemplateEngine(object):
                     LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
                     sys.exit(e)
 
-            print(template.render(group))
+            colorama.init(autoreset=True)
+
+            for line in template.render(group).splitlines():
+                if 'error' in line:
+                    print(colorama.Fore.RED + colorama.Style.BRIGHT + line)
+
+                else:
+                    print(colorama.Fore.GREEN + colorama.Style.BRIGHT + line)
+
             if self.begin_string or self.include_string:
                 self.__get_found_data(template.render(group))
 
@@ -509,7 +518,14 @@ class TemplateEngine(object):
 
         if response_data.get('status_code') == 200:
             config = response_data.get('config')
-            print(config)
+            colorama.init(autoreset=True)
+            for line in config.splitlines():
+                if 'error' in line:
+                    print(colorama.Fore.RED + colorama.Style.BRIGHT + line)
+
+                else:
+                    print(colorama.Fore.GREEN + colorama.Style.BRIGHT + line)
+
             if self.begin_string or self.include_string:
                 self.__get_found_data(config)
 
