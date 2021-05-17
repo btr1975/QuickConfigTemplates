@@ -21,23 +21,9 @@ This script is for simple config templates, to make life easier on admins/engine
 * [Jinja2 Template Language](http://jinja.pocoo.org)
 * [Example Configs](https://github.com/btr1975/QuickConfigTemplates/tree/master/Docs/Examples)
 
-### Version Information
-* [1.0.3.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.3.prod)
-* [1.0.4.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.4.prod)
-* [1.0.5.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.5.prod)
-* [1.0.7.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.7.prod)
-* [1.0.8.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.8.prod)
-* [1.0.9.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.9.prod)
-* [1.0.10.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.10.prod)
-* [1.0.11.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.11.prod)
-* [1.0.13.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.13.prod)
-* [1.0.14.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.14.prod)
-* [1.0.15.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.15.prod)
-* [1.0.16.prod](https://github.com/btr1975/QuickConfigTemplates/wiki/Version-1.0.16.prod)
-
 ### Requirements
-* [See Pipfile](https://github.com/btr1975/QuickConfigTemplates/blob/master/Pipfile)
 * [See requirements.txt](https://github.com/btr1975/QuickConfigTemplates/blob/master/requirements.txt)
+* [See requirements-dev.txt](https://github.com/btr1975/QuickConfigTemplates/blob/master/requirements-dev.txt)
 
 ### Some Instructions
 
