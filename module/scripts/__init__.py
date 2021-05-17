@@ -1,3 +1,6 @@
+"""
+init for scripts
+"""
 from .template_engine import TemplateEngine
 from .template_engine import ServerTemplateEngine
 from .directories_class import Directories

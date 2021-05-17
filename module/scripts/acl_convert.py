@@ -1,23 +1,26 @@
+"""
+Class for ACL conversion
+"""
 import logging
 import sys
 import os
 import persistentdatatools as pdt
 import ipaddresstools as ipv4
 from ..utils import clean_list
-__author__ = 'Benjamin P. Trachtenberg'
-__copyright__ = "Copyright (c) 2018 Ben Trachtenberg"
-__credits__ = 'Benjamin P. Trachtenberg'
-__license__ = 'MIT'
-__status__ = 'dev'
-__version_info__ = (1, 0, 1, __status__)
-__version__ = '.'.join(map(str, __version_info__))
-__maintainer__ = 'Benjamin P. Trachtenberg'
-__email__ = 'e_ben_75-python@yahoo.com'
+
 
 LOGGER = logging.getLogger(__name__)
 
 
-class StandardAclData(object):
+class StandardAclData:
+    """Class to convert a Standard ACL to YAML
+
+    :type name: String
+    :param name: The ACL name
+    :type reset_sequences: Boolean
+    :param reset_sequences: Reset ACL sequences default: False
+
+    """
 
     def __init__(self, name, reset_sequences=False):
         self.name = name
@@ -33,6 +36,13 @@ class StandardAclData(object):
         return '<StandardAclData: ACL Name {}>'.format(self.name)
 
     def set_lines(self, line_data):
+        """Method to clean a line of ACL data
+
+        :type line_data: String
+        :param line_data: The ACL line
+
+        :raises Exception: If anything goes wrong
+        """
         line_data_split = line_data.split()
         temp_dict = dict()
         if line_data_split[0] == 'permit' or line_data_split[0] == 'deny':
@@ -57,23 +67,46 @@ class StandardAclData(object):
                 temp_dict.update({'permit_deny': line_data_split[1],
                                   'source_network': ' '.join(line_data_split[2:])})
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-except,invalid-name
                 LOGGER.critical(e)
                 sys.exit(e)
 
         self.lines.append(temp_dict)
 
     def get_name(self):
+        """Method to get the ACL name
+
+        :rtype: String
+        :returns: The ACL name
+        """
         return self.name
 
     def get_acl_type(self):
+        """Method to get the ACL type
+
+        :rtype: String
+        :returns: The ACL type
+        """
         return self.acl_type
 
     def get_lines(self):
+        """Method to get the ACL lines
+
+        :rtype: List
+        :returns: The ACL lines
+        """
         return self.lines
 
 
-class ExtendedAclData(object):
+class ExtendedAclData:
+    """Class to convert a Extended ACL to YAML
+
+    :type name: String
+    :param name: The ACL name
+    :type reset_sequences: Boolean
+    :param reset_sequences: Reset ACL sequences default: False
+
+    """
 
     def __init__(self, name, reset_sequences=False):
         self.name = name
@@ -88,18 +121,26 @@ class ExtendedAclData(object):
     def __repr__(self):
         return '<ExtendedAclData: ACL Name {}>'.format(self.name)
 
-    def set_lines(self, line_data):
+    def set_lines(self, line_data):  # pylint: disable=too-many-branches
+        """Method to clean a line of ACL data
+
+        :type line_data: String
+        :param line_data: The ACL line
+        """
         temp_dict = dict()
-        prev_enum = 0
+        # TODO: Need to check this variable if needed
+        prev_enum = 0  # pylint: disable=unused-variable
         hit_once = False
-        line_data_split = line_data.split()
-        for enum, entry in enumerate(line_data_split):
+        line_data_split = line_data.split()  # pylint: disable=unused-variable
+        for enum, entry in enumerate(line_data_split):  # pylint: disable=unused-variable
             if ipv4.ip(entry, return_tuple=False):
-                if not hit_once:
-                    temp_network = None
+                if not hit_once:  # pylint: disable=unused-variable
+                    # TODO: Need to check this variable if needed
+                    temp_network = None  # pylint: disable=unused-variable
 
                 else:
-                    temp_network = None
+                    # TODO: Need to check this variable if needed
+                    temp_network = None  # pylint: disable=unused-variable
 
             elif ipv4.ip_mask(entry, return_tuple=False):
                 if not hit_once:
@@ -125,7 +166,8 @@ class ExtendedAclData(object):
             self.lines.append(temp_dict)
 
         elif line_data_split[2] != 'ip':
-            if 'eq' or 'range' in line_data:
+            # TODO: Need to check on this
+            if 'eq' or 'range' in line_data:  # pylint: disable=condition-evals-to-constant
                 if line_data.count('eq') == 2:
                     pass
                 elif line_data.count('eq') == 1:
@@ -148,27 +190,41 @@ class ExtendedAclData(object):
                                'protocol': line_data_split[2]})
 
     def get_name(self):
+        """Method to get the ACL name
+
+        :rtype: String
+        :returns: The ACL name
+        """
         return self.name
 
     def get_acl_type(self):
+        """Method to get the ACL type
+
+        :rtype: String
+        :returns: The ACL type
+        """
         return self.acl_type
 
     def get_lines(self):
+        """Method to get the ACL lines
+
+        :rtype: List
+        :returns: The ACL lines
+        """
         return self.lines
 
 
-def convert_acl_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False,
-                              reset_sequences=False):
-    """
-    Function to convert a ACL to a YML format for QuickConfigTemplates
+def convert_acl_to_our_format(directories=None, input_file_name=None,  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+                              output_file_name=None, display_only=False, reset_sequences=False):
+    """Function to convert a ACL to a YML format for QuickConfigTemplates
+
     :param directories:
     :param input_file_name: The input file name
     :param output_file_name: The output file name
     :param display_only: Boolean true = don't output to file
     :param reset_sequences: Set True to recount sequences
-    :return:
-        None
-
+    :rtype: None
+    :returns: None
     """
     temp_list = list()
     acl_obj = None
@@ -183,7 +239,7 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
             LOGGER.critical(error)
             sys.exit(error)
 
-    except FileNotFoundError as e:
+    except FileNotFoundError as e:  # pylint: disable=invalid-name
         error = '{error}'.format(error=e)
         LOGGER.critical(error)
         sys.exit(error)
@@ -250,45 +306,6 @@ def convert_acl_to_our_format(directories=None, input_file_name=None, output_fil
             temp_list.append('                    protocol: {}'.format(line_data.get('protocol')))
             temp_list.append('                    source_network: {}'.format(line_data.get('source_network')))
             temp_list.append('                    destination_network: {}'.format(line_data.get('destination_network')))
-    """
---- # Test data to for ios
-common:
-    template: ios_base.jinja2
-    ticket_number: CHG123456789
-    devices:
-    -   device:
-        -   devicename: IOS-RTR02
-            management_ip: 10.99.222.23
-            extended_acls:
-            -   acl_name: ACL-EXT-1
-                sequences:
-                -   destination_network: 192.168.5.0 0.0.0.255
-                    permit_deny: permit
-                    protocol: ip
-                    sequence: 10
-                    source_network: 192.168.1.0 0.0.0.255
-
-                -   destination_network: 192.168.6.0 0.0.0.255
-                    destination_port: 445
-                    permit_deny: permit
-                    protocol: tcp
-                    sequence: 20
-                    source_network: 192.168.4.0 0.0.0.255
-
-                -   destination_network: 192.168.6.0 0.0.0.255
-                    destination_port_range: 445 600
-                    permit_deny: permit
-                    protocol: tcp
-                    sequence: 30
-                    source_network: 192.168.4.0 0.0.0.255
-
-                -   destination_network: 192.168.6.0 0.0.0.255
-                    permit_deny: permit
-                    protocol: tcp
-                    sequence: 40
-                    source_network: 192.168.4.0 0.0.0.255
-                    source_port_range: 445 600
-    """
 
     if not display_only:
         file_name = pdt.file_name_increase(output_file_name, directories.get_output_dir())
