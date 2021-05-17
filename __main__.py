@@ -1,3 +1,6 @@
+"""
+Main entry point
+"""
 import logging
 import os
 import sys
@@ -14,15 +17,14 @@ __version__ = '.'.join(map(str, __version_info__))
 __maintainer__ = 'Benjamin P. Trachtenberg'
 __email__ = 'e_ben_75-python@yahoo.com'
 COMPILE = False
-
-
 LOGGER = logging.getLogger('qct_main')
 
 
 def set_directory_structure():
+    """Function that sets directory structure"""
     if COMPILE:
         if platform.system().lower() == 'linux':
-            if os.path.islink('/bin/quick'):
+            if os.path.islink('/bin/quick'):  # pylint: disable=no-else-return
                 return mod.Directories(base_dir=os.path.dirname(os.readlink('/bin/quick')))
             else:
                 return mod.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
@@ -35,7 +37,7 @@ def set_directory_structure():
 
 if __name__ == '__main__':
     directories = set_directory_structure()
-    yml_file = None
+    YML_FILE = None
 
     logging.basicConfig(format='%(asctime)s: %(name)s - %(levelname)s - %(message)s',
                         filename=os.path.join(directories.logging_dir, 'logs.txt'))
@@ -124,37 +126,37 @@ if __name__ == '__main__':
 
         if args.which_sub == 'pl_create':
             if args.outputfile:
-                output_file_name = args.outputfile
+                OUTPUT_FILE_NAME = args.outputfile
 
             else:
-                output_file_name = 'pl_convert.yml'
+                OUTPUT_FILE_NAME = 'pl_convert.yml'
 
-            mod.convert_pl(directories, args.file_name, output_file_name, args.config_only, args.reset_sequences)
+            mod.convert_pl(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'rm_create':
             if args.outputfile:
-                output_file_name = args.outputfile
+                OUTPUT_FILE_NAME = args.outputfile
 
             else:
-                output_file_name = 'rm_convert.yml'
+                OUTPUT_FILE_NAME = 'rm_convert.yml'
 
-            mod.convert_rm(directories, args.file_name, output_file_name, args.config_only, args.reset_sequences)
+            mod.convert_rm(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'acl_create':
             if args.outputfile:
-                output_file_name = args.outputfile
+                OUTPUT_FILE_NAME = args.outputfile
 
             else:
-                output_file_name = 'acl_convert.yml'
+                OUTPUT_FILE_NAME = 'acl_convert.yml'
 
-            mod.convert_acl(directories, args.file_name, output_file_name, args.config_only, args.reset_sequences)
+            mod.convert_acl(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'run_build':
             if args.outputfile:
-                output_file_name = args.outputfile
+                OUTPUT_FILE_NAME = args.outputfile
 
             else:
-                output_file_name = 'config.txt'
+                OUTPUT_FILE_NAME = 'config.txt'
 
             if args.auto_build:
                 if args.typefile:
@@ -166,45 +168,45 @@ if __name__ == '__main__':
 
             else:
                 if len(args.yml_file) == 1:
-                    yml_file = args.yml_file[0]
+                    YML_FILE = args.yml_file[0]
 
                 else:
                     arg_parser.print_help()
                     sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
-            mod.TemplateEngine(directories, yml_file, output_file_name, args.config_only, args.json, args.yml,
+            mod.TemplateEngine(directories, YML_FILE, OUTPUT_FILE_NAME, args.config_only, args.json, args.yml,
                                args.package, args.typefile, args.auto_build, args.remote, args.begin, args.include)
 
         elif args.which_sub == 'run_server':
             if args.ip:
-                ip = args.ip
+                IP = args.ip
 
             else:
-                ip = '127.0.0.1'
+                IP = '127.0.0.1'
 
             if args.port:
-                port = args.port
+                PORT = args.port
 
             else:
-                port = 5000
+                PORT = 5000
 
             if args.uri:
-                base_api_uri = args.uri
+                BASE_API_URI = args.uri
 
             else:
-                base_api_uri = '/qct/api/v1'
+                BASE_API_URI = '/qct/api/v1'
 
-            mod.run_local_server(ip, port, base_api_uri, args.debug, directories)
+            mod.run_local_server(IP, PORT, BASE_API_URI, args.debug, directories)
 
-    except AttributeError as e:
+    except AttributeError as e:  # pylint: disable=invalid-name
         LOGGER.critical(e)
         arg_parser.print_help()
 
-    except FileNotFoundError as e:
+    except FileNotFoundError as e:  # pylint: disable=invalid-name
         LOGGER.critical(e)
         print('\n !!! {} !!! \n'.format(e))
         arg_parser.print_help()
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except,invalid-name
         LOGGER.critical(e)
         arg_parser.print_help()

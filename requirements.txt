@@ -1,7 +1,6 @@
 Jinja2~=3.0.0
 MarkupSafe~=2.0.0
 py~=1.10.0
-pytest~=6.2.4
 PyYAML~=5.4.1
 persistentdatatools~=2.2.12
 ipaddresstools~=1.2.12
