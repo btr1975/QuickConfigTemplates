@@ -10,7 +10,8 @@ Welcome to QuickConfigTemplates's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   main/modules
+   examples/index
 
 Indices and tables
 ==================
