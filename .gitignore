@@ -114,3 +114,6 @@ Logs/
 
 # Ignore yaml directory
 yaml/
+
+# No Pipfiles
+Pipfile*
