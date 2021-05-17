@@ -1,6 +1,9 @@
-import ipaddresstools as ipv4
+"""
+Custom Jinja2 template filters
+"""
 import re
 import logging
+import ipaddresstools as ipv4
 __author__ = 'Benjamin P. Trachtenberg'
 __copyright__ = "Copyright (c) 2018, Benjamin P. Trachtenberg"
 __credits__ = None
@@ -16,52 +19,61 @@ J2_FILTER_LOGGER = logging.getLogger('qct_template_filter')
 
 
 def filter_check_u_ip_address(value):
+    """Function to check for a unicast ipv4 address in a template
+
+    :type value: String
+    :param value: Value to check if it is a IPv4 Unicast address
+
+    :rtype: String
+    :returns: value, or an error
     """
-    Function to check for a unicast ipv4 address in a template
-    :param value:
-    :return:
-    """
-    error = '{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'.format(value=value)
+    error = f'{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_u_ip_address {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_u_ip_address %s', error)
         return error
 
     elif ipv4.ucast_ip(value, return_tuple=False):
         return value
 
     else:
-        J2_FILTER_LOGGER.info('filter_check_u_ip_address {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_u_ip_address %s', error)
         return error
 
 
 def filter_check_subnet(value):
+    """Function to check for a subnet and mask combo in a template
+
+    :type value: String
+    :param value: Value to check if it is a IPv4 Subnet in CIDR format
+
+    :rtype: String
+    :returns: The value or an error
     """
-    Function to check for a subnet and mask combo in a template
-    :param value:
-    :return:
-    """
-    error = '{value} !!!! possible error this is required to be a ipv4 subnet !!!!'.format(value=value)
+    error = f'{value} !!!! possible error this is required to be a ipv4 subnet !!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_subnet {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_subnet %s', error)
         return error
 
     elif ipv4.ip_mask(value, return_tuple=False):
         return value
 
     else:
-        J2_FILTER_LOGGER.info('filter_check_subnet {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_subnet %s', error)
         return error
 
 
 def filter_check_ip_mask_cidr(value):
+    """Function to check to a CIDR mask number in a template
+
+    :type value: String
+    :param value: The value to check if it is a CIDR value
+
+    :rtype: String
+    :return: The value or an error
     """
-    Function to check to a CIDR mask number in a template
-    :param value:
-    :return:
-    """
-    error = '{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'.format(value=value)
+    error = f'{value} !!!! possible error this is required to be a ipv4 subnet mask in CIDR!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_ip_mask_cidr {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_ip_mask_cidr %s', error)
         return error
 
     try:
@@ -72,7 +84,7 @@ def filter_check_ip_mask_cidr(value):
             return error
 
     except ValueError as e:
-        J2_FILTER_LOGGER.info('filter_check_ip_mask_cidr {} {}'.format(error, e))
+        J2_FILTER_LOGGER.info('filter_check_ip_mask_cidr %s %s', error, e)
         return error
 
 
@@ -82,7 +94,7 @@ def filter_check_ip_mask_standard(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'.format(value=value)
+    error = f'{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_ip_mask_standard {}'.format(error))
         return error
@@ -107,7 +119,7 @@ def filter_check_vlan_number(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error the VLAN# should be between 1 and 4096!!!!'.format(value=value)
+    error = f'{value} !!!! possible error the VLAN# should be between 1 and 4096!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_vlan_number {}'.format(error))
         return error
@@ -131,7 +143,7 @@ def filter_check_vni_number(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error the VNI# should be between 1 and 16777214!!!!'.format(value=value)
+    error = f'{value} !!!! possible error the VNI# should be between 1 and 16777214!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_vni_number {}'.format(error))
         return error
@@ -155,7 +167,7 @@ def filter_check_ip_inverse_mask_standard(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'.format(value=value)
+    error = f'{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_ip_inverse_mask_standard {}'.format(error))
         return error
@@ -180,7 +192,7 @@ def filter_check_m_ip_address(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'.format(value=value)
+    error = f'{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_m_ip_address {}'.format(error))
         return error
@@ -199,7 +211,7 @@ def filter_check_as_number(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error the AS# should be between 1 and 65535!!!!'.format(value=value)
+    error = f'{value} !!!! possible error the AS# should be between 1 and 65535!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_as_number {}'.format(error))
         return error
@@ -224,7 +236,7 @@ def filter_check_required(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! This is a required value!!!!'.format(value=value)
+    error = f'{value} !!!! This is a required value!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_required {}'.format(error))
         return error
@@ -239,7 +251,7 @@ def filter_check_community(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error the community should be in this format XXX:XXX!!!!'.format(value=value)
+    error = f'{value} !!!! possible error the community should be in this format XXX:XXX!!!!'
     regex_community = re.compile(r'^[0-9]+:[0-9]+$')
     if not value:
         J2_FILTER_LOGGER.info('filter_check_community {}'.format(error))
@@ -259,8 +271,8 @@ def filter_check_mac_address(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error the mac-address should be in this format ' \
-            'xxxx.xxxx.xxxx, and only contain 0-9 or a-f!!!!'.format(value=value)
+    error = f'{value} !!!! possible error the mac-address should be in this format ' \
+            f'xxxx.xxxx.xxxx, and only contain 0-9 or a-f!!!!'
     regex_mac = re.compile(r'^([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}$', re.IGNORECASE)
     if not value:
         J2_FILTER_LOGGER.info('filter_check_mac_address {}'.format(error))
@@ -280,7 +292,7 @@ def filter_check_permit_or_deny(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error should be permit or deny!!!!'.format(value=value)
+    error = f'{value} !!!! possible error should be permit or deny!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_permit_or_deny {}'.format(error))
         return error
@@ -299,7 +311,7 @@ def filter_check_inside_or_outside(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error should be inside or outside!!!!'.format(value=value)
+    error = f'{value} !!!! possible error should be inside or outside!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_inside_or_outside {}'.format(error))
         return error
@@ -318,7 +330,7 @@ def filter_check_number(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error this should be any number!!!!'.format(value=value)
+    error = f'{value} !!!! possible error this should be any number!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_number {}'.format(error))
         return error
@@ -338,7 +350,7 @@ def filter_check_route_map_match_items(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error check template for possible match items!!!!'.format(value=value)
+    error = f'{value} !!!! possible error check template for possible match items!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_route_map_match_items {}'.format(error))
         return error
@@ -358,7 +370,7 @@ def filter_check_route_map_set_items(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error check template for possible set items!!!!'.format(value=value)
+    error = f'{value} !!!! possible error check template for possible set items!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_route_map_set_items {}'.format(error))
         return error
@@ -377,7 +389,7 @@ def filter_check_protocol_port_number(value):
     :param value:
     :return:
     """
-    error = '{value} !!!! possible error should be between 0 and 65535!!!!'.format(value=value)
+    error = f'{value} !!!! possible error should be between 0 and 65535!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_check_protocol_port_number {}'.format(error))
         return error
@@ -402,7 +414,7 @@ def filter_calculate_neighbor_ip_mask_30(value):
     :param value:
     :return: An error, or a IP address
     """
-    error = '{value} !!!! possible error should be a valid ipv4 address!!!!'.format(value=value)
+    error = f'{value} !!!! possible error should be a valid ipv4 address!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 {}'.format(error))
         return error
@@ -428,7 +440,7 @@ def filter_calculate_neighbor_ip_mask_31(value):
     :param value:
     :return: An error, or a IP address
     """
-    error = '{value} !!!! possible error should be a valid ipv4 address!!!!'.format(value=value)
+    error = f'{value} !!!! possible error should be a valid ipv4 address!!!!'
     if not value:
         J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 {}'.format(error))
         return error
