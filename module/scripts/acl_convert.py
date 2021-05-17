@@ -13,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class StandardAclData:
-    """Class to convert a Standard ACL to YAML
+    """Class to hold 1 Standard ACL Data
 
     :type name: String
     :param name: The ACL name
@@ -99,7 +99,7 @@ class StandardAclData:
 
 
 class ExtendedAclData:
-    """Class to convert a Extended ACL to YAML
+    """Class to hold 1 Extended ACL Data
 
     :type name: String
     :param name: The ACL name

@@ -1,3 +1,6 @@
+"""
+Prefix-List conversion
+"""
 import logging
 import sys
 import os
@@ -8,9 +11,14 @@ from ..utils import clean_list
 LOGGER = logging.getLogger(__name__)
 
 
-class PrefixListData(object):
-    """
-    Class to hold 1 Prefix-Lists's Data
+class PrefixListData:
+    """ Class to hold 1 Prefix-Lists's Data
+
+    :type name: String
+    :param name: The name of the Prefix-List
+    :type reset_sequences: Boolean
+    :param reset_sequences: Reset Prefix-List sequences default: False
+
     """
     def __init__(self, name, reset_sequences=False):
         self.name = name
@@ -25,11 +33,13 @@ class PrefixListData(object):
         return '<PrefixListData: Prefix-List Name {}>'.format(self.name)
 
     def set_lines(self, line_data):
-        """
-        Method to set the sequences description
-        :param line_data: String data
-        :return:
-            None
+        """Method to set the sequence data
+
+        :type line_data: String
+        :param line_data: The Prefix-List line data
+
+        :rtype: None
+        :return: None
         """
         line_data_split = line_data.split()
         temp_dict = dict()
@@ -54,24 +64,24 @@ class PrefixListData(object):
         self.lines.append(temp_dict)
 
     def get_name(self):
-        """
-        Method to get the Prefix-List name
-        :return:
-            String Prefix-List name
+        """Method to get the Prefix-List name
+
+        :rtype: String
+        :return: String Prefix-List name
         """
         return self.name
 
     def get_lines(self):
-        """
-        Method to get a Prefix-List's sequences
-        :return:
-            List of dictionaries
+        """Method to get a Prefix-List's sequences
+
+        :rtype: List
+        :return: List of dictionaries
         """
         return self.lines
 
 
-def convert_prefix_list_to_our_format(directories=None, input_file_name=None, output_file_name=None,
-                                      display_only=False, reset_sequences=False):
+def convert_prefix_list_to_our_format(directories=None, input_file_name=None,  # pylint: disable=too-many-locals
+                                      output_file_name=None, display_only=False, reset_sequences=False):
     """
     Function to convert a Prefix-List to a YML format for QuickConfigTemplates
     :param directories:
@@ -96,7 +106,7 @@ def convert_prefix_list_to_our_format(directories=None, input_file_name=None, ou
             LOGGER.critical(error)
             sys.exit(error)
 
-    except FileNotFoundError as e:
+    except FileNotFoundError as e:  # pylint: disable=invalid-name
         error = '{error}'.format(error=e)
         LOGGER.critical(error)
         sys.exit(error)

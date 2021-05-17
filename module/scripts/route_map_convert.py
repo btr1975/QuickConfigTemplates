@@ -1,3 +1,6 @@
+"""
+Route-Map conversion
+"""
 import logging
 import sys
 import os
@@ -8,9 +11,14 @@ from ..utils import clean_list
 LOGGER = logging.getLogger(__name__)
 
 
-class RouteMapData(object):
-    """
-    Class to hold 1 Route-Map's Data
+class RouteMapData:
+    """Class to hold 1 Route-Map Data
+
+    :type name: String
+    :param name: The ACL name
+    :type reset_sequences: Boolean
+    :param reset_sequences: Reset ACL sequences default: False
+
     """
     def __init__(self, name, reset_sequences=False):
         self.name = name
@@ -26,12 +34,15 @@ class RouteMapData(object):
         return 'RouteMapData: Route-Map {}'.format(self.name)
 
     def set_sequence_info(self, sequence, permit_deny):
-        """
-        Method to create a single sequences dictionary
+        """Method to create a single sequences dictionary
+
+        :type sequence: Integer
         :param sequence: The sequence number
+        :type permit_deny: String
         :param permit_deny: permit, or deny
-        :return:
-            None
+
+        :rtype: None
+        :return:  None
         """
         if self.reset_sequences:
             self.temp_dict.update({'sequence': self.current_seq})
@@ -44,21 +55,25 @@ class RouteMapData(object):
         self.temp_dict.update({'set': list()})
 
     def set_description(self, line_data):
-        """
-        Method to set the sequences description
+        """Method to set the sequences description
+
+        :type: String
         :param line_data: String data
-        :return:
-            None
+
+        :rtype: None
+        :return: None
         """
         line_data_split = line_data.split()
         self.temp_dict['description'] = ' '.join(line_data_split[1:])
 
     def set_matches(self, line_data):
-        """
-        Method to add a match statement
+        """Method to add a match statement
+
+        :type line_data: String
         :param line_data: String data
-        :return:
-            None
+
+        :rtype: None
+        :return: None
         """
         line_data_split = line_data.split()
         if 'address' in line_data_split:
@@ -74,11 +89,13 @@ class RouteMapData(object):
             self.temp_dict['match'].append({'match_item': line_data_split[1], 'match_item_name': line_data_split[2]})
 
     def set_sets(self, line_data):
-        """
-        Method to add a set statement
+        """Method to add a set statement
+
+        :type line_data: String
         :param line_data: String data
-        :return:
-            None
+
+        :rtype: None
+        :return: None
         """
         line_data_split = line_data.split()
         if 'as-path' in line_data_split:
@@ -94,41 +111,41 @@ class RouteMapData(object):
             self.temp_dict['set'].append({'set_item': line_data_split[1], 'set_item_to': line_data_split[2]})
 
     def get_name(self):
-        """
-        Method to get the Route-Map name
-        :return:
-            String Route-Map name
+        """Method to get the Route-Map name
+
+        :rtype: String
+        :returns: The Route-Map name
         """
         return self.name
 
     def get_current_sequence(self):
-        """
-        Method to get the Route-Map's current sequence
-        :return:
-            Integer
+        """Method to get the Route-Map's current sequence
+
+        :rtype: Integer
+        :return: Integer
         """
         return self.temp_dict.get('sequence')
 
     def set_new_sequence(self):
-        """
-        Method to create a new Route-Map sequence
-        :return:
-            None
+        """Method to create a new Route-Map sequence
+
+        :rtype: None
+        :return: None
         """
         self.lines.append(self.temp_dict.copy())
         self.temp_dict.clear()
 
     def get_sequences(self):
-        """
-        Method to get a Route-Map's sequences
-        :return:
-            List of dictionaries
+        """Method to get a Route-Map's sequences
+
+        :rtype: List
+        :return: List of dictionaries
         """
         return self.lines
 
 
-def convert_route_map_to_our_format(directories=None, input_file_name=None, output_file_name=None, display_only=False,
-                                    reset_sequences=False):
+def convert_route_map_to_our_format(directories=None, input_file_name=None,  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
+                                    output_file_name=None, display_only=False, reset_sequences=False):
     """
     Function to convert a Route-Map to a YML format for QuickConfigTemplates
     :param directories:
@@ -153,7 +170,7 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
             LOGGER.critical(error)
             sys.exit(error)
 
-    except FileNotFoundError as e:
+    except FileNotFoundError as e:  # pylint: disable=invalid-name
         error = '{error}'.format(error=e)
         LOGGER.critical(error)
         sys.exit(error)
@@ -215,7 +232,7 @@ def convert_route_map_to_our_format(directories=None, input_file_name=None, outp
         temp_list.append('                    permit_deny: {}'.format(line.get('permit_deny')))
         if line.get('match'):
             temp_list.append('                    match:')
-            for enum, match_line in enumerate(line.get('match')):
+            for enum, match_line in enumerate(line.get('match')):  # pylint: disable=unused-variable
                 temp_list.append('                    -   match_item: {}'.format(match_line.get('match_item')))
                 temp_list.append('                        match_item_name: '
                                  '{}'.format(match_line.get('match_item_name')))
