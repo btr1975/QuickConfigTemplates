@@ -28,7 +28,7 @@ def filter_check_u_ip_address(value):
     :returns: value, or an error
     """
     error = f'{value} !!!! possible error this is required to be a unicast ipv4 address !!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_u_ip_address %s', error)
         return error
 
@@ -50,7 +50,7 @@ def filter_check_subnet(value):
     :returns: The value or an error
     """
     error = f'{value} !!!! possible error this is required to be a ipv4 subnet !!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_subnet %s', error)
         return error
 
@@ -77,32 +77,32 @@ def filter_check_ip_mask_cidr(value):
         return error
 
     try:
-        if ipv4.mask_conversion.get(int(value)):
+        if ipv4.mask_conversion.get(int(value)):  # pylint: disable=no-else-return
             return value
 
         else:
             return error
 
-    except ValueError as e:
+    except ValueError as e:  # pylint: disable=invalid-name  # pylint: disable=invalid-name
         J2_FILTER_LOGGER.info('filter_check_ip_mask_cidr %s %s', error, e)
         return error
 
 
-def filter_check_ip_mask_standard(value):
+def filter_check_ip_mask_standard(value):  # pylint: disable=inconsistent-return-statements
     """
     Function to check for a standard mask in a template
     :param value:
     :return:
     """
     error = f'{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_ip_mask_standard %s', error)
         return error
 
     else:
         not_found = False
         for key in ipv4.mask_conversion:
-            if ipv4.mask_conversion.get(key).get('MASK') == value:
+            if ipv4.mask_conversion.get(key).get('MASK') == value:  # pylint: disable=no-else-return
                 return value
 
             else:
@@ -120,19 +120,19 @@ def filter_check_vlan_number(value):
     :return:
     """
     error = f'{value} !!!! possible error the VLAN# should be between 1 and 4096!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_vlan_number %s', error)
         return error
 
     else:
         try:
-            if int(value) not in range(1, 4097):
+            if int(value) not in range(1, 4097):  # pylint: disable=no-else-return
                 return error
 
             else:
                 return value
 
-        except ValueError as e:
+        except ValueError as e:  # pylint: disable=invalid-name
             J2_FILTER_LOGGER.info('filter_check_vlan_number %s, caught %s', error, e)
             return error
 
@@ -144,38 +144,38 @@ def filter_check_vni_number(value):
     :return:
     """
     error = f'{value} !!!! possible error the VNI# should be between 1 and 16777214!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_vni_number %s', error)
         return error
 
     else:
         try:
-            if int(value) not in range(1, 16777215):
+            if int(value) not in range(1, 16777215):  # pylint: disable=no-else-return
                 return error
 
             else:
                 return value
 
-        except ValueError as e:
+        except ValueError as e:  # pylint: disable=invalid-name
             J2_FILTER_LOGGER.info('filter_check_vni_number %s, caught %s', error, e)
             return error
 
 
-def filter_check_ip_inverse_mask_standard(value):
+def filter_check_ip_inverse_mask_standard(value):  # pylint: disable=inconsistent-return-statements
     """
     Function to check for a inverse mask in a template
     :param value:
     :return:
     """
     error = f'{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_ip_inverse_mask_standard %s', error)
         return error
 
     else:
         not_found = False
         for key in ipv4.mask_conversion:
-            if ipv4.mask_conversion.get(key).get('INVMASK') == value:
+            if ipv4.mask_conversion.get(key).get('INVMASK') == value:  # pylint: disable=no-else-return
                 return value
 
             else:
@@ -193,7 +193,7 @@ def filter_check_m_ip_address(value):
     :return:
     """
     error = f'{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_m_ip_address %s', error)
         return error
 
@@ -212,20 +212,20 @@ def filter_check_as_number(value):
     :return:
     """
     error = f'{value} !!!! possible error the AS# should be between 1 and 65535!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_as_number %s', error)
         return error
 
     else:
         try:
-            if int(value) not in range(1, 65536):
+            if int(value) not in range(1, 65536):  # pylint: disable=no-else-return
                 J2_FILTER_LOGGER.info('filter_check_as_number %s', error)
                 return error
 
             else:
                 return value
 
-        except ValueError as e:
+        except ValueError as e:  # pylint: disable=invalid-name
             J2_FILTER_LOGGER.info('filter_check_as_number %s, caught %s', error, e)
             return error
 
@@ -237,7 +237,7 @@ def filter_check_required(value):
     :return:
     """
     error = f'{value} !!!! This is a required value!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_required %s', error)
         return error
 
@@ -253,7 +253,7 @@ def filter_check_community(value):
     """
     error = f'{value} !!!! possible error the community should be in this format XXX:XXX!!!!'
     regex_community = re.compile(r'^[0-9]+:[0-9]+$')
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_community %s', error)
         return error
 
@@ -274,7 +274,7 @@ def filter_check_mac_address(value):
     error = f'{value} !!!! possible error the mac-address should be in this format ' \
             f'xxxx.xxxx.xxxx, and only contain 0-9 or a-f!!!!'
     regex_mac = re.compile(r'^([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}$', re.IGNORECASE)
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_mac_address %s', error)
         return error
 
@@ -293,7 +293,7 @@ def filter_check_permit_or_deny(value):
     :return:
     """
     error = f'{value} !!!! possible error should be permit or deny!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_permit_or_deny %s', error)
         return error
 
@@ -312,7 +312,7 @@ def filter_check_inside_or_outside(value):
     :return:
     """
     error = f'{value} !!!! possible error should be inside or outside!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_inside_or_outside %s', error)
         return error
 
@@ -324,7 +324,7 @@ def filter_check_inside_or_outside(value):
         return value
 
 
-def filter_check_number(value):
+def filter_check_number(value):  # pylint: disable=inconsistent-return-statements
     """
     Function to check for any number in a template
     :param value:
@@ -339,7 +339,7 @@ def filter_check_number(value):
         if isinstance(int(value), int):
             return value
 
-    except ValueError as e:
+    except ValueError as e:  # pylint: disable=invalid-name
         J2_FILTER_LOGGER.info('filter_check_number %s, caught %s', error, e)
         return error
 
@@ -351,7 +351,7 @@ def filter_check_route_map_match_items(value):
     :return:
     """
     error = f'{value} !!!! possible error check template for possible match items!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_route_map_match_items %s', error)
         return error
 
@@ -371,7 +371,7 @@ def filter_check_route_map_set_items(value):
     :return:
     """
     error = f'{value} !!!! possible error check template for possible set items!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_route_map_set_items %s', error)
         return error
 
@@ -390,20 +390,20 @@ def filter_check_protocol_port_number(value):
     :return:
     """
     error = f'{value} !!!! possible error should be between 0 and 65535!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_check_protocol_port_number %s', error)
         return error
 
     else:
         try:
-            if int(value) not in range(0, 65536):
+            if int(value) not in range(0, 65536):  # pylint: disable=no-else-return
                 J2_FILTER_LOGGER.info('filter_check_protocol_port_number %s', error)
                 return error
 
             else:
                 return value
 
-        except ValueError as e:
+        except ValueError as e:  # pylint: disable=invalid-name
             J2_FILTER_LOGGER.info('filter_check_protocol_port_number %s, caught %s', error, e)
             return error
 
@@ -415,21 +415,21 @@ def filter_calculate_neighbor_ip_mask_30(value):
     :return: An error, or a IP address
     """
     error = f'{value} !!!! possible error should be a valid ipv4 address!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 %s', error)
         return error
 
     else:
         try:
-            if ipv4.ip(value, return_tuple=False):
-                this_ip, nei_ip = ipv4.get_neighbor_ip(value, '30')
+            if ipv4.ip(value, return_tuple=False):  # pylint: disable=no-else-return
+                this_ip, nei_ip = ipv4.get_neighbor_ip(value, '30')  # pylint: disable=unused-variable
                 return nei_ip
 
             else:
                 J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 %s', error)
                 return error
 
-        except ValueError as e:
+        except ValueError as e:  # pylint: disable=invalid-name
             J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 %s, caught %s', error, e)
             return error
 
@@ -441,21 +441,21 @@ def filter_calculate_neighbor_ip_mask_31(value):
     :return: An error, or a IP address
     """
     error = f'{value} !!!! possible error should be a valid ipv4 address!!!!'
-    if not value:
+    if not value:  # pylint: disable=no-else-return
         J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 %s', error)
         return error
 
     else:
         try:
-            if ipv4.ip(value, return_tuple=False):
-                this_ip, nei_ip = ipv4.get_neighbor_ip(value, '31')
+            if ipv4.ip(value, return_tuple=False):  # pylint: disable=no-else-return
+                this_ip, nei_ip = ipv4.get_neighbor_ip(value, '31')  # pylint: disable=unused-variable
                 return nei_ip
 
             else:
                 J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 %s', error)
                 return error
 
-        except ValueError as e:
+        except ValueError as e:  # pylint: disable=invalid-name
             J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 %s, caught %s', error, e)
             return error
 
