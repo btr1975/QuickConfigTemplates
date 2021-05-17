@@ -96,7 +96,7 @@ def filter_check_ip_mask_standard(value):
     """
     error = f'{value} !!!! possible error this is required to be a ipv4 standard subnet mask!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_ip_mask_standard {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_ip_mask_standard %s', error)
         return error
 
     else:
@@ -109,7 +109,7 @@ def filter_check_ip_mask_standard(value):
                 not_found = True
 
         if not_found:
-            J2_FILTER_LOGGER.info('filter_check_ip_mask_standard {}'.format(error))
+            J2_FILTER_LOGGER.info('filter_check_ip_mask_standard %s', error)
             return error
 
 
@@ -121,7 +121,7 @@ def filter_check_vlan_number(value):
     """
     error = f'{value} !!!! possible error the VLAN# should be between 1 and 4096!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_vlan_number {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_vlan_number %s', error)
         return error
 
     else:
@@ -133,7 +133,7 @@ def filter_check_vlan_number(value):
                 return value
 
         except ValueError as e:
-            J2_FILTER_LOGGER.info('filter_check_vlan_number {}, caught {}'.format(error, e))
+            J2_FILTER_LOGGER.info('filter_check_vlan_number %s, caught %s', error, e)
             return error
 
 
@@ -145,7 +145,7 @@ def filter_check_vni_number(value):
     """
     error = f'{value} !!!! possible error the VNI# should be between 1 and 16777214!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_vni_number {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_vni_number %s', error)
         return error
 
     else:
@@ -157,7 +157,7 @@ def filter_check_vni_number(value):
                 return value
 
         except ValueError as e:
-            J2_FILTER_LOGGER.info('filter_check_vni_number {}, caught {}'.format(error, e))
+            J2_FILTER_LOGGER.info('filter_check_vni_number %s, caught %s', error, e)
             return error
 
 
@@ -169,7 +169,7 @@ def filter_check_ip_inverse_mask_standard(value):
     """
     error = f'{value} !!!! possible error this is required to be a ipv4 inverse subnet mask!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_ip_inverse_mask_standard {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_ip_inverse_mask_standard %s', error)
         return error
 
     else:
@@ -182,7 +182,7 @@ def filter_check_ip_inverse_mask_standard(value):
                 not_found = True
 
         if not_found:
-            J2_FILTER_LOGGER.info('filter_check_ip_inverse_mask_standard {}'.format(error))
+            J2_FILTER_LOGGER.info('filter_check_ip_inverse_mask_standard %s', error)
             return error
 
 
@@ -194,14 +194,14 @@ def filter_check_m_ip_address(value):
     """
     error = f'{value} !!!! possible error this is required to be a multicast ipv4 address !!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_m_ip_address {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_m_ip_address %s', error)
         return error
 
     elif ipv4.mcast_ip(value, return_tuple=False):
         return value
 
     else:
-        J2_FILTER_LOGGER.info('filter_check_m_ip_address {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_m_ip_address %s', error)
         return error
 
 
@@ -213,20 +213,20 @@ def filter_check_as_number(value):
     """
     error = f'{value} !!!! possible error the AS# should be between 1 and 65535!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_as_number {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_as_number %s', error)
         return error
 
     else:
         try:
             if int(value) not in range(1, 65536):
-                J2_FILTER_LOGGER.info('filter_check_as_number {}'.format(error))
+                J2_FILTER_LOGGER.info('filter_check_as_number %s', error)
                 return error
 
             else:
                 return value
 
         except ValueError as e:
-            J2_FILTER_LOGGER.info('filter_check_as_number {}, caught {}'.format(error, e))
+            J2_FILTER_LOGGER.info('filter_check_as_number %s, caught %s', error, e)
             return error
 
 
@@ -238,7 +238,7 @@ def filter_check_required(value):
     """
     error = f'{value} !!!! This is a required value!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_required {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_required %s', error)
         return error
 
     else:
@@ -254,11 +254,11 @@ def filter_check_community(value):
     error = f'{value} !!!! possible error the community should be in this format XXX:XXX!!!!'
     regex_community = re.compile(r'^[0-9]+:[0-9]+$')
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_community {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_community %s', error)
         return error
 
     elif not regex_community.match(str(value)):
-        J2_FILTER_LOGGER.info('filter_check_community {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_community %s', error)
         return error
 
     else:
@@ -275,11 +275,11 @@ def filter_check_mac_address(value):
             f'xxxx.xxxx.xxxx, and only contain 0-9 or a-f!!!!'
     regex_mac = re.compile(r'^([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}\.([0-9]|[a-f]){4}$', re.IGNORECASE)
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_mac_address {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_mac_address %s', error)
         return error
 
     elif not regex_mac.match(str(value)):
-        J2_FILTER_LOGGER.info('filter_check_mac_address {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_mac_address %s', error)
         return error
 
     else:
@@ -294,11 +294,11 @@ def filter_check_permit_or_deny(value):
     """
     error = f'{value} !!!! possible error should be permit or deny!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_permit_or_deny {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_permit_or_deny %s', error)
         return error
 
     elif value not in ('permit', 'deny'):
-        J2_FILTER_LOGGER.info('filter_check_permit_or_deny {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_permit_or_deny %s', error)
         return error
 
     else:
@@ -313,11 +313,11 @@ def filter_check_inside_or_outside(value):
     """
     error = f'{value} !!!! possible error should be inside or outside!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_inside_or_outside {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_inside_or_outside %s', error)
         return error
 
     elif value not in ('inside', 'outside'):
-        J2_FILTER_LOGGER.info('filter_check_inside_or_outside {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_inside_or_outside %s', error)
         return error
 
     else:
@@ -332,7 +332,7 @@ def filter_check_number(value):
     """
     error = f'{value} !!!! possible error this should be any number!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_number {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_number %s', error)
         return error
 
     try:
@@ -340,7 +340,7 @@ def filter_check_number(value):
             return value
 
     except ValueError as e:
-        J2_FILTER_LOGGER.info('filter_check_number {}, caught {}'.format(error, e))
+        J2_FILTER_LOGGER.info('filter_check_number %s, caught %s', error, e)
         return error
 
 
@@ -352,12 +352,12 @@ def filter_check_route_map_match_items(value):
     """
     error = f'{value} !!!! possible error check template for possible match items!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_route_map_match_items {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_route_map_match_items %s', error)
         return error
 
     elif value not in ('ip address prefix-list', 'as-path', 'ip address', 'community', 'extcommunity',
                        'ip multicast group'):
-        J2_FILTER_LOGGER.info('filter_check_route_map_match_items {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_route_map_match_items %s', error)
         return error
 
     else:
@@ -372,11 +372,11 @@ def filter_check_route_map_set_items(value):
     """
     error = f'{value} !!!! possible error check template for possible set items!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_route_map_set_items {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_route_map_set_items %s', error)
         return error
 
     elif value not in ('local-preference', 'weight', 'community', 'as-path prepend', 'as-path prepend last-as'):
-        J2_FILTER_LOGGER.info('filter_check_route_map_set_items {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_route_map_set_items %s', error)
         return error
 
     else:
@@ -391,20 +391,20 @@ def filter_check_protocol_port_number(value):
     """
     error = f'{value} !!!! possible error should be between 0 and 65535!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_check_protocol_port_number {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_check_protocol_port_number %s', error)
         return error
 
     else:
         try:
             if int(value) not in range(0, 65536):
-                J2_FILTER_LOGGER.info('filter_check_protocol_port_number {}'.format(error))
+                J2_FILTER_LOGGER.info('filter_check_protocol_port_number %s', error)
                 return error
 
             else:
                 return value
 
         except ValueError as e:
-            J2_FILTER_LOGGER.info('filter_check_protocol_port_number {}, caught {}'.format(error, e))
+            J2_FILTER_LOGGER.info('filter_check_protocol_port_number %s, caught %s', error, e)
             return error
 
 
@@ -416,7 +416,7 @@ def filter_calculate_neighbor_ip_mask_30(value):
     """
     error = f'{value} !!!! possible error should be a valid ipv4 address!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 %s', error)
         return error
 
     else:
@@ -426,11 +426,11 @@ def filter_calculate_neighbor_ip_mask_30(value):
                 return nei_ip
 
             else:
-                J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 {}'.format(error))
+                J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 %s', error)
                 return error
 
         except ValueError as e:
-            J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 {}, caught {}'.format(error, e))
+            J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_30 %s, caught %s', error, e)
             return error
 
 
@@ -442,7 +442,7 @@ def filter_calculate_neighbor_ip_mask_31(value):
     """
     error = f'{value} !!!! possible error should be a valid ipv4 address!!!!'
     if not value:
-        J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 {}'.format(error))
+        J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 %s', error)
         return error
 
     else:
@@ -452,11 +452,11 @@ def filter_calculate_neighbor_ip_mask_31(value):
                 return nei_ip
 
             else:
-                J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 {}'.format(error))
+                J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 %s', error)
                 return error
 
         except ValueError as e:
-            J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 {}, caught {}'.format(error, e))
+            J2_FILTER_LOGGER.info('filter_calculate_neighbor_ip_mask_31 %s, caught %s', error, e)
             return error
 
 
