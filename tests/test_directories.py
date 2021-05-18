@@ -1,41 +1,35 @@
-import pytest
-import os
 import sys
+import os
 
-
-@pytest.fixture(scope="session")
-def dir_class_fixture():
-    sys.path.append('..')
-    import module as mod
-    return mod.Directories(base_dir=os.path.dirname(os.path.dirname(os.path.realpath(__file__)))), \
-           os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-
-
-def test_output_dir():
+def test_output_dir(dir_class_fixture):
     # Check that output directory is good
-    temp_obj, base_test_path = dir_class_fixture()
-    assert temp_obj.get_output_dir() == os.path.join(base_test_path, 'Output')
+    output_dir = os.path.split(dir_class_fixture.get_output_dir())[1]
+    app_dir = os.path.split(os.path.split(dir_class_fixture.get_output_dir())[0])[1]
+    assert 'QuickConfigTemplates' == app_dir
+    assert 'Output' == output_dir
 
 
-def test_yml_dir():
+def test_yml_dir(dir_class_fixture):
     # Check that yml directory is good
-    temp_obj, base_test_path = dir_class_fixture()
-    assert temp_obj.get_yml_dir() == os.path.join(base_test_path, 'yaml')
+    yml_dir = os.path.split(dir_class_fixture.get_yml_dir())[1]
+    app_dir = os.path.split(os.path.split(dir_class_fixture.get_yml_dir())[0])[1]
+    assert 'QuickConfigTemplates' == app_dir
+    assert 'Output' == yml_dir
 
 
-def test_logging_dir():
+def test_logging_dir(dir_class_fixture):
     # Check that logging directory is good
-    temp_obj, base_test_path = dir_class_fixture()
-    assert temp_obj.get_logging_dir() == os.path.join(base_test_path, 'Logs')
+    logs_dir = os.path.split(dir_class_fixture.get_logging_dir())[1]
+    app_dir = os.path.split(os.path.split(dir_class_fixture.get_logging_dir())[0])[1]
+    assert 'QuickConfigTemplates' == app_dir
+    assert 'Logs' == logs_dir
 
 
-def test_templates_dir_is_list():
+def test_templates_dir_is_list(dir_class_fixture):
     # Check that templates directory returns a list
-    temp_obj, base_test_path = dir_class_fixture()
-    assert isinstance(temp_obj.get_templates_dir(), list)
+    assert list == type(dir_class_fixture.get_templates_dir())
 
 
-def test_verify_base_logging_level():
+def test_verify_base_logging_level(dir_class_fixture):
     # Check that templates directory returns a list
-    temp_obj, base_test_path = dir_class_fixture()
-    assert temp_obj.get_logging_level() == 30
+    assert 30 == dir_class_fixture.get_logging_level()
