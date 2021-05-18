@@ -69,11 +69,10 @@ class PostRemoteYamlBuild(Resource):
         return template_engine_obj.get_remote_yaml_template()
 
 
-# TODO: Change var ip
-def run_local_server(ip, port, base_api_uri, debug, directories):  # pylint: disable=invalid-name
+def run_local_server(ip_addr, port, base_api_uri, debug, directories):
     """
     Function to run the local flask server
-    :param ip: The IP address to listen on
+    :param ip_addr: The IP address to listen on
     :param port: The port to listen on
     :param base_api_uri: The base uri, for the server
     :param debug: True to turn on debug
@@ -85,7 +84,7 @@ def run_local_server(ip, port, base_api_uri, debug, directories):  # pylint: dis
     if debug:
         LOGGER.setLevel(logging.DEBUG)
     LOGGER.debug('Starting server with the following ip: %s, '
-                 'port: %s, base_api_uri: %s, server_debug: %s', ip, port, base_api_uri, debug)
+                 'port: %s, base_api_uri: %s, server_debug: %s', ip_addr, port, base_api_uri, debug)
     # TODO: Need to check on this global usage
     global DIRECTORIES  # pylint: disable=global-statement
     DIRECTORIES = directories
@@ -93,7 +92,7 @@ def run_local_server(ip, port, base_api_uri, debug, directories):  # pylint: dis
     api = Api(app)
     api.add_resource(PostBasicBuild, '{base_api_uri}/basic_build'.format(base_api_uri=base_api_uri))
     api.add_resource(PostRemoteYamlBuild, '{base_api_uri}/remote_yaml_build'.format(base_api_uri=base_api_uri))
-    app.run(port=int(port), host=ip, debug=debug)
+    app.run(port=int(port), host=ip_addr, debug=debug)
 
 
 # https://blog.miguelgrinberg.com/post/designing-a-restful-api-using-flask-restful

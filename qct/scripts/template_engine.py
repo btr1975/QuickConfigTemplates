@@ -13,6 +13,7 @@ import colorama
 import yaml
 from .arestme import ARestMe
 from ..utils import custom_filters
+from ..version import __version__
 
 
 LOGGER = logging.getLogger(__name__)
@@ -506,8 +507,7 @@ class TemplateEngine:  # pylint: disable=too-many-instance-attributes
         rest_object.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
                                         server_config.get('server_port'))
         rest_object.set_update_headers('Qct', 'ApiVersion1')
-        # TODO: Need to get version from somewhere else
-        # rest_object.set_update_headers('Qct-Te', __version__)
+        rest_object.set_update_headers('Qct-Te', __version__)
 
         if yaml_data.get('remote_build_server_yaml_template'):
             response_data = rest_object.send_post('{server_api_uri}remote_yaml_'

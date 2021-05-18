@@ -1,3 +1,6 @@
+"""
+Holds package version information
+"""
 __title__ = 'QuickConfigTemplates'
 __description__ = 'Creates configuration from YAML'
 __author__ = 'Benjamin P. Trachtenberg'
