@@ -1,5 +1,5 @@
-module package
-==============
+qct package
+===========
 
 Subpackages
 -----------
@@ -13,7 +13,7 @@ Subpackages
 Module contents
 ---------------
 
-.. automodule:: module
+.. automodule:: qct
    :members:
    :undoc-members:
    :show-inheritance:

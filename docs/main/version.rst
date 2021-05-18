@@ -1,7 +1,7 @@
 version module
 ==============
 
-.. automodule:: version
+.. automodule:: qct.version
    :members:
    :undoc-members:
    :show-inheritance:

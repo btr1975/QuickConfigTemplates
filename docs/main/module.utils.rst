@@ -1,21 +1,21 @@
-module.utils package
-====================
+qct.utils package
+=================
 
 Submodules
 ----------
 
-module.utils.custom\_jinja2\_filters module
+qct.utils.custom\_jinja2\_filters module
 -------------------------------------------
 
-.. automodule:: module.utils.custom_jinja2_filters
+.. automodule:: qct.utils.custom_jinja2_filters
    :members:
    :undoc-members:
    :show-inheritance:
 
-module.utils.utils module
+qct.utils.utils module
 -------------------------
 
-.. automodule:: module.utils.utils
+.. automodule:: qct.utils.utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ module.utils.utils module
 Module contents
 ---------------
 
-.. automodule:: module.utils
+.. automodule:: qct.utils
    :members:
    :undoc-members:
    :show-inheritance:
