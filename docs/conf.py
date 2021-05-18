@@ -15,7 +15,7 @@ import sys
 base_path = os.path.split(os.path.join(os.path.abspath(os.path.dirname(__name__))))[0]
 sys.path.append(base_path)
 about = {}
-with open(os.path.join(base_path, 'version.py'), 'r', encoding='utf-8') as f:
+with open(os.path.join(base_path, 'qct', 'version.py'), 'r', encoding='utf-8') as f:
     exec(f.read(), about)
 
 

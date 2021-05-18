@@ -506,7 +506,7 @@ class TemplateEngine:  # pylint: disable=too-many-instance-attributes
         rest_object.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
                                         server_config.get('server_port'))
         rest_object.set_update_headers('Qct', 'ApiVersion1')
-        # FIXME: Broken after moving to flask 2.0.0
+        # TODO: Need to get version from somewhere else
         # rest_object.set_update_headers('Qct-Te', __version__)
 
         if yaml_data.get('remote_build_server_yaml_template'):

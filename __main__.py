@@ -6,8 +6,8 @@ import os
 import sys
 import platform
 from argparse import ArgumentParser
-import module as mod
-from version import __version__
+import qct
+from qct.version import __version__
 COMPILE = False
 LOGGER = logging.getLogger('qct_main')
 
@@ -17,14 +17,14 @@ def set_directory_structure():
     if COMPILE:
         if platform.system().lower() == 'linux':
             if os.path.islink('/bin/quick'):  # pylint: disable=no-else-return
-                return mod.Directories(base_dir=os.path.dirname(os.readlink('/bin/quick')))
+                return qct.Directories(base_dir=os.path.dirname(os.readlink('/bin/quick')))
             else:
-                return mod.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
+                return qct.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
         else:
-            return mod.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
+            return qct.Directories(base_dir=os.path.dirname(os.path.realpath(sys.argv[0])))
 
     else:
-        return mod.Directories(base_dir=os.path.dirname(os.path.realpath(__file__)))
+        return qct.Directories(base_dir=os.path.dirname(os.path.realpath(__file__)))
 
 
 if __name__ == '__main__':
@@ -123,7 +123,7 @@ if __name__ == '__main__':
             else:
                 OUTPUT_FILE_NAME = 'pl_convert.yml'
 
-            mod.convert_pl(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
+            qct.convert_pl(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'rm_create':
             if args.outputfile:
@@ -132,7 +132,7 @@ if __name__ == '__main__':
             else:
                 OUTPUT_FILE_NAME = 'rm_convert.yml'
 
-            mod.convert_rm(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
+            qct.convert_rm(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'acl_create':
             if args.outputfile:
@@ -141,7 +141,7 @@ if __name__ == '__main__':
             else:
                 OUTPUT_FILE_NAME = 'acl_convert.yml'
 
-            mod.convert_acl(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
+            qct.convert_acl(directories, args.file_name, OUTPUT_FILE_NAME, args.config_only, args.reset_sequences)
 
         elif args.which_sub == 'run_build':
             if args.outputfile:
@@ -166,7 +166,7 @@ if __name__ == '__main__':
                     arg_parser.print_help()
                     sys.exit('\n!!! You are required to have only one yml_file argument. !!!')
 
-            mod.TemplateEngine(directories, YML_FILE, OUTPUT_FILE_NAME, args.config_only, args.json, args.yml,
+            qct.TemplateEngine(directories, YML_FILE, OUTPUT_FILE_NAME, args.config_only, args.json, args.yml,
                                args.package, args.typefile, args.auto_build, args.remote, args.begin, args.include)
 
         elif args.which_sub == 'run_server':
@@ -188,7 +188,7 @@ if __name__ == '__main__':
             else:
                 BASE_API_URI = '/qct/api/v1'
 
-            mod.run_local_server(IP, PORT, BASE_API_URI, args.debug, directories)
+            qct.run_local_server(IP, PORT, BASE_API_URI, args.debug, directories)
 
     except AttributeError as e:  # pylint: disable=invalid-name
         LOGGER.critical(e)
