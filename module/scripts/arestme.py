@@ -1,10 +1,12 @@
-import requests
+"""
+REST API Interface
+"""
 import json
+import requests
 
 
-class ARestMe(object):
-    """
-    This class is used for a REST API
+class ARestMe:
+    """This class is used for a REST API
     """
     def __init__(self):
         self.username = None
@@ -30,7 +32,7 @@ class ARestMe(object):
         """
         full_url = '{server_url}{api_url}'.format(server_url=self.server_url, api_url=api_url)
 
-        if post_data:
+        if post_data:  # pylint: disable=no-else-return
             return requests.post(full_url, data=json.dumps(post_data), headers=self.headers).json()
 
         elif put_data:
@@ -135,7 +137,7 @@ class ARestMe(object):
         :return:
             JSON
         """
-        if not isinstance(data, dict):
+        if not isinstance(data, dict):  # pylint: disable=no-else-raise
             raise TypeError('data argument must be a dictionary if supplied.')
 
         elif len(data) == 0:
@@ -151,7 +153,7 @@ class ARestMe(object):
         :return:
             JSON
         """
-        if not isinstance(data, dict):
+        if not isinstance(data, dict):  # pylint: disable=no-else-raise
             raise TypeError('data argument must be a dictionary if supplied.')
 
         elif len(data) == 0:

@@ -1,22 +1,30 @@
+"""
+Code to deal with directories
+"""
 import logging
 import os
+import sys
 import zipfile
-from yaml import safe_load
 import persistentdatatools as pdt
+from yaml import safe_load
 
 
 LOGGER = logging.getLogger(__name__)
 
 
-class Directories(object):
+class Directories:  # pylint: disable=too-many-instance-attributes
+    """Class to hold directory structure
+
+    :type base_dir: String
+    :param base_dir: The base level directory
     """
-    Class to hold directory structure
-    """
-    def __init__(self, base_dir):
+    def __init__(self, base_dir):  # pylint: disable=too-many-branches,too-many-statements
         self.base_dir = base_dir
         self.data_dir = os.path.join(self.base_dir, 'Data')
         pdt.verify_directory('Data', self.base_dir, directory_create=True)
-        self.yml_config_data = open(os.path.join(self.data_dir, 'config.yml'))
+        with open(os.path.join(self.data_dir, 'config.yml'), 'r') as file:
+            self.yml_config_data = file.read()
+
         self.dir_config = safe_load(self.yml_config_data).get('config')
         self.templates_dir = list()
         self.yml_dir = list()
@@ -32,8 +40,8 @@ class Directories(object):
 
             for directory in self.yml_dir:
                 if not os.path.isdir(directory):
-                    LOGGER.critical('Could not find yml directory stated in config file {}'.format(directory))
-                    exit('Bad yml directory {}'.format(directory))
+                    LOGGER.critical('Could not find yml directory stated in config file %s', directory)
+                    sys.exit('Bad yml directory {}'.format(directory))
 
         else:
             pdt.verify_directory('yaml', self.base_dir, directory_create=True)
@@ -49,8 +57,8 @@ class Directories(object):
 
             for directory in self.templates_dir:
                 if not os.path.isdir(directory):
-                    LOGGER.critical('Could not find templates in directory stated in config file {}'.format(directory))
-                    exit('Bad templates directory {}'.format(directory))
+                    LOGGER.critical('Could not find templates in directory stated in config file %s', directory)
+                    sys.exit('Bad templates directory {}'.format(directory))
 
         else:
             pdt.verify_directory('templates', self.base_dir, directory_create=True)
@@ -59,8 +67,8 @@ class Directories(object):
         if self.dir_config.get('output_directory'):
             self.output_dir = self.dir_config.get('output_directory')
             if not os.path.isdir(self.output_dir):
-                LOGGER.critical('Could not find output directory stated in config file {}'.format(self.output_dir))
-                exit('Bad output directory {}'.format(self.output_dir))
+                LOGGER.critical('Could not find output directory stated in config file %s', self.output_dir)
+                sys.exit('Bad output directory {}'.format(self.output_dir))
 
         else:
             self.output_dir = os.path.join(self.base_dir, 'Output')
@@ -70,8 +78,8 @@ class Directories(object):
         if self.dir_config.get('logging_directory'):
             self.logging_dir = self.dir_config.get('logging_directory')
             if not os.path.isdir(self.logging_dir):
-                LOGGER.critical('Could not find logging directory stated in config file {}'.format(self.logging_dir))
-                exit('Bad logging directory {}'.format(self.logging_dir))
+                LOGGER.critical('Could not find logging directory stated in config file %s', self.logging_dir)
+                sys.exit('Bad logging directory {}'.format(self.logging_dir))
 
         else:
             self.logging_dir = os.path.join(self.base_dir, 'Logs')
@@ -123,7 +131,8 @@ class Directories(object):
     def get_logging_dir(self):
         return self.logging_dir
 
-    def collect_and_zip_files(self, dir_list, zip_file_name, file_extension_list=None, file_name_list=None):
+    def collect_and_zip_files(self, dir_list, zip_file_name, file_extension_list=None,  # pylint: disable=too-many-locals,too-many-branches
+                              file_name_list=None):
         """
         Method to collect files and make a zip file
         :param dir_list: A list of directories
@@ -158,7 +167,7 @@ class Directories(object):
                 for dir_name in dir_list:
                     temp_files_list = pdt.list_files_in_directory(dir_name)
                     for file_name in temp_files_list:
-                        garbage, extension = file_name.split('.')
+                        garbage, extension = file_name.split('.')  # pylint: disable=unused-variable
                         if extension in file_extension_list:
                             temp_list.append(os.path.join(dir_name, file_name))
 
@@ -185,7 +194,7 @@ class Directories(object):
         if len(zip_file_name.split('.')) == 2:
             name, ext = zip_file_name.split('.')
             if ext != 'zip':
-                LOGGER.warning('Changed the extension of zip_file_name={} to be zip'.format(zip_file_name))
+                LOGGER.warning('Changed the extension of zip_file_name=%s to be zip', zip_file_name)
                 zip_file_name = '{}.{}'.format(name, 'zip')
 
         else:
