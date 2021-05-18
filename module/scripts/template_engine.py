@@ -1,13 +1,16 @@
+"""
+The template engine
+"""
 import logging
 import sys
-from jinja2 import Environment, select_autoescape, FileSystemLoader
-from jinja2 import exceptions as j2_exceptions
-import yaml
 import json
-import persistentdatatools as pdt
 import os
 import re
+from jinja2 import Environment, select_autoescape, FileSystemLoader
+from jinja2 import exceptions as j2_exceptions
+import persistentdatatools as pdt
 import colorama
+import yaml
 from .arestme import ARestMe
 from ..utils import custom_filters
 
@@ -17,13 +20,13 @@ TEMPLATE_LOGGER = logging.getLogger('qct_template')
 SERVER_LOGGER = logging.getLogger('qct_server')
 
 
-class TemplateEngine(object):
+class TemplateEngine:  # pylint: disable=too-many-instance-attributes
     """
     Class to render, and clean Jinja2 templates from the client side
     """
     custom_filters = custom_filters
 
-    def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,
+    def __init__(self, directories=None, yml_file_name=None, output_file_name=None, display_only=False,  # pylint: disable=too-many-arguments
                  display_json=False, display_yml=False, package_name=None, variables_file_name=None, auto_build=None,
                  remote_build=False, begin_string=None, include_string=None):
         self.directories = directories
@@ -45,10 +48,15 @@ class TemplateEngine(object):
             self.server_rest()
 
     def version_runner(self):
+        """Method that checks what version of YAML being used
+
+        :rtype: None
+        :returns: None
+        """
         try:
             config = yaml.safe_load(self.yml_data)
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
             error = 'Error retrieving yml yaml.safe_load(yml_data) {}'.format(e)
             LOGGER.critical(error)
             sys.exit(error)
@@ -75,7 +83,7 @@ class TemplateEngine(object):
         try:
             config = yaml.safe_load(self.yml_data)
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
             error = 'Error retrieving yml yaml.safe_load(yml_data) {}'.format(e)
             LOGGER.critical(error)
             sys.exit(error)
@@ -83,8 +91,8 @@ class TemplateEngine(object):
         try:
             common_data = config.get('common')
 
-        except Exception as e:
-            LOGGER.critical('Error could not retrieve common_data {}'.format(e))
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
+            LOGGER.critical('Error could not retrieve common_data %s', e)
             sys.exit(e)
 
         env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
@@ -100,8 +108,8 @@ class TemplateEngine(object):
                 pdt.list_to_file(template.render(common_data).splitlines(), self.output_file_name,
                                  self.directories.get_output_dir())
 
-            except FileNotFoundError as e:
-                LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+            except FileNotFoundError as e:  # pylint: disable=invalid-name
+                LOGGER.critical('Can not write output %s', self.directories.get_output_dir())
                 sys.exit(e)
 
         print(template.render(common_data))
@@ -127,17 +135,17 @@ class TemplateEngine(object):
                 self.directories.collect_and_zip_files([self.directories.get_output_dir()], zip_file_name,
                                                        file_extension_list=None, file_name_list=[self.output_file_name])
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=invalid-name,broad-except
                 LOGGER.critical(e)
                 self.directories.collect_and_zip_files([self.directories.get_logging_dir()], zip_file_name,
                                                        file_extension_list=None, file_name_list=['logs.txt'])
 
-            LOGGER.debug('config data: {}'.format(config))
+            LOGGER.debug('config data: %s', config)
 
         if self.package_name:
             self.__create_zip_package(env, self.output_file_name)
 
-    def __run_template_v2(self):
+    def __run_template_v2(self):  # pylint: disable=too-many-branches
         """
         Method to build, and output the template
 
@@ -145,7 +153,7 @@ class TemplateEngine(object):
         try:
             config = yaml.safe_load(self.yml_data)
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
             error = 'Error retrieving yml yaml.safe_load(yml_data) {}'.format(e)
             LOGGER.critical(error)
             sys.exit(error)
@@ -153,8 +161,8 @@ class TemplateEngine(object):
         try:
             common_data = config.get('data')
 
-        except Exception as e:
-            LOGGER.critical('Error could not retrieve common_data {}'.format(e))
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
+            LOGGER.critical('Error could not retrieve common_data %s', e)
             sys.exit(e)
 
         env = Environment(autoescape=select_autoescape(enabled_extensions=('html', 'xml', 'jinja2'),
@@ -174,8 +182,8 @@ class TemplateEngine(object):
                     pdt.list_to_file(template.render(group).splitlines(), self.output_file_name,
                                      self.directories.get_output_dir())
 
-                except FileNotFoundError as e:
-                    LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+                except FileNotFoundError as e:  # pylint: disable=invalid-name
+                    LOGGER.critical('Can not write output %s', self.directories.get_output_dir())
                     sys.exit(e)
 
             colorama.init(autoreset=True)
@@ -211,12 +219,12 @@ class TemplateEngine(object):
                 self.directories.collect_and_zip_files([self.directories.get_output_dir()], zip_file_name,
                                                        file_extension_list=None, file_name_list=[self.output_file_name])
 
-            except Exception as e:
+            except Exception as e:  # pylint: disable=invalid-name,broad-except
                 LOGGER.critical(e)
                 self.directories.collect_and_zip_files([self.directories.get_logging_dir()], zip_file_name,
                                                        file_extension_list=None, file_name_list=['logs.txt'])
 
-            LOGGER.debug('config data: {}'.format(config))
+            LOGGER.debug('config data: %s', config)
 
         if self.package_name:
             self.__create_zip_package(env, self.output_file_name)
@@ -241,8 +249,8 @@ class TemplateEngine(object):
 
                 pdt.list_to_file(json_data.splitlines(), file_name, self.directories.get_output_dir())
 
-            except FileNotFoundError as e:
-                LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+            except FileNotFoundError as e:  # pylint: disable=invalid-name
+                LOGGER.critical('Can not write output %s', self.directories.get_output_dir())
                 sys.exit(e)
 
     def __config_as_yml(self, config_yml):
@@ -265,8 +273,8 @@ class TemplateEngine(object):
 
                 pdt.list_to_file(yml_data.splitlines(), file_name, self.directories.get_output_dir())
 
-            except FileNotFoundError as e:
-                LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+            except FileNotFoundError as e:  # pylint: disable=invalid-name
+                LOGGER.critical('Can not write output %s', self.directories.get_output_dir())
                 sys.exit(e)
 
     def __variable_dict_builder(self, variables_file_name):
@@ -285,8 +293,8 @@ class TemplateEngine(object):
 
             return data
 
-        except FileNotFoundError as e:
-            LOGGER.critical('Error could not retrieve Variables file {}'.format(e))
+        except FileNotFoundError as e:  # pylint: disable=invalid-name
+            LOGGER.critical('Error could not retrieve Variables file %s', e)
             sys.exit(e)
 
     def __yml_variable_pre_run_environment(self, yml_file_name, variable_data):
@@ -311,7 +319,7 @@ class TemplateEngine(object):
             if vars_yml_dict:
                 variable_data.update(vars_yml_dict)
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
             error = 'Error when running __yml_variable_pre_run_environment file name {} looking for vars'.format(e)
             LOGGER.critical(error)
             sys.exit(error)
@@ -320,7 +328,7 @@ class TemplateEngine(object):
             yml_file = pre_run_env.get_template(yml_file_name)
             return yml_file.render(variable_data)
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
             error = 'Error when running __yml_variable_pre_run_environment file name {}'.format(e)
             LOGGER.critical(error)
             sys.exit(error)
@@ -350,7 +358,7 @@ class TemplateEngine(object):
         """
         temp_set = set()
         for template_dir_name in self.directories.get_templates_dir():
-            for a in env.list_templates():
+            for a in env.list_templates():  # pylint: disable=invalid-name
                 if os.path.isfile(os.path.join(template_dir_name, os.path.dirname(a), os.path.basename(a))):
                     temp_set.add(os.path.join(template_dir_name, os.path.dirname(a)))
 
@@ -368,7 +376,7 @@ class TemplateEngine(object):
         if len(self.package_name.split('.')) == 2:
             name, ext = self.package_name.split('.')
             if ext != 'zip':
-                LOGGER.warning('Changed the extension of zip_file_name={} to be zip'.format(self.package_name))
+                LOGGER.warning('Changed the extension of zip_file_name=%s to be zip', self.package_name)
                 self.package_name = '{}.{}'.format(name, 'zip')
 
         else:
@@ -396,13 +404,13 @@ class TemplateEngine(object):
         try:
             data = self.__variable_dict_builder(variables_file_name)
 
-            if data.get('yml_template'):
+            if data.get('yml_template'):  # pylint: disable=no-else-return
                 return data.get('yml_template')
 
             else:
                 raise KeyError('KeyError: There is no "yml_template" variable in the csv!')
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
             LOGGER.critical(e)
             sys.exit(e)
 
@@ -418,7 +426,7 @@ class TemplateEngine(object):
         try:
             config = yaml.safe_load(yml_data)
 
-        except Exception as e:
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
             error = 'Error retrieving yml yaml.safe_load(yml_data) Method __check_for_vars_section_in_yml {}'.format(e)
             LOGGER.critical(error)
             sys.exit(error)
@@ -464,7 +472,7 @@ class TemplateEngine(object):
                 elif re.match(regex_device_config_end, line):
                     print(line)
 
-    def server_rest(self):
+    def server_rest(self):  # pylint: disable=too-many-branches
         """
         Method to send a restful request to build on a remote server
         :return:
@@ -475,7 +483,7 @@ class TemplateEngine(object):
                                                          'config.yml'))).get('remote_build_server_config')
 
         error = 'Missing parameter in remote_build_server_config: {}'.format(server_config)
-        if not server_config.get('protocol'):
+        if not server_config.get('protocol'):  # pylint: disable=no-else-return,no-else-raise
             LOGGER.critical(error)
             raise EnvironmentError(error)
 
@@ -498,7 +506,8 @@ class TemplateEngine(object):
         rest_object.set_server_and_port(server_config.get('protocol'), server_config.get('server_host'),
                                         server_config.get('server_port'))
         rest_object.set_update_headers('Qct', 'ApiVersion1')
-        rest_object.set_update_headers('Qct-Te', __version__)
+        # FIXME: Broken after moving to flask 2.0.0
+        # rest_object.set_update_headers('Qct-Te', __version__)
 
         if yaml_data.get('remote_build_server_yaml_template'):
             response_data = rest_object.send_post('{server_api_uri}remote_yaml_'
@@ -527,8 +536,8 @@ class TemplateEngine(object):
                     pdt.list_to_file(config.splitlines(), self.output_file_name,
                                      self.directories.get_output_dir())
 
-                except FileNotFoundError as e:
-                    LOGGER.critical('Can not write output {}'.format(self.directories.get_output_dir()))
+                except FileNotFoundError as e:  # pylint: disable=invalid-name
+                    LOGGER.critical('Can not write output %s', self.directories.get_output_dir())
                     sys.exit(e)
 
             if self.display_json:
@@ -541,7 +550,7 @@ class TemplateEngine(object):
             print(response_data.get('error'))
 
 
-class ServerTemplateEngine(object):
+class ServerTemplateEngine:  # pylint: disable=too-many-instance-attributes
     """
     Class to render, and clean Jinja2 templates from the server side
     """
@@ -566,13 +575,13 @@ class ServerTemplateEngine(object):
             (dict, int)
 
         """
-        if self.config.get('common'):
+        if self.config.get('common'):  # pylint: disable=no-else-return
             error = 'Error method version_runner could not retrieve common, or version.'
             SERVER_LOGGER.critical(error)
             return {'status_code': 400, 'error': error}, 400
 
         elif self.config.get('version'):
-            if int(self.config.get('version')) == 2:
+            if int(self.config.get('version')) == 2:  # pylint: disable=no-else-return
                 return self.__run_template_v2(self.config)
 
             else:
@@ -597,8 +606,8 @@ class ServerTemplateEngine(object):
         try:
             common_data = config.get('data')
 
-        except Exception as e:
-            SERVER_LOGGER.critical('Error could not retrieve common_data {}'.format(e))
+        except Exception as e:  # pylint: disable=invalid-name,broad-except
+            SERVER_LOGGER.critical('Error could not retrieve common_data %s', e)
             sys.exit(e)
 
         try:
@@ -615,12 +624,12 @@ class ServerTemplateEngine(object):
                 rendered += template.render(group)
             return {'status_code': 200, 'config': rendered}, 200
 
-        except j2_exceptions.TemplateNotFound as e:
+        except j2_exceptions.TemplateNotFound as e:  # pylint: disable=invalid-name
             error = 'Error can not find template {} in any of these {}.'.format(e, self.directories.get_templates_dir())
             SERVER_LOGGER.critical(error)
             return {'status_code': 400, 'error': error}, 400
 
-    def get_remote_yaml_template(self):
+    def get_remote_yaml_template(self):  # pylint: disable=inconsistent-return-statements
         """
         Method to build, a yaml file to then run a jinja2 template
         :return:
@@ -639,7 +648,7 @@ class ServerTemplateEngine(object):
 
                 template = env.get_template(self.config.get('remote_build_server_yaml_template'))
 
-                if self.config.get('vars'):
+                if self.config.get('vars'):  # pylint: disable=no-else-return
                     config = yaml.safe_load(template.render(self.config.get('vars')))
                     return self.__run_template_v2(config)
 
@@ -648,7 +657,7 @@ class ServerTemplateEngine(object):
                     SERVER_LOGGER.critical(error)
                     return {'status_code': 400, 'error': error}, 400
 
-            except j2_exceptions.TemplateNotFound as e:
+            except j2_exceptions.TemplateNotFound as e:  # pylint: disable=invalid-name
                 error = 'Error can not find template {} in any of these ' \
                         '{}.'.format(e, self.directories.get_templates_dir())
                 SERVER_LOGGER.critical(error)
