@@ -1,6 +1,9 @@
+"""
+QCT Server
+"""
+import logging
 from flask import Flask, request
 from flask_restful import Resource, Api
-import logging
 from .template_engine import ServerTemplateEngine
 
 
@@ -14,17 +17,18 @@ class PostBasicBuild(Resource):
     Class for a basic build this receives full yaml and operates on the
     template in data.template
     """
-    def post(self):
-        if not request.headers.get('Qct'):
+    def post(self):  # pylint: disable=no-self-use
+        """Method to receive a POST"""
+        if not request.headers.get('Qct'):  # pylint: disable=no-else-return
             error = 'Could not find Qct in request header!! Here are the headers found \n{}'.format(request.headers)
-            LOGGER.critical('PostBasicBuild: {}'.format(error))
+            LOGGER.critical('PostBasicBuild: %s', error)
             return {'status_code': 400, 'error': error}, 400
 
         else:
             if request.headers.get('Qct') not in ['ApiVersion1']:
                 error = 'Could not find ApiVersion1 in Qct request header!! ' \
                         'Here are the headers found \n{}'.format(request.headers)
-                LOGGER.critical('PostBasicBuild: {}'.format(error))
+                LOGGER.critical('PostBasicBuild: %s', error)
                 return {'status_code': 400, 'error': error}, 400
 
         template_engine_obj = ServerTemplateEngine(directories=DIRECTORIES, config=request.json)
@@ -32,7 +36,7 @@ class PostBasicBuild(Resource):
         if LOGGER.getEffectiveLevel() == logging.DEBUG:
             message = 'From: {} Received Data: {}'.format(request.remote_addr, request.json)
             print(message)
-            LOGGER.debug('PostBasicBuild: {}'.format(message))
+            LOGGER.debug('PostBasicBuild: %s', message)
 
         return template_engine_obj.run_template_version()
 
@@ -41,17 +45,18 @@ class PostRemoteYamlBuild(Resource):
     """
     Class for a remote yaml build this receives vars, and a yaml template to build
     """
-    def post(self):
-        if not request.headers.get('Qct'):
+    def post(self):  # pylint: disable=no-self-use
+        """Method to receive a POST"""
+        if not request.headers.get('Qct'):  # pylint: disable=no-else-return
             error = 'Could not find Qct in request header!! Here are the headers found \n{}'.format(request.headers)
-            LOGGER.critical('PostRemoteYamlBuild: {}'.format(error))
+            LOGGER.critical('PostRemoteYamlBuild: %s', error)
             return {'status_code': 400, 'error': error}, 400
 
         else:
             if request.headers.get('Qct') not in ['ApiVersion1']:
                 error = 'Could not find ApiVersion1 in Qct request header!! ' \
                         'Here are the headers found \n{}'.format(request.headers)
-                LOGGER.critical('PostRemoteYamlBuild: {}'.format(error))
+                LOGGER.critical('PostRemoteYamlBuild: %s', error)
                 return {'status_code': 400, 'error': error}, 400
 
         template_engine_obj = ServerTemplateEngine(directories=DIRECTORIES, config=request.json)
@@ -59,12 +64,13 @@ class PostRemoteYamlBuild(Resource):
         if LOGGER.getEffectiveLevel() == logging.DEBUG:
             message = 'From: {} Received Data: {}'.format(request.remote_addr, request.json)
             print(message)
-            LOGGER.debug('PostRemoteYamlBuild: {}'.format(message))
+            LOGGER.debug('PostRemoteYamlBuild: %s', message)
 
         return template_engine_obj.get_remote_yaml_template()
 
 
-def run_local_server(ip, port, base_api_uri, debug, directories):
+# TODO: Change var ip
+def run_local_server(ip, port, base_api_uri, debug, directories):  # pylint: disable=invalid-name
     """
     Function to run the local flask server
     :param ip: The IP address to listen on
@@ -78,9 +84,10 @@ def run_local_server(ip, port, base_api_uri, debug, directories):
     """
     if debug:
         LOGGER.setLevel(logging.DEBUG)
-    LOGGER.debug('Starting server with the following ip: {}, '
-                 'port: {}, base_api_uri: {}, server_debug: {}'.format(ip, port, base_api_uri, debug))
-    global DIRECTORIES
+    LOGGER.debug('Starting server with the following ip: %s, '
+                 'port: %s, base_api_uri: %s, server_debug: %s', ip, port, base_api_uri, debug)
+    # TODO: Need to check on this global usage
+    global DIRECTORIES  # pylint: disable=global-statement
     DIRECTORIES = directories
     app = Flask(__name__)
     api = Api(app)
